@@ -15,6 +15,10 @@ or
 
 ## Articles
 You can create articles which tell about your worlds characters, areas, religions, species and so more. Provided rich text editor allows adding tables, images, titles and links which can be used to reference other articles. 
+
+![Alt text](https://i.imgur.com/X2Cl3lQ.png "Article")
+
+![Alt text](https://i.imgur.com/Gx4KMYz.png "ArticleList")
 ## Maps
 
 Map feature allows you to import images and mark areas using pins. It also allows you to put multiple image layers which can be toggled.
