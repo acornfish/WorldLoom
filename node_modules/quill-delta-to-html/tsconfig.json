@@ -1,0 +1,29 @@
+{
+   "compilerOptions": {
+      "module": "commonjs",
+      "removeComments": true,
+      "preserveConstEnums": true,
+      "sourceMap": false,
+      "target": "es5",
+      "outDir": "dist/commonjs/",
+      "lib": [
+         "es6"
+      ],
+      "types": [
+         "node",
+         "mocha"
+      ],
+      "declaration": true,
+      "noImplicitThis": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "alwaysStrict": true,
+      "noUnusedParameters": true,
+      "noUnusedLocals": true,
+      "noFallthroughCasesInSwitch": true,
+      "esModuleInterop": true
+   },
+   "include": [
+      "src/**/*.ts"
+   ]
+}

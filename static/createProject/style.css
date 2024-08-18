@@ -1,0 +1,75 @@
+html {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 100%;
+    height: 120%;
+    margin: 0;
+    padding: 0;
+    background: var(--battleship-gray);
+    overflow-x: hidden;
+    object-fit: fill;
+    font-family: 'rubik', Arial, Helvetica, sans-serif;
+}
+
+
+.form-container{
+    width: 60vh;
+    height: 70vh;
+    background-color: var(--onyx);
+    position: relative;
+    left: 50%;
+    top: 35%;
+    transform:translate(-50%,-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /*border-radius: 1vh;*/
+}
+
+.project-name-input{
+    border: 0;
+    outline: 0;
+    height: 10%;
+    width: 80%;
+    background-color: var(--red);
+    color: var(--wheat);
+    padding-left: 2%;
+    font-weight: bold;
+    /*border-radius: 1vh;*/
+}
+
+.project-description-input{
+    border: 0;
+    outline: 0;
+    height: 30%;
+    resize: none;
+    width: 80%;
+    background-color: var(--red);
+    margin-top: 10%;
+    margin-bottom: 15%;
+    color: var(--wheat);
+    padding-left: 2%;
+    padding-top: 1%;
+    font-size: 0.8rem;
+    /*border-radius: 1vh;*/
+
+}
+
+.submit-button{
+    border: 0;
+    outline: 0;
+    height: 10%;
+    width: 70%;
+    background-color: var(--red);
+    color: var(--wheat);
+    /*border-radius: 1vh;*/
+}
+
+.submit-button:hover{filter: brightness(85%);}
+.submit-button:active{filter: brightness(70%);}

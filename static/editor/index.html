@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoryLab</title>
+    <link href="/libs/quill.snow.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/global.css">
+    <script>
+        if (localStorage.getItem("Article") == null &&  
+        new URLSearchParams(window.location.search).get("new") === null) window.location = "/dashboard";
+    </script>
+    <script src="app.js" type="module" defer></script>
+    <script src="/global.js" type="module"></script>
+
+</head>
+
+<body>
+    <div id="loading-screen" style="width: 100%;height: 140%;background-color: gray;z-index: 999;position: absolute;">
+    </div>
+
+    <div class="navbar"> </div>
+
+    <div class="topbar">
+        <div class="topbar-container">
+            <div class="topbar-section" selected style="flex-grow: 1;"><button>
+                    <h2>Main Section</h2>
+                </button></div>
+            <div class="topbar-section" style="flex-grow: 1;"><button>
+                    <h2>Side Sections</h2>
+                </button></div>
+            <div class="topbar-section" style="flex-grow: 1;"><button>
+                    <h2>Settings</h2>
+                </button></div>
+        </div>
+    </div>
+    <div id="container">
+        <div class="editorContainer">
+            <div id="editor"></div>
+        </div>
+    </div>
+    <div class="sidebar">
+        <div class="article-image-container">
+            <img src="/resources/default.jpg" alt="image"
+                class="article-image">
+        </div>
+        <div class="article-title-container">
+            <h2 class="article-title">Article</h2>
+        </div>
+        <textarea id="article-description"></textarea>
+        <button onclick="saveArticle()" class="article-save-button">Save</button>
+    </div>
+
+</body>
+
+</html>

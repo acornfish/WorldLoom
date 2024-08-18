@@ -1,0 +1,167 @@
+html {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 100%;
+    height: 120%;
+    margin: 0;
+    padding: 0;
+    background: var(--battleship-gray);
+    overflow-x: hidden;
+    object-fit: fill;
+    font-family: 'rubik', Arial, Helvetica, sans-serif;
+}
+
+.maps-list{
+    width: 100%;
+    height: 90%;
+    margin-left: 6%;
+    position: relative;
+    list-style: none;
+    top: 4%;
+}
+
+.maps-list li{
+    margin-left: 3%;
+    margin-bottom: 2%;
+    font-family: 'rubik', Arial, Helvetica, sans-serif;
+    word-break: break-all;
+    width: 80%;
+}
+
+.maps-list li button:hover{
+    background-color: var(--onyx-darkened);
+    cursor: pointer;
+}
+
+.maps-list li button:active{
+    filter: brightness(150%);
+}
+
+.maps-list li button{
+    border: none;
+    color: var(--wheat);
+    background-color: var(--onyx);
+    padding: 0.5%;
+}
+
+
+
+.card:hover {
+    filter: brightness(115%);
+}
+
+.card:active {
+    filter: brightness(130%);
+}
+
+.new-card:hover {
+    filter: brightness(115%);
+}
+
+.new-card:active {
+    filter: brightness(150%);
+}
+
+.card {
+    width: 30vh;
+    height: 40vh;
+    background-color: var(--onyx);
+    position: relative;
+    border-radius: 2vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0;
+    grid-row: auto;
+    color: var(--wheat);
+    border: 0px solid;
+}
+
+.card * {
+    position: relative;
+    margin: 0;
+    margin-left: 5%;
+}
+
+.card-title {
+    margin-bottom: 7%;
+    white-space: nowrap;
+}
+
+.card-title h2{
+    text-overflow: hidden;
+    overflow: hidden;
+    position: relative;
+    width: 80%;
+    left: 10%;
+    transform: translateX(-10%)
+}
+
+.card img {
+    width: 90%;
+    height: 40%;
+    object-fit: cover;
+    margin-bottom: 10%;
+    border-radius: 2vh;
+}
+
+.cards {
+    width: 90vw;
+    margin-left: 10vw;
+    height: 100vh;
+    display: grid;
+    row-gap: 1vh;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: auto;
+    position: relative;
+    top: 5vh;
+}
+
+.cards *{
+    cursor: pointer;
+}
+
+.new-card {
+    width: 30vh;
+    height: 40vh;
+    background-color: rgba(0, 0, 0, 0);
+    position: relative;
+    border-radius: 2vh;
+    border: 5px dashed var(--wheat);
+    margin: 0;
+    grid-row: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--wheat);
+}
+
+.card-text {
+    width: 90%;
+    height: 28%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.card-text p {
+    word-wrap: break-word;
+}
+.remove-map{
+    background-color: var(--red);
+    display: inline;
+    width: 10%;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15%;
+    z-index: 10;
+    position: relative;
+    left: 80%;
+    top: 85%;
+}

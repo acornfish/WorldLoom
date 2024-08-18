@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "express": "^4.19.2",
+    "quill-delta-to-html": "^0.12.1"
+  },
+  "name": "storylab",
+  "version": "1.0.0",
+  "description": "An open-source alternative to world anvil",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "compile": " em++ WASM_source/kmp.cpp -std=c++17 -sEXPORTED_FUNCTIONS=_KMP,_free -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o static/WASM/kmp.wasm"
+  },
+  "author": "Ege Açikgöz",
+  "license": "MIT"
+}

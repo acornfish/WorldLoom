@@ -1,0 +1,264 @@
+html {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: var(--battleship-gray);
+    overflow-x: hidden;
+    object-fit: fill;
+    font-family: 'rubik', Arial, Helvetica, sans-serif;
+}
+
+.draggable {
+    position: absolute;
+}
+
+.map-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    overflow: hidden;
+}
+
+.inner-map-container {
+    width: 95vw;
+    padding: 10%;
+    position: absolute;
+
+}
+
+.map-image {
+    position: relative;
+    transition: transform 0.3s ease-in-out;
+    width: 95vw;
+    user-drag: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.map-controls {
+    background-color: var(--onyx);
+    width: 40%;
+    height: 5%;
+    position: fixed;
+    z-index: 10;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    left: 50%;
+    transform: translate(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.map-contol-buttons {
+    width: 80%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--wheat);
+}
+
+.map-control-button {
+    border-left: 0.2vh solid var(-wheat);
+    background-color: var(--onyx);
+    flex-grow: 1;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'rubik', Arial, Helvetica, sans-serif;
+    border: 0;
+    color: var(--wheat);
+}
+
+.map-control-button:hover {
+    filter: brightness(120%);
+}
+
+.map-control-button:active {
+    filter: brightness(180%);
+}
+
+.sub-tab {
+    display: none;
+}
+
+.active-tab {
+    display: block;
+}
+
+
+.sub-tab-container {
+    width: 100%;
+    height: 100%;
+}
+
+.markers-container {
+    width: 95%;
+    margin-left: 5%;
+    height: 95%;
+    position: absolute;
+}
+
+.inner-markers-container {
+    width: 90%;
+    height: 80%;
+    background-color: var(--onyx);
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 5%;
+    overflow: scroll;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-family: 'Rubik', Arial, Helvetica, sans-serif;
+}
+
+
+tr:nth-child(odd):not([head]) {
+    background-color: var(--onyx-darkened);
+}
+
+th,
+td {
+    padding-left: 1%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    text-align: left;
+    height: 100%;
+    color: var(--wheat);
+}
+
+
+.settings-container {
+    width: 95%;
+    margin-left: 5%;
+    height: 95%;
+    position: absolute;
+}
+
+.inner-settings-container {
+    width: 70%;
+    height: 80%;
+    background-color: var(--onyx);
+    position: relative;
+    left: 40%;
+    transform: translateX(-50%);
+    margin-top: 5%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    display: inline-block;
+
+}
+
+.prompt-container {
+    width: 100%;
+    height: 10%;
+    position: relative;
+    margin-left: 5%;
+    margin-top: 2%;
+    margin-bottom: 4%;
+    color: var(--wheat);
+}
+
+.prompt-container input{
+    width: 80%;
+    height: 80%;
+    border: none;
+    border-bottom: 2px solid var(--red);
+    outline: none;
+    background: none;
+    padding-left: 0.5%;
+    color: var(--wheat);
+    font-family: 'Rubik', Arial, Helvetica, sans-serif;
+}
+
+.prompt-container input:focus{
+    border-bottom: 4px solid var(--red);
+}
+
+.prompt-container h2{
+    font-family: 'Rubik', Arial, Helvetica, sans-serif;   
+}
+
+.description-container{
+    height: 50%;
+}
+
+.editorContainer {
+    width: 80%;
+    position: relative;
+    background-color: var(--onyx);
+    top: 10%;
+    height: 100%;
+    left: 0;
+}
+
+.editorContainer * {
+    background-color: var(--onyx-darkened);
+    z-index: 5;
+}
+
+.ql-stroke,
+.ql-picker-label,
+.ql-editor,
+.ql-picker-item:not(.ql-selected) {
+    stroke: var(--wheat) !important;
+    color: var(--wheat) !important;
+}
+
+.settings-sidebar{
+    width: 20%;
+    height: 20%;
+    background-color: var(--onyx);
+    position: relative;
+    left: 8%;
+    bottom: 75%;
+    display: inline-block;
+}
+
+.settings-sidebar button{ 
+    width: 80%;
+    height: 40%;
+    margin-left: 10%;
+    background-color: var(--red);
+    border: none;
+    top: 30%;
+    position: relative;
+}
+
+.settings-sidebar button:hover{ 
+    filter: brightness(120%);
+}
+
+.settings-sidebar button:active{ 
+    filter: brightness(140%);
+}
+
+td input{
+    outline: none;
+    background: none;
+    color: var(--wheat);    
+    height: 100%;
+    display: block;
+    position: relative;
+    border: 1px solid var(--wheat);
+    padding: 2%;
+}

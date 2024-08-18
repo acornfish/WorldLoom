@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoryLab</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/global.css">
+    <script src="/global-head.js" type="module"></script>
+    <script src="app.js" type="module" defer></script>
+    <link href="/libs/quill.snow.css" rel="stylesheet" />
+
+</head>
+<body oncontextmenu="return false;">
+    <div class="navbar"> </div> 
+    <div id="loading-screen" style="width: 100%;height: 100%;background-color: gray;z-index: 999;position: absolute;"></div>
+    <div class="map-controls">
+        <div class="map-contol-buttons">
+            <button class="map-control-button">Map</button>
+            <button class="map-control-button">Markers</button>
+            <button class="map-control-button">Layers</button>
+            <button class="map-control-button">Settings</button>
+        </div>
+    </div>
+    <div class="sub-tab-container">
+        <div class="map-container sub-tab">
+            <div class="inner-map-container">
+                <img src="" alt="" class="map-image"> 
+            </div>
+        </div>
+        <div class="markers-container sub-tab">
+            <div class="inner-markers-container">
+                <table>
+                    <thead>
+                      <tr head>
+                        <th>Title</th>
+                        <th>Length</th>
+                        <th>Latitude</th>
+                        <th>Type</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+       
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+        <div class="sub-tab">b</div>
+        <div class="settings-container sub-tab">
+            <div class="inner-settings-container">
+                <div class="prompt-container title-container">
+                    <h2>Title</h2>
+                    <input type="text" class="title-input">
+                </div>
+
+                <div class="prompt-container description-container">
+                    <h2>Description</h2>
+                    <div class="editorContainer">
+                        <div id="editor"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-sidebar">
+                <button>Save</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

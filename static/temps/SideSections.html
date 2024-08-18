@@ -1,0 +1,70 @@
+<div class="editorContainer">
+    <div id="editor"></div>
+</div>
+
+<style>
+    .editorContainer {
+        width: 60%;
+        margin-left: 10%;
+        position: relative;
+        background-color: var(--onyx);
+        top: 10%;
+        height: 60%;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .editorContainer * {
+        background-color: var(--onyx);
+    }
+
+    .ql-stroke,
+    .ql-picker-label,
+    .ql-editor,
+    .ql-picker-item:not(.ql-selected) {
+        stroke: var(--wheat) !important;
+        color: var(--wheat) !important;
+    }
+</style>
+
+<script>
+    const quillLinkHandler = (value) => {
+        console.log(value)
+        if (value) {
+            const href = prompt('Enter the article name: ');
+            this.quill.format('link', "/Articles/" + href);
+        } else {
+            this.quill.format('link', false);
+        }
+    }
+
+    const toolbarOptions = {
+        handlers: {
+            link: quillLinkHandler
+        }
+    };
+
+
+    var quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{
+                    'header': [1, 2, false]
+                }],
+                ['bold', 'italic', 'underline'],
+                [{
+                    'link': quillLinkHandler
+                }, 'image'],
+                [{
+                    'list': 'ordered'
+                }, {
+                    'list': 'bullet'
+                }],
+
+            ]
+        }
+    });
+    quill.root.setAttribute('spellcheck', false)
+</script>

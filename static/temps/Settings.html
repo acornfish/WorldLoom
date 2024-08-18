@@ -1,0 +1,226 @@
+<style>
+    .OptionsContainer {
+        width: 60%;
+        margin-left: 10%;
+        position: relative;
+        background-color: var(--onyx);
+        top: 10%;
+        height: 60%;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #articleName {
+        width: 60%;
+        height: 10%;
+        position: relative;
+        left: 40%;
+        transform: translate(-50%);
+        outline: none;
+        font-family: 'Rubik', Arial, Helvetica, sans-serif;
+        background-color: var(--wheat);
+        border: none;
+        padding-left: 2%;
+    }
+
+    .image-selector-container-outer {
+        display: flex;
+        width: 50vw;
+        height: 70vh;
+        top: 3%;
+        left: 3%;
+        background: rgba(0 0, 0, 0);
+        justify-content: center;
+        position: absolute;
+        visibility: hidden;
+    }
+
+    .image-selector-container {
+        background: gray;
+        width: 100%;
+        height: 100%;
+        z-index: 6;
+        display: grid;
+        grid-template-rows: repeat(3, min-content);
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5%;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        padding: 2%;
+
+    }
+
+    .image-selector-option {
+        position: relative;
+
+    }
+
+    .image-selector-option img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .image-selector-option:hover {
+        filter: brightness(130%);
+    }
+
+    .image-selector-option:active {
+        filter: brightness(160%);
+    }
+
+    .close-button {
+        background-color: #C02942;
+        width: 5%;
+        height: 5%;
+        z-index: 9;
+        position: absolute;
+        left: 99%;
+        top: 2%;
+        transform: translateX(-100%);
+        border-radius: 50%;
+
+    }
+
+    .close-button:hover {
+        filter: brightness(130%);
+    }
+
+    .close-button:active {
+        filter: brightness(160%);
+    }
+
+
+    .close-button::after {
+        content: 'X';
+        color: white;
+        font-size: 2.5vh;
+        display: flex;
+        justify-content: center;
+    }
+
+    .image-selector-button {
+        width: 40vh;
+        height: 20vh;
+        background: url("/resources/default.jpg");
+        display: inline-block;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+
+    .image-selector-button:hover {
+        filter: brightness(130%);
+    }
+
+    .image-selector-button:active {
+        filter: brightness(160%);
+    }
+
+    .image-selector-control h5 {
+        display: inline-block;
+        margin-right: 10%;
+    }
+
+    .image-selector-control {
+        min-width: 60%;
+        max-width: 100%;
+        width: 60%;
+        display: inline-flex;
+        position: relative;
+        align-items: center;
+        left: 40%;
+        transform: translate(-50%);
+        justify-content: baseline;
+        margin-top: 5%;
+        color: var(--wheat);
+    }
+    
+    .article-name-label {
+        display: inline;
+        font-family: 'Rubik', Arial, Helvetica, sans-serif;
+        color: var(--wheat);
+        position: relative;
+        left: 60%;
+        margin-top: 5%;
+        margin-bottom: 2%;
+        transform: translateX(-50%);
+    }
+</style>
+
+
+<div class="OptionsContainer">
+    <h2 class="article-name-label">Article name</h2>
+    <input type="text" id="articleName">
+    <div class="image-selector-control">
+        <h5>Select cover image: </h5>
+        <div class="image-selector-button" onclick="OpenImageSelector()"></div>
+    </div>
+
+    <div class="image-selector-container-outer">
+        <div class="close-button" onclick="OpenImageSelector(false)"></div>
+        <div class="image-selector-container">
+        </div>
+    </div>
+    <script>
+        var isImageSelectorOpen = false;
+
+        function OpenImageSelector(set) {
+            if (typeof set === "undefined") {
+                isImageSelectorOpen = !isImageSelectorOpen;
+            } else if (typeof set === "boolean") {
+                isImageSelectorOpen = set;
+            }
+            let container = document.querySelector(".image-selector-container-outer")
+            container.setAttribute("style", `visibility: ${isImageSelectorOpen?"visible":"hidden"}`)
+        }
+
+        function getImageList() {
+            const apiCall = new XMLHttpRequest();
+            apiCall.open("GET", "/api/retrieveImageList");
+            apiCall.setRequestHeader("Content-Type", "application/json");
+
+            return new Promise((resolve, reject) => {
+                apiCall.onload = function() {
+                    if (apiCall.status === 200) {
+                        try {
+                            const imageList = JSON.parse(apiCall.responseText);
+                            resolve(imageList);
+                        } catch (error) {
+                            reject(new Error("Failed to parse JSON response"));
+                        }
+                    } else {
+                        reject(new Error("Failed to retrieve image list. Status:", apiCall.status));
+                    }
+                };
+
+                apiCall.onerror = function(error) {
+                    reject(new Error("Error retrieving image list:", error));
+                };
+
+                apiCall.send();
+            });
+        }
+
+        getImageList().then(imgs => {
+            let container = document.querySelector(".image-selector-container")
+            imgs.forEach(x => {
+                container.innerHTML += `
+                    <div class="image-selector-option"><img src="${x}" alt="${x}"></div>
+                `
+            })
+
+
+            document.querySelectorAll(".image-selector-option").forEach(x => {
+                x.addEventListener("click", (x) => {
+                    let src = (x.explicitOriginalTarget.getAttribute("src"))
+                    let selector = document.querySelector(".image-selector-button")
+                    selector.setAttribute("style", `background-image: url("${src}")`)
+                    OpenImageSelector(false);
+                })
+            })
+        })
+    </script>
+</div>
