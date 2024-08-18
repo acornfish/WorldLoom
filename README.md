@@ -14,7 +14,7 @@ or
 # Features
 
 ## Articles
-You can create articles which tell about your worlds characters, areas, religions, species and so more. Provided rich text editor allows adding tables, images, titles and links which can be used to reference other articles. 
+You can create articles which tell about your characters, areas, religions, species and so more. Provided rich text editor allows adding tables, images, titles and links which can be used to reference other articles. 
 
 ![Alt text](https://i.imgur.com/X2Cl3lQ.png "Article")
 
