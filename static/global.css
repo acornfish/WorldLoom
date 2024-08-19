@@ -3,15 +3,15 @@
 @import url('/libs/fontAwsome/css/solid.css');
 
 :root {
-    --onyx: #444444 ;
-    --onyx-darkened: #404040 ;
-    --battleship-gray:#b8b8b8 ;
+    --onyx: #444444;
+    --onyx-darkened: #404040;
+    --battleship-gray: #b8b8b8;
     --wheat: #dddddd;
     --red: #C02942;
 }
 
 
-.Navbar{
+.Navbar {
     background-color: var(--onyx);
     height: 100%;
     width: 5%;
@@ -20,9 +20,53 @@
     padding: 0;
     left: 0;
     z-index: 100;
+    transition: all 0.5s ease-in-out;
 }
 
-.Navbar #NavbarButtons{
+.Navbar[collapsed] {
+    transform: translateX(-100%);
+}
+.Navbar:not([collapsed]) {
+    transform: translateX(0);
+}
+
+
+.Navbar .collapse-switch {
+    display: inline-block;
+    position: absolute;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    left: 100%;
+    background-color: var(--onyx);
+    border-top-right-radius: 50% ;
+    border-bottom-right-radius: 50%;
+    color: var(--wheat);
+    width: 30%;
+    }
+
+.Navbar .collapse-switch:hover{
+    filter: brightness(120%);
+}
+
+.Navbar .collapse-switch:active{
+    filter: brightness(140%);
+}
+
+.Navbar .collapse-switch::before {
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 2.5vh;
+    content: "\f100";
+}
+
+.Navbar[collapsed] .collapse-switch::before {
+    content: "\f101";
+}
+
+.Navbar #NavbarButtons {
     height: 70%;
     width: 100%;
 }
@@ -34,17 +78,23 @@
     z-index: 10;
 }
 
-.Navbar #NavbarButtons div button{
+.Navbar #NavbarButtons div button {
     width: 100%;
     height: 100%;
     background-color: var(--onyx);
     border: none;
     color: var(--wheat);
 }
-.Navbar #NavbarButtons div button:hover{filter: brightness(85%);}
-.Navbar #NavbarButtons div button:active{filter: brightness(70%);}
 
-.change-project-popup{
+.Navbar #NavbarButtons div button:hover {
+    filter: brightness(85%);
+}
+
+.Navbar #NavbarButtons div button:active {
+    filter: brightness(70%);
+}
+
+.change-project-popup {
     height: 100vh;
     width: 100vw;
     position: fixed;
@@ -54,14 +104,14 @@
     visibility: hidden;
 }
 
-.change-project-popup .popup-window{
+.change-project-popup .popup-window {
     width: 30vw;
     height: 30vw;
     background-color: var(--onyx);
     position: fixed;
     left: 50%;
     top: 50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     display: block;
 }
 
@@ -72,8 +122,8 @@
     font-family: "Courier New";
 }
 
-.popup-header{
-    font-family: 'Rubik',Arial, Helvetica, sans-serif;
+.popup-header {
+    font-family: 'Rubik', Arial, Helvetica, sans-serif;
     color: var(--wheat);
     position: absolute;
     left: 50%;
@@ -114,6 +164,7 @@
     border-left: 2px solid white;
     border-top: 2px solid white;
 }
+
 .select-container .select input {
     position: relative;
     width: 100%;
@@ -126,6 +177,7 @@
     color: white;
     cursor: pointer;
 }
+
 .select-container .option-container {
     position: relative;
     background: var(--red);
@@ -176,7 +228,7 @@
     cursor: pointer;
 }
 
-.create-new-project{
+.create-new-project {
     background-color: var(--red);
     border: 0;
     position: absolute;
@@ -189,8 +241,14 @@
     color: var(--wheat);
     border: 1px solid rgba(0, 0, 0, 0.3);
 }
-.create-new-project:hover{ filter: brightness(80%); }
-.create-new-project:active{ filter: brightness(60%); }
+
+.create-new-project:hover {
+    filter: brightness(80%);
+}
+
+.create-new-project:active {
+    filter: brightness(60%);
+}
 
 .tooltip {
     position: relative;
@@ -206,7 +264,7 @@
     padding: 5px 0;
     border-radius: 6px;
     border: 1px solid black;
-    word-wrap:break-word;
+    word-wrap: break-word;
     white-space: no-wrap;
     position: absolute;
     right: 50%;
@@ -219,12 +277,13 @@
 .tooltip-target:hover .tooltip {
     visibility: visible !important;
 }
-.tooltip-target .tooltip:hover{
+
+.tooltip-target .tooltip:hover {
     visibility: visible !important;
 
 }
 
-.tooltip-target .tooltip .tooltip-text{
+.tooltip-target .tooltip .tooltip-text {
     color: var(--wheat);
 }
 
@@ -236,19 +295,15 @@
     background: #fff;
     padding: 0.5rem;
     border-radius: 4px;
-    box-shadow: -1px 1px 10px
-        rgba(0, 0, 0, 0.3);
+    box-shadow: -1px 1px 10px rgba(0, 0, 0, 0.3);
     z-index: 1023;
-    animation: slideInRight 0.3s
-            ease-in-out forwards,
-        fadeOut 0.5s ease-in-out
-            forwards 3s;
+    animation: slideInRight 0.3s ease-in-out forwards,
+        fadeOut 0.5s ease-in-out forwards 3s;
     transform: translateX(110%);
 }
 
 .toast.closing {
-    animation: slideOutRight 0.5s
-        ease-in-out forwards;
+    animation: slideOutRight 0.5s ease-in-out forwards;
 }
 
 .toast-progress {
@@ -259,8 +314,7 @@
     height: 4px;
     width: 100%;
     background: #b7b7b7;
-    animation: toastProgress 3s
-        ease-in-out forwards;
+    animation: toastProgress 3s ease-in-out forwards;
 }
 
 .toast-content-wrapper {
@@ -360,3 +414,4 @@
         width: 0%;
     }
 }
+

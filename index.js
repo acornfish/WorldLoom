@@ -99,7 +99,6 @@ app.post("/api/createArticle", (req, res) => {
         let index = dbFile.projects.findIndex((x) => {
             return x["Name"] == project;
         })
-        console.log("replace article: " + replaceArticle);
         if (typeof replaceArticle == "undefined") {
             dbFile.projects[index]["Articles"].push({
                 Name: articleName,

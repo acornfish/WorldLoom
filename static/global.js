@@ -22,11 +22,11 @@ function waitForElm(selector) {
         }
 
         new MutationObserver((mutationRecords, observer) => {
-                Array.from(document.querySelectorAll(selector)).forEach(element => {
-                    resolve(element);
-                    observer.disconnect();
-                });
-            })
+            Array.from(document.querySelectorAll(selector)).forEach(element => {
+                resolve(element);
+                observer.disconnect();
+            });
+        })
             .observe(document.documentElement, {
                 childList: true,
                 subtree: true
@@ -148,6 +148,13 @@ const showToast = (
 $.get("/temps/navbar.html", function (data) {
     $(".navbar").replaceWith(data);
     setTimeout(() => {
+        $(".Navbar .collapse-switch").get(0).addEventListener("click", (e) => {
+            if (e.target.parentElement.getAttribute("collapsed") == "") {
+               e.target.parentElement.removeAttribute("collapsed")
+            } else {
+                e.target.parentElement.setAttribute("collapsed", "")
+            }
+        })        
         InitilalizeProjectSelector()
     }, 1000)
 });
