@@ -172,6 +172,11 @@ document.addEventListener('keydown', (event) => {
 setTimeout(() => {
     $("#loading-screen").fadeOut()
 }, 500)
+
+
 window.ChangeProject = ChangeProject;
 window.WaitForElm = waitForElm;
 window.showToast = showToast;
+window.uid = function(){
+    return (Date.now().toString(36) + Math.random().toString(36)).substring(4,16).padStart(12,0);
+}

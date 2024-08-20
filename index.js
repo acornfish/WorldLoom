@@ -141,6 +141,28 @@ app.post("/api/createArticle", (req, res) => {
 
 })
 
+app.post("/api/saveManuscript", (req, res) => {
+    const project = req.body["Project"];
+    const manuScriptTree = req.body["Data"]
+
+    if (typeof project == "undefined") {
+        res.status(200).send("Fail: Project name is undefined");
+        return;
+    }
+    let projectIndex = dbFile.projects.findIndex((x) => {
+        return x["Name"] == project;
+    })
+
+    if (projectIndex === -1) {
+        res.status(200).send("Fail: Specified project does not exist");
+        return;
+    }
+    
+
+    dbFile.projects[projectIndex]["Manuscript"] = manuScriptTree; 
+    res.status(200).send("Sucess")
+})
+
 app.post("/api/createMap", (req, res) => {
     const map = req.body["MapResource"];
     const name = req.body["Name"];
