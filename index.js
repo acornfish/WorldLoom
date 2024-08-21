@@ -1,16 +1,52 @@
-const Express = require("express");
-const FS = require("fs");
-const Process = require("process");
-const Path = require('node:path');
 
+const FgRed = "\x1b[31m"
+const FgGreen = "\x1b[32m"
+const FgBlue = "\x1b[34m"
+const Underscore = "\x1b[4m"
+const Reset = "\x1b[0m"
+
+const Process = require("process");
+const FS = require("fs");
+const Path = require('node:path');    
+
+process.chdir(__dirname);
+
+try{
+    var Express = require("express");
+}catch{
+    console.log(`${FgRed}Required node modules are not installed.\n${Reset}Please run the start script `)
+    process.exit(-1);
+}
+
+
+if(!FS.existsSync("./files")){
+    console.log(`${FgBlue}File storage directory did not exist. Creating...${Reset}`)
+    FS.mkdirSync(process.cwd() + "/files", (err) => {
+        console.log(`${FgRed}Failed creating file storage directory.${Reset} Exiting...`)
+        process.exit()
+    })
+    FS.mkdirSync(process.cwd() + "/files/resources",(err) => {
+        console.log(`${FgRed}Failed creating resource storage directory.${Reset} Exiting...`)
+        process.exit()
+    })
+}
+if(!FS.existsSync("./files/resources")){
+    console.log(`${FgBlue}Resource storage directory did not exist. Creating...${Reset}`)
+    FS.mkdirSync(process.cwd() + "/files/resources",(err) => {
+        console.log(`${FgRed}Failed creating resource storage directory.${Reset} Exiting...`)
+        process.exit()
+    })
+}
+
+const PORT = 2012
 const app = Express();
 
 app.use(Express.static("./static"));
 app.use(Express.static("./files"));
 app.use(Express.json());
 
-app.listen(1930, '127.0.0.1', function () {
-    console.log("Server started");
+app.listen(PORT, '127.0.0.1', function () {
+    console.log(`${FgGreen}StoryLab is running.\nAcess the application at ${Reset}${Underscore}http://127.0.0.1:${PORT}`);
 })
 
 var dbFile = {

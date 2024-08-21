@@ -1,6 +1,5 @@
 # Prerequisites
--NodeJS (https://nodejs.org/en/download/prebuilt-binaries)
-https://imgur.com/a/storylab-nTCoU8F
+-NodeJS (https://nodejs.org/en/download/package-manager) 
 
 # Installation
  1. Download the latest release
@@ -30,3 +29,19 @@ You can chronologicaly list events using the timelines feature.
 # Exporting
 You can export your project both in the json format (to be imported later) and 
 HTML format to upload as a wiki website
+
+
+# TroubleShooting
+
+## Npm is not found
+
+If you have installed nodejs via ...
+
+Prebuilt installer, Package manager: Reinstall the application and if the issue persists try another method 
+
+Prebuilt binary: Try adding the nodejs installation to the PATH envoriment variable 
+
+Source code: Try another method
+
+
+ 

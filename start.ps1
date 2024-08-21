@@ -3,4 +3,4 @@ if (!(Test-Path node_modules)) {
     npm install
 } 
 
-npm start
+npm run --silent start
