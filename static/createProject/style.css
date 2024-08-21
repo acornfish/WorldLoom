@@ -10,7 +10,7 @@ body {
     height: 120%;
     margin: 0;
     padding: 0;
-    background: var(--battleship-gray);
+    background: var(--background-color);
     overflow-x: hidden;
     object-fit: fill;
     font-family: 'rubik', Arial, Helvetica, sans-serif;
@@ -20,7 +20,7 @@ body {
 .form-container{
     width: 60vh;
     height: 70vh;
-    background-color: var(--onyx);
+    background-color: var(--menu-color);
     position: relative;
     left: 50%;
     top: 35%;
@@ -37,8 +37,8 @@ body {
     outline: 0;
     height: 10%;
     width: 80%;
-    background-color: var(--red);
-    color: var(--wheat);
+    background-color: var(--accent);
+    color: var(--text-color);
     padding-left: 2%;
     font-weight: bold;
     /*border-radius: 1vh;*/
@@ -50,10 +50,10 @@ body {
     height: 30%;
     resize: none;
     width: 80%;
-    background-color: var(--red);
+    background-color: var(--accent);
     margin-top: 10%;
     margin-bottom: 15%;
-    color: var(--wheat);
+    color: var(--text-color);
     padding-left: 2%;
     padding-top: 1%;
     font-size: 0.8rem;
@@ -66,8 +66,8 @@ body {
     outline: 0;
     height: 10%;
     width: 70%;
-    background-color: var(--red);
-    color: var(--wheat);
+    background-color: var(--accent);
+    color: var(--text-color);
     /*border-radius: 1vh;*/
 }
 

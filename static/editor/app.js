@@ -1,6 +1,6 @@
 import "../libs/quill.js"
 import "../libs/jquery.min.js"
-
+import "/global.js"
 
 var sectionNames = ["MainText", "SideSections", "Settings"]
 

@@ -10,7 +10,7 @@ body {
     height: 120%;
     margin: 0;
     padding: 0;
-    background: var(--battleship-gray);
+    background: var(--background-color);
     overflow-x: hidden;
     object-fit: fill;
     font-family: 'rubik', Arial, Helvetica, sans-serif;
@@ -34,7 +34,7 @@ body {
 }
 
 .maps-list li button:hover{
-    background-color: var(--onyx-darkened);
+    background-color: var(--menu-color-darkened);
     cursor: pointer;
 }
 
@@ -44,8 +44,8 @@ body {
 
 .maps-list li button{
     border: none;
-    color: var(--wheat);
-    background-color: var(--onyx);
+    color: var(--text-color);
+    background-color: var(--menu-color);
     padding: 0.5%;
 }
 
@@ -70,7 +70,7 @@ body {
 .card {
     width: 30vh;
     height: 40vh;
-    background-color: var(--onyx);
+    background-color: var(--menu-color);
     position: relative;
     border-radius: 2vh;
     display: flex;
@@ -78,7 +78,7 @@ body {
     justify-content: center;
     margin: 0;
     grid-row: auto;
-    color: var(--wheat);
+    color: var(--text-color);
     border: 0px solid;
 }
 
@@ -132,13 +132,13 @@ body {
     background-color: rgba(0, 0, 0, 0);
     position: relative;
     border-radius: 2vh;
-    border: 5px dashed var(--wheat);
+    border: 5px dashed var(--text-color);
     margin: 0;
     grid-row: auto;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--wheat);
+    color: var(--text-color);
 }
 
 .card-text {
@@ -152,7 +152,7 @@ body {
     word-wrap: break-word;
 }
 .remove-map{
-    background-color: var(--red);
+    background-color: var(--accent);
     display: inline;
     width: 10%;
     height: 10%;

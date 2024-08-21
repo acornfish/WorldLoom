@@ -11,7 +11,7 @@ body{
     height: 120%;
     margin: 0;
     padding: 0;
-    background: var(--battleship-gray);
+    background: var(--background-color);
     overflow-x: hidden;
     object-fit: fill;
     font-family: 'rubik', Arial, Helvetica, sans-serif;
@@ -20,7 +20,7 @@ body{
 
 .topbar{
     position: relative;
-    background-color: var(--onyx);
+    background-color: var(--menu-color);
     width: 60%;
     height: 10%;
     left: 10%;
@@ -51,19 +51,19 @@ body{
     height: 100%;
     width: 100%;
     border: 0px;
-    background-color: var(--onyx);
-    color: var(--wheat);
+    background-color: var(--menu-color);
+    color: var(--text-color);
 
 }
 
 
 
-.topbar-section:hover{filter: brightness(85%);box-shadow:  0px 1vh var(--red);}
-.topbar-section:active{filter: brightness(70%);box-shadow:  0px 1vh var(--red);}
-.topbar-section button:hover{  box-shadow:  0px 1vh var(--red); }
-.topbar-section button:active{  box-shadow:  0px 1vh var(--red); }
-.topbar-section[selected]{  box-shadow:  0px 1vh var(--red); }
-.topbar-section[selected] button{  box-shadow:  0px 1vh var(--red); }
+.topbar-section:hover{filter: brightness(85%);box-shadow:  0px 1vh var(--accent);}
+.topbar-section:active{filter: brightness(70%);box-shadow:  0px 1vh var(--accent);}
+.topbar-section button:hover{  box-shadow:  0px 1vh var(--accent); }
+.topbar-section button:active{  box-shadow:  0px 1vh var(--accent); }
+.topbar-section[selected]{  box-shadow:  0px 1vh var(--accent); }
+.topbar-section[selected] button{  box-shadow:  0px 1vh var(--accent); }
 
 #container{
     width: 100vw;
@@ -76,7 +76,7 @@ body{
 .sidebar{
     height: 80%;
     width: 20%;
-    background-color: var(--onyx);
+    background-color: var(--menu-color);
     position: absolute;
     left: 75%;
     top: 5%;
@@ -97,13 +97,13 @@ body{
     height: 30%;
     margin-top: 10%;
     position: relative;
-   /* background-color: var(--wheat); 
-    border: 1px solid var(--battleship-gray);*/
+   /* background-color: var(--text-color); 
+    border: 1px solid var(--background-color);*/
 }
 
 .article-title{
     font-family: 'rubik', Arial, Helvetica, sans-serif;
-    color: var(--wheat);
+    color: var(--text-color);
     display: block;
     text-align: center;
     width: 100%;
@@ -126,9 +126,9 @@ body{
 
 .article-save-button{
     position: relative;
-    color: var(--wheat);
+    color: var(--text-color);
     font-family: 'rubik', Arial, Helvetica, sans-serif;
-    background-color: var(--red);
+    background-color: var(--accent);
     border: none;
     outline: none;
     width: 80%;
@@ -140,17 +140,17 @@ body{
 .article-save-button:active{ filter: brightness(160%);}
 
 #article-description{
-    background-color: var(--wheat);
-    border: none;
+    color: var(--text-color);
+    border: 2px solid var(--accent);
     outline: none;
     resize: none;
     width: 80%;
     height: 30%;
     font-family: 'Rubik', Arial, Helvetica, sans-serif;
-    background-color: var(--wheat);
+    background-color: var(--menu-color);
     position: relative;
     padding-left: 2%;
     padding-right: 2%;
-    padding-top: 1%;
+    padding-top: 2%;
     font-size: small;
 }

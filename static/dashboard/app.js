@@ -100,7 +100,7 @@ $(".tooltip").each((key,element) => {
 })
 
 
-window.WaitForElm(".remove-article").then(x => {
+window.waitForElm(".remove-article").then(x => {
     $(".remove-article").on("click", (e) => {
         e.stopPropagation();
         let title = (e).currentTarget.parentElement.getElementsByTagName("h2")[0].innerText;

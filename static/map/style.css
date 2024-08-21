@@ -10,7 +10,7 @@ body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background: var(--battleship-gray);
+    background: var(--background-color);
     overflow-x: hidden;
     object-fit: fill;
     font-family: 'rubik', Arial, Helvetica, sans-serif;
@@ -47,7 +47,7 @@ body {
 }
 
 .map-controls {
-    background-color: var(--onyx);
+    background-color: var(--menu-color);
     width: 40%;
     height: 5%;
     position: fixed;
@@ -69,12 +69,12 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--wheat);
+    color: var(--text-color);
 }
 
 .map-control-button {
     border-left: 0.2vh solid var(-wheat);
-    background-color: var(--onyx);
+    background-color: var(--menu-color);
     flex-grow: 1;
     height: 100%;
     display: flex;
@@ -82,7 +82,7 @@ body {
     align-items: center;
     font-family: 'rubik', Arial, Helvetica, sans-serif;
     border: 0;
-    color: var(--wheat);
+    color: var(--text-color);
 }
 
 .map-control-button:hover {
@@ -117,7 +117,7 @@ body {
 .inner-markers-container {
     width: 90%;
     height: 80%;
-    background-color: var(--onyx);
+    background-color: var(--menu-color);
     position: relative;
     left: 50%;
     transform: translateX(-50%);
@@ -133,7 +133,7 @@ table {
 
 
 tr:nth-child(odd):not([head]) {
-    background-color: var(--onyx-darkened);
+    background-color: var(--menu-color-darkened);
 }
 
 th,
@@ -143,7 +143,7 @@ td {
     padding-bottom: 1%;
     text-align: left;
     height: 100%;
-    color: var(--wheat);
+    color: var(--text-color);
 }
 
 
@@ -157,7 +157,7 @@ td {
 .inner-settings-container {
     width: 70%;
     height: 80%;
-    background-color: var(--onyx);
+    background-color: var(--menu-color);
     position: relative;
     left: 40%;
     transform: translateX(-50%);
@@ -175,23 +175,23 @@ td {
     margin-left: 5%;
     margin-top: 2%;
     margin-bottom: 4%;
-    color: var(--wheat);
+    color: var(--text-color);
 }
 
 .prompt-container input{
     width: 80%;
     height: 80%;
     border: none;
-    border-bottom: 2px solid var(--red);
+    border-bottom: 2px solid var(--accent);
     outline: none;
     background: none;
     padding-left: 0.5%;
-    color: var(--wheat);
+    color: var(--text-color);
     font-family: 'Rubik', Arial, Helvetica, sans-serif;
 }
 
 .prompt-container input:focus{
-    border-bottom: 4px solid var(--red);
+    border-bottom: 4px solid var(--accent);
 }
 
 .prompt-container h2{
@@ -205,14 +205,14 @@ td {
 .editorContainer {
     width: 80%;
     position: relative;
-    background-color: var(--onyx);
+    background-color: var(--menu-color);
     top: 10%;
     height: 100%;
     left: 0;
 }
 
 .editorContainer * {
-    background-color: var(--onyx-darkened);
+    background-color: var(--menu-color-darkened);
     z-index: 5;
 }
 
@@ -220,14 +220,14 @@ td {
 .ql-picker-label,
 .ql-editor,
 .ql-picker-item:not(.ql-selected) {
-    stroke: var(--wheat) !important;
-    color: var(--wheat) !important;
+    stroke: var(--text-color) !important;
+    color: var(--text-color) !important;
 }
 
 .settings-sidebar{
     width: 20%;
     height: 20%;
-    background-color: var(--onyx);
+    background-color: var(--menu-color);
     position: relative;
     left: 8%;
     bottom: 75%;
@@ -238,7 +238,7 @@ td {
     width: 80%;
     height: 40%;
     margin-left: 10%;
-    background-color: var(--red);
+    background-color: var(--accent);
     border: none;
     top: 30%;
     position: relative;
@@ -255,10 +255,10 @@ td {
 td input{
     outline: none;
     background: none;
-    color: var(--wheat);    
+    color: var(--text-color);    
     height: 100%;
     display: block;
     position: relative;
-    border: 1px solid var(--wheat);
+    border: 1px solid var(--text-color);
     padding: 2%;
 }

@@ -8,31 +8,13 @@ var isChangeProjectPopupOpen = false;
 document.title = "Story Lab"
 
 function ChangeProject() {
-    waitForElm(".change-project-popup").then(x => {
+    window.waitForElm(".change-project-popup").then(x => {
         x.setAttribute("style", `visibility: ${isChangeProjectPopupOpen ? "visible" : "hidden"};`)
     });
     isChangeProjectPopupOpen = !isChangeProjectPopupOpen;
 }
 
-function waitForElm(selector) {
-    return new Promise((resolve, reject) => {
-        const el = document.querySelector(selector);
-        if (el) {
-            resolve(el);
-        }
 
-        new MutationObserver((mutationRecords, observer) => {
-            Array.from(document.querySelectorAll(selector)).forEach(element => {
-                resolve(element);
-                observer.disconnect();
-            });
-        })
-            .observe(document.documentElement, {
-                childList: true,
-                subtree: true
-            });
-    });
-}
 
 window.addEventListener('load', function () {
     window.DOMContentLoaded = true;
@@ -41,11 +23,11 @@ window.addEventListener('load', function () {
 
 
 async function InitilalizeProjectSelector() {
-    let selectContainer = await waitForElm(".select-container");
-    let select = await waitForElm(".select");
-    let input = await waitForElm("#project-select-input");
+    let selectContainer = await window.waitForElm(".select-container");
+    let select = await window.waitForElm(".select");
+    let input = await window.waitForElm("#project-select-input");
 
-    while (select == null) select = waitForElm(".select");
+    while (select == null) select = window.waitForElm(".select");
 
     select.onclick = () => {
         selectContainer.classList.toggle("active");
@@ -150,11 +132,11 @@ $.get("/temps/navbar.html", function (data) {
     setTimeout(() => {
         $(".Navbar .collapse-switch").get(0).addEventListener("click", (e) => {
             if (e.target.parentElement.getAttribute("collapsed") == "") {
-               e.target.parentElement.removeAttribute("collapsed")
+                e.target.parentElement.removeAttribute("collapsed")
             } else {
                 e.target.parentElement.setAttribute("collapsed", "")
             }
-        })        
+        })
         InitilalizeProjectSelector()
     }, 1000)
 });
@@ -175,8 +157,9 @@ setTimeout(() => {
 
 
 window.ChangeProject = ChangeProject;
-window.WaitForElm = waitForElm;
 window.showToast = showToast;
-window.uid = function(){
-    return (Date.now().toString(36) + Math.random().toString(36)).substring(4,16).padStart(12,0);
+
+
+window.uid = function () {
+    return (Date.now().toString(36) + Math.random().toString(36)).substring(4, 16).padStart(12, 0);
 }

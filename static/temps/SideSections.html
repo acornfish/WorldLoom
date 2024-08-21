@@ -7,7 +7,7 @@
         width: 60%;
         margin-left: 10%;
         position: relative;
-        background-color: var(--onyx);
+        background-color: var(--menu-color);
         top: 10%;
         height: 60%;
         flex: 1;
@@ -15,56 +15,57 @@
         flex-direction: column;
     }
 
-    .editorContainer * {
-        background-color: var(--onyx);
+    .ql-picker-options {
+        background-color: var(--menu-color) !important;
+        border-color: var(--menu-color) !important;
     }
 
     .ql-stroke,
     .ql-picker-label,
     .ql-editor,
     .ql-picker-item:not(.ql-selected) {
-        stroke: var(--wheat) !important;
-        color: var(--wheat) !important;
+        font-family: 'Rubik', Arial, Helvetica, sans-serif;
+        stroke: var(--text-color) !important;
+        color: var(--text-color) !important;
     }
 </style>
 
 <script>
-    const quillLinkHandler = (value) => {
-        console.log(value)
-        if (value) {
-            const href = prompt('Enter the article name: ');
-            this.quill.format('link', "/Articles/" + href);
-        } else {
-            this.quill.format('link', false);
-        }
-    }
-
-    const toolbarOptions = {
-        handlers: {
-            link: quillLinkHandler
-        }
-    };
-
-
-    var quill = new Quill('#editor', {
-        theme: 'snow',
-        modules: {
-            toolbar: [
+    
+var quill = new Quill('#editor', {
+    theme: 'snow',
+    modules: {
+        toolbar: {
+            container: [
                 [{
                     'header': [1, 2, false]
                 }],
                 ['bold', 'italic', 'underline'],
-                [{
-                    'link': quillLinkHandler
-                }, 'image'],
+                ["link", 'image'],
                 [{
                     'list': 'ordered'
                 }, {
                     'list': 'bullet'
-                }],
+                }]
+            ],
+            handlers: {
+                link: function (value)  {
+                    if (value) {
+                        var href = prompt('Name:');
+                        if(!href.startsWith("manuscript:")){
+                          this.quill.format('link', `Articles/${href}`);
+                        }else{
+                          this.quill.format('link', `Manuscripts/${href}`);
+                        }
+                    } else {
+                        this.quill.format('link', false);
+                    }
 
-            ]
+                },
+            }
         }
-    });
+    },
+
+});
     quill.root.setAttribute('spellcheck', false)
 </script>

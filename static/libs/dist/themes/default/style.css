@@ -66,10 +66,6 @@
 .jstree-anchor > .jstree-themeicon-hidden {
   display: none;
 }
-.jstree-hidden,
-.jstree-node.jstree-hidden {
-  display: none;
-}
 .jstree-rtl .jstree-anchor {
   padding: 0 1px 0 4px;
 }
@@ -105,13 +101,6 @@
   -ms-user-select: none;
   user-select: none;
 }
-.jstree-contextmenu .jstree-anchor {
-  -webkit-user-select: none;
-  /* disable selection/Copy of UIWebView */
-  -webkit-touch-callout: none;
-  /* disable the IOS popup when long-press on a link */
-  user-select: none;
-}
 .vakata-context {
   display: none;
 }
@@ -122,6 +111,8 @@
   position: absolute;
   background: #f5f5f5;
   border: 1px solid #979797;
+  -moz-box-shadow: 5px 5px 4px -4px #666666;
+  -webkit-box-shadow: 2px 2px 2px #999999;
   box-shadow: 2px 2px 2px #999999;
 }
 .vakata-context ul {
@@ -138,6 +129,7 @@
 }
 .vakata-context li {
   list-style: none;
+  display: inline;
 }
 .vakata-context li > a {
   display: block;
@@ -147,12 +139,18 @@
   color: black;
   white-space: nowrap;
   line-height: 2.4em;
+  -moz-text-shadow: 1px 1px 0 white;
+  -webkit-text-shadow: 1px 1px 0 white;
   text-shadow: 1px 1px 0 white;
+  -moz-border-radius: 1px;
+  -webkit-border-radius: 1px;
   border-radius: 1px;
 }
 .vakata-context li > a:hover {
   position: relative;
   background-color: #e8eff7;
+  -moz-box-shadow: 0 0 2px #0a6aa1;
+  -webkit-box-shadow: 0 0 2px #0a6aa1;
   box-shadow: 0 0 2px #0a6aa1;
 }
 .vakata-context li > a.vakata-context-parent {
@@ -163,12 +161,11 @@
 .vakata-context li > a:focus {
   outline: 0;
 }
-.vakata-context .vakata-context-no-icons {
-  margin-left: 0;
-}
 .vakata-context .vakata-context-hover > a {
   position: relative;
   background-color: #e8eff7;
+  -moz-box-shadow: 0 0 2px #0a6aa1;
+  -webkit-box-shadow: 0 0 2px #0a6aa1;
   box-shadow: 0 0 2px #0a6aa1;
 }
 .vakata-context .vakata-context-separator > a,
@@ -182,8 +179,14 @@
   padding: 0;
   margin: 0 0 0 2.4em;
   border-left: 1px solid #e0e0e0;
+  -moz-text-shadow: 0 0 0 transparent;
+  -webkit-text-shadow: 0 0 0 transparent;
   text-shadow: 0 0 0 transparent;
+  -moz-box-shadow: 0 0 0 transparent;
+  -webkit-box-shadow: 0 0 0 transparent;
   box-shadow: 0 0 0 transparent;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
   border-radius: 0;
 }
 .vakata-context .vakata-contextmenu-disabled a,
@@ -192,9 +195,6 @@
   background-color: transparent;
   border: 0;
   box-shadow: 0 0 0;
-}
-.vakata-context .vakata-contextmenu-disabled > a > i {
-  filter: grayscale(100%);
 }
 .vakata-context li > a > i {
   text-decoration: none;
@@ -299,16 +299,10 @@
   background-color: transparent;
 }
 .jstree-default .jstree-anchor,
-.jstree-default .jstree-animated,
 .jstree-default .jstree-wholerow {
   transition: background-color 0.15s, box-shadow 0.15s;
 }
 .jstree-default .jstree-hovered {
-  background: #e7f4f9;
-  border-radius: 2px;
-  box-shadow: inset 0 0 1px #cccccc;
-}
-.jstree-default .jstree-context {
   background: #e7f4f9;
   border-radius: 2px;
   box-shadow: inset 0 0 1px #cccccc;
@@ -363,8 +357,6 @@
   background: #e7f4f9;
 }
 .jstree-default > .jstree-striped {
-  min-width: 100%;
-  display: inline-block;
   background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB/qqA+AAAABlBMVEUAAAAAAAClZ7nPAAAAAnRSTlMNAMM9s3UAAAAXSURBVHjajcEBAQAAAIKg/H/aCQZ70AUBjAATb6YPDgAAAABJRU5ErkJggg==") left top repeat;
 }
 .jstree-default > .jstree-wholerow-ul .jstree-hovered,
@@ -383,8 +375,13 @@
 }
 .jstree-default .jstree-wholerow-clicked {
   background: #beebff;
+  background: -moz-linear-gradient(top, #beebff 0%, #a8e4ff 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #beebff), color-stop(100%, #a8e4ff));
   background: -webkit-linear-gradient(top, #beebff 0%, #a8e4ff 100%);
+  background: -o-linear-gradient(top, #beebff 0%, #a8e4ff 100%);
+  background: -ms-linear-gradient(top, #beebff 0%, #a8e4ff 100%);
   background: linear-gradient(to bottom, #beebff 0%, #a8e4ff 100%);
+  /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='@color1', endColorstr='@color2',GradientType=0 );*/
 }
 .jstree-default .jstree-node {
   min-height: 24px;
@@ -421,7 +418,7 @@
   background-repeat: repeat-y;
 }
 .jstree-default .jstree-last {
-  background-image: none;
+  background: transparent;
 }
 .jstree-default .jstree-open > .jstree-ocl {
   background-position: -132px -4px;
@@ -474,15 +471,6 @@
 .jstree-default .jstree-anchor > .jstree-undetermined:hover {
   background-position: -196px -36px;
 }
-.jstree-default .jstree-checkbox-disabled {
-  opacity: 0.8;
-  filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'jstree-grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#jstree-grayscale");
-  /* Firefox 10+ */
-  filter: gray;
-  /* IE6-9 */
-  -webkit-filter: grayscale(100%);
-  /* Chrome 19+ & Safari 6+ */
-}
 .jstree-default > .jstree-striped {
   background-size: auto 48px;
 }
@@ -492,7 +480,7 @@
   background-repeat: repeat-y;
 }
 .jstree-default.jstree-rtl .jstree-last {
-  background-image: none;
+  background: transparent;
 }
 .jstree-default.jstree-rtl .jstree-open > .jstree-ocl {
   background-position: -132px -36px;
@@ -553,19 +541,11 @@
 #jstree-dnd.jstree-default .jstree-er {
   background-position: -36px -68px;
 }
-.jstree-default .jstree-ellipsis {
-  overflow: hidden;
-}
-.jstree-default .jstree-ellipsis .jstree-anchor {
-  width: calc(100% - 24px + 5px);
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
 .jstree-default.jstree-rtl .jstree-node {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAACAQMAAAB49I5GAAAABlBMVEUAAAAdHRvEkCwcAAAAAXRSTlMAQObYZgAAAAxJREFUCNdjAAMOBgAAGAAJMwQHdQAAAABJRU5ErkJggg==");
 }
 .jstree-default.jstree-rtl .jstree-last {
-  background-image: none;
+  background: transparent;
 }
 .jstree-default-small .jstree-node {
   min-height: 18px;
@@ -602,7 +582,7 @@
   background-repeat: repeat-y;
 }
 .jstree-default-small .jstree-last {
-  background-image: none;
+  background: transparent;
 }
 .jstree-default-small .jstree-open > .jstree-ocl {
   background-position: -135px -7px;
@@ -655,15 +635,6 @@
 .jstree-default-small .jstree-anchor > .jstree-undetermined:hover {
   background-position: -199px -39px;
 }
-.jstree-default-small .jstree-checkbox-disabled {
-  opacity: 0.8;
-  filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'jstree-grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#jstree-grayscale");
-  /* Firefox 10+ */
-  filter: gray;
-  /* IE6-9 */
-  -webkit-filter: grayscale(100%);
-  /* Chrome 19+ & Safari 6+ */
-}
 .jstree-default-small > .jstree-striped {
   background-size: auto 36px;
 }
@@ -673,7 +644,7 @@
   background-repeat: repeat-y;
 }
 .jstree-default-small.jstree-rtl .jstree-last {
-  background-image: none;
+  background: transparent;
 }
 .jstree-default-small.jstree-rtl .jstree-open > .jstree-ocl {
   background-position: -135px -39px;
@@ -734,19 +705,11 @@
 #jstree-dnd.jstree-default-small .jstree-er {
   background-position: -39px -71px;
 }
-.jstree-default-small .jstree-ellipsis {
-  overflow: hidden;
-}
-.jstree-default-small .jstree-ellipsis .jstree-anchor {
-  width: calc(100% - 18px + 5px);
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
 .jstree-default-small.jstree-rtl .jstree-node {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAACAQMAAABv1h6PAAAABlBMVEUAAAAdHRvEkCwcAAAAAXRSTlMAQObYZgAAAAxJREFUCNdjAAMHBgAAiABBI4gz9AAAAABJRU5ErkJggg==");
 }
 .jstree-default-small.jstree-rtl .jstree-last {
-  background-image: none;
+  background: transparent;
 }
 .jstree-default-large .jstree-node {
   min-height: 32px;
@@ -783,7 +746,7 @@
   background-repeat: repeat-y;
 }
 .jstree-default-large .jstree-last {
-  background-image: none;
+  background: transparent;
 }
 .jstree-default-large .jstree-open > .jstree-ocl {
   background-position: -128px 0px;
@@ -836,15 +799,6 @@
 .jstree-default-large .jstree-anchor > .jstree-undetermined:hover {
   background-position: -192px -32px;
 }
-.jstree-default-large .jstree-checkbox-disabled {
-  opacity: 0.8;
-  filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'jstree-grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#jstree-grayscale");
-  /* Firefox 10+ */
-  filter: gray;
-  /* IE6-9 */
-  -webkit-filter: grayscale(100%);
-  /* Chrome 19+ & Safari 6+ */
-}
 .jstree-default-large > .jstree-striped {
   background-size: auto 64px;
 }
@@ -854,7 +808,7 @@
   background-repeat: repeat-y;
 }
 .jstree-default-large.jstree-rtl .jstree-last {
-  background-image: none;
+  background: transparent;
 }
 .jstree-default-large.jstree-rtl .jstree-open > .jstree-ocl {
   background-position: -128px -32px;
@@ -915,19 +869,11 @@
 #jstree-dnd.jstree-default-large .jstree-er {
   background-position: -32px -64px;
 }
-.jstree-default-large .jstree-ellipsis {
-  overflow: hidden;
-}
-.jstree-default-large .jstree-ellipsis .jstree-anchor {
-  width: calc(100% - 32px + 5px);
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
 .jstree-default-large.jstree-rtl .jstree-node {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAACAQMAAAAD0EyKAAAABlBMVEUAAAAdHRvEkCwcAAAAAXRSTlMAQObYZgAAAAxJREFUCNdjgIIGBgABCgCBvVLXcAAAAABJRU5ErkJggg==");
 }
 .jstree-default-large.jstree-rtl .jstree-last {
-  background-image: none;
+  background: transparent;
 }
 @media (max-width: 768px) {
   #jstree-dnd.jstree-dnd-responsive {
@@ -995,7 +941,6 @@
   .jstree-default-responsive.jstree-rtl .jstree-node {
     margin-left: 0;
     margin-right: 40px;
-    background: transparent;
   }
   .jstree-default-responsive.jstree-rtl .jstree-container-ul > .jstree-node {
     margin-right: 0;
@@ -1005,18 +950,17 @@
   .jstree-default-responsive .jstree-checkbox {
     background-size: 120px 240px;
   }
-  .jstree-default-responsive .jstree-leaf > .jstree-ocl,
-  .jstree-default-responsive.jstree-rtl .jstree-leaf > .jstree-ocl {
+  .jstree-default-responsive .jstree-leaf > .jstree-ocl {
     background: transparent;
   }
   .jstree-default-responsive .jstree-open > .jstree-ocl {
-    background-position: 0 0 !important;
+    background-position: 0 0px !important;
   }
   .jstree-default-responsive .jstree-closed > .jstree-ocl {
     background-position: 0 -40px !important;
   }
   .jstree-default-responsive.jstree-rtl .jstree-closed > .jstree-ocl {
-    background-position: -40px 0 !important;
+    background-position: -40px 0px !important;
   }
   .jstree-default-responsive .jstree-themeicon {
     background-position: -40px -40px;
@@ -1078,7 +1022,7 @@
     background-repeat: repeat-y;
   }
   .jstree-default-responsive .jstree-last {
-    background-image: none;
+    background: transparent;
   }
   .jstree-default-responsive .jstree-leaf > .jstree-ocl {
     background-position: -40px -120px;

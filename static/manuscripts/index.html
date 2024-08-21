@@ -11,32 +11,21 @@
     <script src="app.js" type="module" defer></script>
     <script src="/libs/dist/jstree.min.js" type="module" defer></script>
     <script src="/global.js" type="module"></script>
+    <link rel="stylesheet" href="/libs/dist/themes/proton/style.css" />
+    <script type="module" src="/global-head.js"></script>
+
 </head>
 
 <body>
     <div class="navbar"></div>
     <div class="explorer-container">
-        <div class="controls">
-            <button class="new-scene"><i class="fa-solid fa-file-circle-plus"></i></button>
-            <button class="new-folder"><i class="fa-solid fa-folder-plus"></i></button>
-        </div>
-        <ol class="tree">
-            <li>
-                <input type="checkbox" id="root" />
-                <label for="root">Root</label>
-              <ol>
-              </ol>
-            </li>   
-
-        </ol>
-        <div id="contextMenu" class="hidden">
-            <ul>
-              <li>Copy</li>
-              <li>Cut</li>
-              <li>Paste</li>
-              <li>Delete</li>
-            </ul>
-          </div>
+        <ul id="tree"></ul>
+    </div>  
+    <div class="text-editor-container">
+        <div id="text-editor"></div>
+    </div>
+    <div class="sidebar-container">
+        <div class="resize-button"><i class="fa-solid fa-grip-lines-vertical"></i></div>
     </div>
 
 </body>
