@@ -3,14 +3,10 @@
 https://imgur.com/a/storylab-nTCoU8F
 
 # Installation
-
-   git clone https://github.com/acornfish/StoryLab.git
-or
-
- 1. Download latest release
+ 1. Download the latest release
  2. Extract the zip file
  3. Run the appropriate script file on the main folder (`start.sh` on linux and `start.bat` on windows)
- 4. Follow the instructions script outputs
+ 4. Follow the instructions on the script output
 # Features
 
 ## Articles
