@@ -12,7 +12,7 @@
     <script type="module" src="/global-head.js"></script>
 
 </head>
-<body oncontextmenu="return false;">
+<body oncontextmenu="return !window.mapContainer.isActive;">
     <div class="navbar"> </div> 
     <div id="loading-screen" style="width: 100%;height: 100%;background-color: gray;z-index: 999;position: absolute;"></div>
     <div class="map-controls">

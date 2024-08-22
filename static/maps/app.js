@@ -68,6 +68,13 @@ fetchMaps(localStorage.getItem("CurrentProject"))
     });
 
 
+$(".new-card").on("click", (e) => {
+    ["MainText", "Settings", "SideSections", "Article", "description"].forEach(x => {
+        localStorage.removeItem(x);
+    })  
+    window.location = "/map?new=1"
+});
+
 ["MainText", "Settings", "SideSections", "Article", "description"].forEach(x => {
     localStorage.removeItem(x);
 })

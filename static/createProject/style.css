@@ -23,7 +23,7 @@ body {
     background-color: var(--menu-color);
     position: relative;
     left: 50%;
-    top: 35%;
+    top: 50%;
     transform:translate(-50%,-50%);
     display: flex;
     flex-direction: column;

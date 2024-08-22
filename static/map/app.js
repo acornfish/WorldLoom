@@ -3,9 +3,6 @@ import '../libs/jquery.min.js'
 import "../libs/quill.js"
 
 
-$(".map-container").on("oncontextmenu", (e) => {
-    return false;
-})
 
 
 var subTabs = ["Map", "Markers", "Layers", "Settings"]
