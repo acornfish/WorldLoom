@@ -1,6 +1,7 @@
 body {
     background-color: var(--background-color);
     display: flex;
+    overflow: hidden;
 
 }
 
@@ -53,9 +54,9 @@ body {
     position: absolute;
     z-index: 20;
     right: 0;
-    display: inline-flex;
+    display: inline-block;
     background-color: var(--menu-color);
-    border-left: 2px solid var(--accent) ;
+    border-left: 2px solid var(--accent);
 }
 
 .sidebar-container .resize-button{
@@ -65,7 +66,7 @@ body {
     border-top-left-radius: 50%;
     border-bottom-left-radius: 50%;
     background-color: var(--menu-color);
-    left: -4.1vh;
+    left: -1.9vw;
     top: 50%;
     transform: translateY(-50%);
     display: flex;
@@ -83,7 +84,97 @@ body {
     filter: brightness(140%);
 }
 
+.synopsis-container{
+    width: 100%;
+    height: 50%;
+    display: inline-block;
+    position: relative;
+    left: 55%;
+    transform: translateX(-50%);
+    margin-top: -2vh;
+}
+
+.synopsis-container h2 {
+    font-family: 'Rubik', Arial, Helvetica, sans-serif;
+    color: var(--text-color);
+}
+
+#synopsis-editor{
+    font-family: 'Rubik', Arial, Helvetica, sans-serif;
+    background-color: var(--menu-color);
+    border: 2px solid var(--accent);
+    color: var(--text-color);
+    resize: none;
+    margin-top: 3vh;
+    width: 90%;
+    height: 60%;
+    outline: none;
+    padding-left: 1vw;
+    padding-top: 3vh;
+    padding-right: 1vh;
+    font-size: small;
+}
+
+.notes-container{
+    width: 100%;
+    height: 50%;
+    display: inline-block;
+    position: relative;
+    left: 55%;
+    transform: translateX(-50%);
+    margin-top: -10vh;
+
+}
+
+.notes-container h2 {
+    font-family: 'Rubik', Arial, Helvetica, sans-serif;
+    color: var(--text-color);
+}
+
+#notes-editor{
+    font-family: 'Rubik', Arial, Helvetica, sans-serif;
+    background-color: var(--menu-color);
+    border: 2px solid var(--accent);
+    color: var(--text-color);
+    resize: none;
+    margin-top: 3vh;
+    width: 90%;
+    height: 60%;
+    outline: none;
+    padding-left: 1vw;
+    padding-top: 3vh;
+    padding-right: 1vh;
+    font-size: small;
+}
+
 
 .fa-solid{
     color: var(--text-color) !important;
+}
+
+#save-scene{
+    position: relative;
+    color: var(--text-color);
+    font-family: 'rubik', Arial, Helvetica, sans-serif;
+    background-color: var(--accent);
+    border: none;
+    outline: none;
+    width: 90%;
+    height: 10vh;
+    margin-top: 5vh;
+}
+
+#save-scene:hover{
+    filter: brightness(120%);
+}
+
+#save-scene:active{
+    filter: brightness(140%);
+}
+
+input{
+    color: var(--text-color);
+    border: 2px solid var(--accent) !important;
+    background-color: var(--menu-color);
+    outline: none;
 }

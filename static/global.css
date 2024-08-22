@@ -389,6 +389,12 @@ input {
     color: var(--link-color) !important;
 }
 
+textarea:focus{
+    filter: brightness(120%);
+}
+input[type="text"]:focus{
+    filter: brightness(120%);
+}
 
 @keyframes slideInRight {
     0% {

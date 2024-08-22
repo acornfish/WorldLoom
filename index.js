@@ -8,6 +8,7 @@ const Reset = "\x1b[0m"
 const Process = require("process");
 const FS = require("fs");
 const Path = require('node:path');    
+const { parse } = require("path")
 
 process.chdir(__dirname);
 
@@ -25,10 +26,6 @@ if(!FS.existsSync("./files")){
         console.log(`${FgRed}Failed creating file storage directory.${Reset} Exiting...`)
         process.exit()
     })
-    FS.mkdirSync(process.cwd() + "/files/resources",(err) => {
-        console.log(`${FgRed}Failed creating resource storage directory.${Reset} Exiting...`)
-        process.exit()
-    })
 }
 if(!FS.existsSync("./files/resources")){
     console.log(`${FgBlue}Resource storage directory did not exist. Creating...${Reset}`)
@@ -36,8 +33,15 @@ if(!FS.existsSync("./files/resources")){
         console.log(`${FgRed}Failed creating resource storage directory.${Reset} Exiting...`)
         process.exit()
     })
+    FS.copyFileSync("default.png", "files/resources/default.png")
 }
-
+if(!FS.existsSync("./files/manuscripts")){
+    console.log(`${FgBlue}Manuscript storage directory did not exist. Creating...${Reset}`)
+    FS.mkdirSync(process.cwd() + "/files/manuscripts",(err) => {
+        console.log(`${FgRed}Failed creating resource storage directory.${Reset} Exiting...`)
+        process.exit()
+    })
+}
 const PORT = 2012
 const app = Express();
 
@@ -67,6 +71,49 @@ const fetchAllfiles = (fullPath) => {
     return files
 }
 
+function encodeScene(scene, synopsis, notes) {
+    const encoder = new TextEncoder();
+  
+    const sceneBytes = encoder.encode(scene);
+    const synopsisBytes = encoder.encode(synopsis);
+    const notesBytes = encoder.encode(notes);
+  
+    const headerBytes = new Uint8Array(12);
+    headerBytes.set([
+      sceneBytes.length >> 24, (sceneBytes.length >> 16) & 0xFF, (sceneBytes.length >> 8) & 0xFF, sceneBytes.length & 0xFF,
+      synopsisBytes.length >> 24, (synopsisBytes.length >> 16) & 0xFF, (synopsisBytes.length >> 8) & 0xFF, synopsisBytes.length & 0xFF,
+      notesBytes.length >> 24, (notesBytes.length >> 16) & 0xFF, (notesBytes.length >> 8) & 0xFF, notesBytes.length & 0xFF,
+    ]);
+  
+    const fileData = new Uint8Array(headerBytes.length + sceneBytes.length + synopsisBytes.length + notesBytes.length);
+    fileData.set(headerBytes);
+    fileData.set(sceneBytes, headerBytes.length);
+    fileData.set(synopsisBytes, headerBytes.length + sceneBytes.length);
+    fileData.set(notesBytes, headerBytes.length + sceneBytes.length + synopsisBytes.length);
+  
+    return fileData;
+}
+
+function parseScene(fileData) {
+    const dataView = new DataView(fileData);
+  
+    const sceneLength = dataView.getUint32(0);
+    const synopsisLength = dataView.getUint32(4);
+    const notesLength = dataView.getUint32(8);
+  
+    const sceneOffset = 12;
+    const synopsisOffset = sceneOffset + sceneLength;
+    const notesOffset = synopsisOffset + synopsisLength;
+  
+    const decoder = new TextDecoder();
+  
+    const scene = decoder.decode(fileData.slice(sceneOffset, sceneOffset + sceneLength));
+    const synopsis = decoder.decode(fileData.slice(synopsisOffset, synopsisOffset + synopsisLength));
+    const notes = decoder.decode(fileData.slice(notesOffset, notesOffset + notesLength));
+  
+    return { scene, synopsis, notes };
+}
+
 app.post("/api/createProject", (req, res) => {
     let projectName = req.body["Name"];
     let projectDescription = req.body["Description"];
@@ -92,7 +139,12 @@ app.post("/api/createProject", (req, res) => {
         Name: projectName,
         Description: projectDescription,
         Articles: [],
-        Maps: []
+        Maps: [],
+        Manuscript: [{
+            "id": 1,
+            "text": "Root",
+            "children": []
+        }]
     });
 
     res.status(200).send("Sucess");
@@ -197,6 +249,21 @@ app.post("/api/saveManuscript", (req, res) => {
 
     dbFile.projects[projectIndex]["Manuscript"] = manuScriptTree; 
     res.status(200).send("Sucess")
+})
+
+app.get("/api/retrieveManuscript", (req, res) => {
+    let project = req.query["Project"];
+
+    if (typeof project === "undefined" || dbFile.projects.every((x) => {
+            return x["Name"] != project;
+        })) {
+        res.status(200).send("Fail: Specified project does not exist");
+        return;
+    } else {
+        res.status(200).send(JSON.stringify(dbFile.projects.find((x) => {
+            return x["Name"] == project;
+        })["Manuscript"]));
+    }
 })
 
 app.post("/api/createMap", (req, res) => {
@@ -435,6 +502,41 @@ app.get("/api/retrieveImageList", (req, res) => {
     })
     res.status(200).send(list)
 })
+
+app.get("/api/retrieveScene", (req, res) => {
+    let sceneName = req.query["name"];
+    if(FS.existsSync(`./files/manuscripts/${sceneName}`)){
+        let sceneContents = FS.readFileSync(`./files/manuscripts/${sceneName}`, { encoding: 'utf8', flag: 'r' });
+        let encoded = new TextEncoder().encode(sceneContents)
+        res.status(200).send(parseScene(encoded.buffer));
+    }else{
+        res.status(200).send("Fail: Scene does not exist")
+        return;
+    }
+})
+
+
+app.post("/api/saveScene", (req, res) => {
+    let sceneName = req.body["name"];
+    let scene = req.body["scene"];
+    let synopsis = req.body["synopsis"];
+    let notes = req.body["notes"];
+    try{
+        FS.writeFileSync(`./files/manuscripts/${sceneName}`, encodeScene(scene,synopsis,notes),{ encoding: 'utf8', flag: 'w' });
+    }catch{
+        res.status(200).send("Fail: failure when saving scene")
+    }
+})
+app.post("/api/deleteScene", (req, res) => {
+    let sceneName = req.body["name"];
+
+    try{
+        FS.unlink(`./files/manuscripts/${sceneName}`);
+    }catch{
+        res.status(200).send("Fail: failure when deleting scene")
+    }
+})
+
 
 if (FS.existsSync("./files/db.json")) {
     try {

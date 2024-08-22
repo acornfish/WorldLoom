@@ -71,5 +71,5 @@ body {
     /*border-radius: 1vh;*/
 }
 
-.submit-button:hover{filter: brightness(85%);}
-.submit-button:active{filter: brightness(70%);}
+.submit-button:hover{filter: brightness(120%);}
+.submit-button:active{filter: brightness(140%);}

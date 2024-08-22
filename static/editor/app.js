@@ -51,7 +51,7 @@ function saveArticle() {
     let MainText = localStorage.getItem("MainText") ?? ""
     let SideText = localStorage.getItem("SideSections") ?? ""
     let image = localStorage.getItem("Settings") !== null ? (localStorage.getItem("Settings")).split(SEPERATOR)[1] :
-        "/resources/default.jpg"
+        "/resources/default.png"
     let ArticleName = (localStorage.getItem("Settings") ?? SEPERATOR).split(SEPERATOR)[0]
     let description = $("#article-description").val() ?? ""
 
@@ -79,14 +79,14 @@ function saveArticle() {
         }).catch(() => {
             articleRequest(localStorage.getItem("CurrentProject"), ArticleName, MainText, SideText, image,
                 description, lastArticle)
-            window.showToast("Successfuly created article", "success", 3000)
+            window.showToast("Successfuly saved article", "success", 3000)
             localStorage.setItem("Article", ArticleName)
             setCurrentArticle()
         })
     } else {
         articleRequest(localStorage.getItem("CurrentProject"), ArticleName, MainText, SideText, image, description,
             lastArticle)
-        window.showToast("Successfuly created article", "success", 3000)
+        window.showToast("Successfuly saved article", "success", 3000)
         localStorage.setItem("Article", ArticleName)
         setCurrentArticle()
     }
@@ -178,7 +178,7 @@ function setCurrentArticle() {
             if (typeof x["SideText"] !== 'undefined') localStorage.setItem("SideSections", x["SideText"])
             if (typeof x["Description"] !== 'undefined') localStorage.setItem("description", x["Description"])
             $(".article-image").attr("src", (localStorage.getItem("Settings") ?? SEPERATOR +
-                '/resources/default.jpg').split(SEPERATOR)[1])
+                '/resources/default.png').split(SEPERATOR)[1])
             $("#article-description").val(localStorage.getItem("description") ?? "")
             $(".article-title").html(x["Name"])
             console.log(x)

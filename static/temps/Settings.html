@@ -104,7 +104,7 @@
     .image-selector-button {
         width: 40vh;
         height: 20vh;
-        background: url("/resources/default.jpg");
+        background: url("/resources/default.png");
         display: inline-block;
         background-size: contain;
         background-repeat: no-repeat;
@@ -157,7 +157,7 @@
     <input type="text" id="articleName">
     <div class="image-selector-control">
         <h5>Select cover image: </h5>
-        <div class="image-selector-button" onclick="OpenImageSelector()"></div>
+        <div class="image-selector-button" onclick="OpenImageSelector(undefined, this)"></div>
     </div>
 
     <div class="image-selector-container-outer">
@@ -167,15 +167,21 @@
     </div>
     <script>
         var isImageSelectorOpen = false;
-
-        function OpenImageSelector(set) {
+        window.currentUID = null;
+        function OpenImageSelector(set, btn) {
             if (typeof set === "undefined") {
                 isImageSelectorOpen = !isImageSelectorOpen;
             } else if (typeof set === "boolean") {
                 isImageSelectorOpen = set;
             }
+
             let container = document.querySelector(".image-selector-container-outer")
             container.setAttribute("style", `visibility: ${isImageSelectorOpen?"visible":"hidden"}`)
+            if(btn === undefined) return;
+            let id = window.uid();
+            window.currentUID = id;
+            btn.setAttribute("id", id)
+            
         }
 
         function getImageList() {
@@ -217,7 +223,7 @@
             document.querySelectorAll(".image-selector-option").forEach(x => {
                 x.addEventListener("click", (x) => {
                     let src = (x.explicitOriginalTarget.getAttribute("src"))
-                    let selector = document.querySelector(".image-selector-button")
+                    let selector = document.getElementById(window.currentUID) 
                     selector.setAttribute("style", `background-image: url("${src}")`)
                     OpenImageSelector(false);
                 })

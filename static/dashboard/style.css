@@ -72,18 +72,20 @@ body {
 .card img {
     width: 90%;
     height: 40%;
-    object-fit:fill;
+    object-fit: cover;
     margin-bottom: 10%;
     border-radius: 2vh;
+    border: 1px solid var(--accent);
 }
 
 .cards {
     width: 90vw;
-    margin-left: 10vw;
+    margin-left: 6vw;
+    margin-right: 4vw;
     height: 100vh;
     display: grid;
-    row-gap: 1vh;
-    grid-template-columns: repeat(5, 1fr);
+    gap: 3vh;
+    grid-template-columns: min-content repeat(5,1fr);
     grid-template-rows: auto;
     position: relative;
     top: 5vh;
@@ -116,7 +118,9 @@ body {
 }
 
 .card-text p {
+    text-align: center;
     word-wrap: break-word;
+    font-size: 0.9em;
 }
 
 .remove-article{
