@@ -2,88 +2,111 @@ import '/global.js'
 import '../libs/jquery.min.js'
 import "../libs/quill.js"
 
+const urlParams = new URLSearchParams(window.location.search);
 
+const hiddenCanvas = document.getElementById("hiddenCanvas")
 
+const mapData = {
+    "Project": localStorage.getItem("CurrentProject"),
+    "Name": localStorage.getItem("Map"),
+    "Description": "",
+    "ReplaceName": undefined,
+    "Layers": []
+}
+
+window.md = () => (console.log(mapData))
 
 var subTabs = ["Map", "Markers", "Layers", "Settings"]
 
 var lastTabIndex = 0
 
+function renderMapFromLayers(layers) {
+    const ctx = hiddenCanvas.getContext('2d');
 
-$(".map-control-button").on("click", (e) => {
-    //styling
-    e.currentTarget.setAttribute("style", "filter: brightness(140%)")
-    setTimeout((e) => {
-        $(".map-control-button").css("filter", "")
-        e.setAttribute("style", "filter: brightness(80%)")
-    }, 100, e.currentTarget);
+    layers.sort((a,b) => {a["order"] - b["order"]});
 
-    //activate the selected tab
-    let tabIndex = (subTabs.findIndex((x) => x == e.currentTarget.innerText))
-
-    if(lastTabIndex == tabIndex) return;
-
-    lastTabIndex = tabIndex;
-
-    $(".sub-tab").removeClass("active-tab")
-    $(`.sub-tab:nth(${tabIndex})`).addClass("active-tab")
-
-    //activate the javascript for selected tab
-    window.mapContainer.deactivate()
-    window.markerListContainer.deactivate();
-    switch(tabIndex){
-        case 0:
-            window.mapContainer.activate()
-            break;
-        case 1:
-            window.markerListContainer.activate();
-            break;
+    if(layers.length){
+        let img = new Image();
+        img.src = layers[0]["image"];
+        hiddenCanvas.width = img.width;
+        hiddenCanvas.height = img.height;
     }
 
-})
+    let imagesLoaded = 0;
+    let totalImages = layers.length;
+
+    layers.forEach((layer, index) => {
+        if (layer["order"] < 0) {
+            return;
+        }
+        const image = new Image();
+        image.src = layer["image"];
+
+        image.onload = () => {
+            ctx.drawImage(image, 0, 0);
+            imagesLoaded++;
+
+            if (imagesLoaded === totalImages) {
+                const dataUrl = hiddenCanvas.toDataURL();
+                const outputImage = document.getElementsByClassName('map-image')[0];
+                outputImage.src = dataUrl;
+            }
+        };
+    });
+}
+
+function updateMap() {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/updateMap", true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {} else {
+            console.error("Error updating map:", xhr.responseText);
+        }
+    };
+
+    xhr.send(JSON.stringify(mapData));
+}
 
 function fetchMap(project, name) {
     return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', `/api/retrieveMap?Project=${project}&Name=${name}`, true);
-  
-      xhr.onload = function () {
-        if (this.status === 200) {
-          try {
-            const response = (this.responseText);
-            if (typeof response === 'string' && response.startsWith('Fail:')) {
-              reject(response);
-            } else {
-              resolve(JSON.parse(this.responseText));
-            }
-          } catch (error) {
-            reject(error);
-          }
-        } else {
-          reject(`Error: Status ${this.status}`);
-        }
-      };
-  
-      xhr.onerror = function () {
-        reject('Network Error');
-      };
-  
-      xhr.send();
-    });
-  }
-  
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `/api/retrieveMap?Project=${project}&Name=${name}`, false);
 
+        xhr.onload = function () {
+            if (this.status === 200) {
+                try {
+                    const response = (this.responseText);
+                    if (typeof response === 'string' && response.startsWith('Fail:')) {
+                        reject(response);
+                    } else {
+                        resolve(JSON.parse(this.responseText));
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            } else {
+                reject(`Error: Status ${this.status}`);
+            }
+        };
+
+        xhr.onerror = function () {
+            reject('Network Error');
+        };
+
+        xhr.send();
+    });
+}
 
 class MapContainer {
 
     constructor() {
         this.isActive = false
         this.mapImage = $(".map-image");
-        fetchMap(localStorage.getItem("CurrentProject"), localStorage.getItem("Map")).then((x) => {
-            this.mapImage.attr("src", x["MapResource"])
-        }).catch((e) => {
-            console.error(e);
-        })
+        this.mapImage.attr("src", mapData["MapResource"])
         this.zoomLevel = 1;
         this.minZoom = 0.3;
         this.maxZoom = 3;
@@ -122,7 +145,6 @@ class MapContainer {
                 this.MapObject.currentlyDragged = true
             }
         })
-        setInterval(() => {console.log(this.MapObject)}, 1000)
         this.mapImage.parent().on('mousemove', (e) => {
             if (!this.isActive) return;
             if (e.button == 0 && (!this.CurrentlyDragged) && this.MapObject.currentlyDragged) {
@@ -131,10 +153,10 @@ class MapContainer {
 
                 const dx = e.pageX - this.MapObject.startOffset.x;
                 const dy = e.pageY - this.MapObject.startOffset.y;
-        
+
                 const dragDistance = Math.hypot(dx, dy);
 
-                if(dragDistance < 15) return;
+                if (dragDistance < 15) return;
                 this.MapObject.offsetX = e.pageX - this.MapObject.startOffset.x
                 this.MapObject.offsetY = e.pageY - this.MapObject.startOffset.y
                 this.mapImage.parent().css("left", this.MapObject.left + this.MapObject.offsetX)
@@ -167,7 +189,7 @@ class MapContainer {
     }
 
     onDragStart(e) {
-        if(!this.isActive) return;
+        if (!this.isActive) return;
         e.preventDefault();
         e.stopPropagation();
         if (e.button == 2) {
@@ -200,8 +222,8 @@ class MapContainer {
         }
         $(document).on('mousemove', (e) => {
             this.e = e;
-            requestAnimationFrame( this.onDragMove.bind(this) )
-        } );
+            requestAnimationFrame(this.onDragMove.bind(this))
+        });
         $(document).on('mouseup', this.onDragEnd.bind(this));
 
     }
@@ -218,8 +240,8 @@ class MapContainer {
         $(this.CurrentlyDragged).attr({
             left: this.e.pageX,
             top: this.e.pageY
-        })        
-              
+        })
+
         let relativePinPosition = {
             left: (this.e.pageX - innerMapContainerRect.left) / (this.zoomLevel),
             top: (this.e.pageY - innerMapContainerRect.top) / this.zoomLevel
@@ -248,12 +270,12 @@ class MapContainer {
             this.mapImage.parent().css(`transform`, `scale(${this.zoomLevel})`);
         }
     }
-    fetchMarkers(){
+    fetchMarkers() {
         // Not to be confused with markerListContainer.fetchMarkers()
-        let container = $(".inner-map-container") 
+        let container = $(".inner-map-container")
         let rect = container.get(0).getBoundingClientRect()
         let positions = []
-        $(".pin").each((ind,e) => {
+        $(".pin").each((ind, e) => {
             let pin = $(`.pin[num=${ind}]`)
             positions.push({
                 length: (pin.attr("left")),
@@ -265,31 +287,31 @@ class MapContainer {
         return positions
     }
 
-    updateMarkers(){
+    updateMarkers() {
         // Not to be confused with markerListContainer.updateMarkers()
         let markers = JSON.parse(window.markerListContainer.fetchMarkers())
-        let container = $(".inner-map-container") 
+        let container = $(".inner-map-container")
         let rect = container.get(0).getBoundingClientRect()
         let index = 0
 
         $(".pin").remove()
         markers.forEach(marker => {
             let pin = new Image()
-            pin.src = "./Pin_Icon.svg" 
+            pin.src = "./Pin_Icon.svg"
             pin.classList = [
                 "draggable pin"
             ]
-            
+
             console.log(parseInt(marker["latitude"]))
             pin.setAttribute("style", `
                 top: ${parseInt(marker["latitude"])}px;
                 left: ${parseInt(marker["length"])}px;
-            `) 
+            `)
             $(pin).attr({
                 left: marker["length"],
-                top: marker["latitude"],    
-                title: marker["title"],    
-                type: marker["type"]    
+                top: marker["latitude"],
+                title: marker["title"],
+                type: marker["type"]
             })
             pin.setAttribute("num", index)
 
@@ -303,23 +325,24 @@ class MapContainer {
         this.isActive = false
     }
 
-    activate(){
+    activate() {
         this.isActive = true;
+        renderMapFromLayers(mapData["Layers"])
         this.updateMarkers()
     }
 }
 
-class MarkerListContainer{
-    constructor(){
+class MarkerListContainer {
+    constructor() {
         this.isActive = false
     }
 
-    fetchMarkers(){
+    fetchMarkers() {
         let markers = $(".inner-markers-container input")
         let markersSerialized = []
-        markers.each((ind,marker) => {
+        markers.each((ind, marker) => {
             marker = $(marker)
-            if(ind % 4 == 0) markersSerialized.push({
+            if (ind % 4 == 0) markersSerialized.push({
                 title: "",
                 length: "",
                 latitude: "",
@@ -330,13 +353,13 @@ class MarkerListContainer{
         return (JSON.stringify(markersSerialized))
     }
 
-    updateMarkers(){
+    updateMarkers() {
         let markers = window.mapContainer.fetchMarkers()
 
         let container = $(".inner-markers-container tbody")
         let i = 0
         container.empty()
-        for(let marker of markers){
+        for (let marker of markers) {
             let element = $(`
                 <tr num="${i}" >
                   <td><input type="text" name="title"></td>
@@ -347,7 +370,7 @@ class MarkerListContainer{
             `)
 
             container.append(element)
-            
+
 
             element.children().children().get(0).value = (marker["title"]) ?? ""
             element.children().children().get(1).value = (marker["length"])
@@ -356,52 +379,52 @@ class MarkerListContainer{
         }
     }
 
-    saveMarkers(){
+    saveMarkers() {
         let data = this.fetchMarkers()
 
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '/api/setPins', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');  
-        
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
             xhr.onload = function () {
-              if (this.status === 200) {
-                const response = (this.responseText);
-                if (response === 'Sucess') {
-                  resolve('Pins updated successfully');
+                if (this.status === 200) {
+                    const response = (this.responseText);
+                    if (response === 'Sucess') {
+                        resolve('Pins updated successfully');
+                    } else {
+                        reject(response);
+                    }
                 } else {
-                  reject(response);
+                    reject(`Error: Status ${this.status}`);
                 }
-              } else {
-                reject(`Error: Status ${this.status}`);
-              }
             };
-        
+
             xhr.onerror = function () {
-              reject('Network Error');
+                reject('Network Error');
             };
-        
-            xhr.send(JSON.stringify({ 
-              Project: localStorage.getItem("CurrentProject"),
-              MapName: localStorage.getItem("Map"),
-              Pins: data,
+
+            xhr.send(JSON.stringify({
+                Project: localStorage.getItem("CurrentProject"),
+                MapName: localStorage.getItem("Map"),
+                Pins: data,
             }));
-          });
+        });
     }
 
-    deactivate(){
+    deactivate() {
         this.isActive = false
     }
 
-    activate(){
+    activate() {
         this.isActive = true
         this.updateMarkers()
     }
 }
 
-class SettingsContainer{
-    constructor(){
-        this.isActive = false        
+class SettingsContainer {
+    constructor() {
+        this.isActive = false
 
         const quillLinkHandler = (value) => {
             if (value) {
@@ -411,7 +434,7 @@ class SettingsContainer{
                 this.quill.format('link', false);
             }
         }
-        
+
         this.quill = new Quill('#editor', {
             theme: 'snow',
             modules: {
@@ -422,46 +445,196 @@ class SettingsContainer{
                     ['bold', 'italic', 'underline'],
                     [{
                         'link': quillLinkHandler
-                    },'image'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }], 
-        
+                    }, 'image'],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
+
                 ]
             }
         });
     }
 
-    save(){
+    save() {
         window.markerListContainer.saveMarkers();
-    
-        let title = $(".title-input").val() 
-        
-        let description = (this.quill.getContents())
 
 
     }
 
-    activate(){
+    activate() {
         this.isActive = true
     }
 
-    deactivate(){
+    deactivate() {
         this.isActive = false
     }
 
 }
 
-window.mapContainer = new MapContainer()
-window.markerListContainer = new MarkerListContainer()
-window.settingsContainer = new SettingsContainer()
+class LayersContainer {
+    constructor() {
+        this.isActive = false;
+
+    }
+
+    addNewLayer(){
+        let container = $(".inner-layers-container tbody")
+        $.get(`/temps/image-selector.html`, ((imageSelectorHTML) => {
+            let element = $(`
+                <tr>
+                    <td><input type="text" name="title"></td>
+                    <td><div class="o-image-selector"></div></td>
+                    <td><input type="text" name="order"></td>
+                    <td onclick="window.layersContainer.deleteLayer(this)"><i class="fa-solid fa-trash-can"></i></td>
+                </tr>     
+            `);
+
+            container.append(element);
+
+            element.find(".o-image-selector").append(imageSelectorHTML);
+            mapData["Layers"] = this.fetchLayers();
+        }).bind(this))
+    }
+
+    deleteLayer(t){
+        t.parentElement.remove()
+        mapData["Layers"] = this.fetchLayers()
+    }
+
+    fetchLayers() {
+        const layerData = [];
+
+        $(".inner-layers-container tbody tr").each(function () {
+            const title = $(this).find("input[name='title']").val();
+            const order = $(this).find("input[name='order']").val();
+            const image = $(this).find(".o-image-selector .image-selector-button").css("background-image");
+            const imageUrl = image.slice(5,-2);
+
+            layerData.push({
+                title,
+                order,
+                image: imageUrl.slice(window.location.origin.length)
+            });
+        });
+
+        return layerData;
+    }
+
+    updateLayers() {
+        let layers = mapData["Layers"]
+        let container = $(".inner-layers-container tbody")
+        container.empty()
+        let i = 0
+        $.get(`/temps/image-selector.html`, function (imageSelectorHTML) {
+            for (let layer of layers) {
+                i++;
+                let element = $(`
+                    <tr num="${i}" >
+                        <td><input type="text" name="title"></td>
+                        <td><div class="o-image-selector"></div></td>
+                        <td><input type="text" name="order"></td>
+                        <td onclick="window.layersContainer.deleteLayer(this)"><i class="fa-solid fa-trash-can"></i></td>
+                    </tr>     
+                `);
+
+                container.append(element);
+                element.css("display", "none")
+
+                $(`tr[num=${i}] .o-image-selector`).append(imageSelectorHTML);
+                element.children().children().get(0).value = (layer["title"]) ?? "";
+                element.children().children().get(2).value = (layer["order"]) ?? 0;
+                if (!((layer["image"] ?? "") == "")) {
+                    element.children().children().get(1)
+                        .getElementsByClassName("image-selector-button")[0].setAttribute("style",
+                            `background-image: url(${layer["image"]??""})`)
+                }
+            }
+            container.children().fadeIn(100)
+        })
+    }
+
+    activate() {
+        this.isActive = true;
+        this.updateLayers()
+    }
+
+    deactivate() {
+        this.isActive = false;
+        mapData["Layers"] = this.fetchLayers();
+    }
+}
+
+fetchMap(localStorage.getItem("CurrentProject"), localStorage.getItem("Map")).then((x) => {
+    mapData = x;
+}).catch((e) => {
+    console.error(e);
+})
 
 
-setTimeout((e) => {
-    $(".map-control-button").css("filter", "")
-    e.setAttribute("style", "filter: brightness(80%)")
-}, 100, document.querySelector(".map-control-button"))
+$(() => {
+    window.mapContainer = new MapContainer()
+    window.markerListContainer = new MarkerListContainer()
+    window.settingsContainer = new SettingsContainer()
+    window.layersContainer = new LayersContainer()    
 
-$(`.sub-tab:nth(0)`).addClass("active-tab")
+    if (urlParams.get("new") == 1) {
+        setTimeout((e) => {
+            $(".map-control-button").css("filter", "")
+            e.setAttribute("style", "filter: brightness(80%)")
+        }, 100, document.querySelector(".map-control-button:nth-of-type(4)"))
+        $(`.sub-tab:nth-of-type(4)`).addClass("active-tab")
+        lastTabIndex = 3;
+        window.settingsContainer.activate()
+    } else {
+        setTimeout((e) => {
+            $(".map-control-button").css("filter", "")
+            e.setAttribute("style", "filter: brightness(80%)")
+        }, 100, document.querySelector(".map-control-button"))
+        $(`.sub-tab:nth-of-type(0)`).addClass("active-tab")
+        window.mapContainer.activate()
+    }
+    
+})
 
-window.mapContainer.activate()
+$(".map-control-button").on("click", (e) => {
+    //styling
+    e.currentTarget.setAttribute("style", "filter: brightness(140%)")
+    setTimeout((e) => {
+        $(".map-control-button").css("filter", "")
+        e.setAttribute("style", "filter: brightness(80%)")
+    }, 100, e.currentTarget);
 
+    //activate the selected tab
+    let tabIndex = (subTabs.findIndex((x) => x == e.currentTarget.innerText))
+
+    if (lastTabIndex == tabIndex) return;
+
+    lastTabIndex = tabIndex;
+
+    $(".sub-tab").removeClass("active-tab")
+    $(`.sub-tab:nth(${tabIndex})`).addClass("active-tab")
+
+    //activate the javascript for selected tab
+    window.mapContainer.deactivate()
+    window.markerListContainer.deactivate();
+    window.layersContainer.deactivate();
+    window.settingsContainer.deactivate();
+    switch (tabIndex) {
+        case 0:
+            window.mapContainer.activate()
+            break;
+        case 1:
+            window.markerListContainer.activate();
+            break;
+        case 2: 
+            window.layersContainer.activate()
+            break
+        case 3:
+            window.settingsContainer.activate()
+            break;
+    }
+
+})
 

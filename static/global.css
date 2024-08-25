@@ -336,6 +336,9 @@ input {
     padding: 0.35rem 0.5rem;
     font-size: 1.5rem;
 }
+.toast-icon i{
+    color: #000000 !important;
+}
 
 .toast-message {
     flex: 1;

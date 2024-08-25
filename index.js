@@ -8,7 +8,6 @@ const Reset = "\x1b[0m"
 const Process = require("process");
 const FS = require("fs");
 const Path = require('node:path');    
-const { parse } = require("path")
 
 process.chdir(__dirname);
 
@@ -33,7 +32,7 @@ if(!FS.existsSync("./files/resources")){
         console.log(`${FgRed}Failed creating resource storage directory.${Reset} Exiting...`)
         process.exit()
     })
-    FS.copyFileSync("default.png", "files/resources/default.png")
+    FS.copyFileSync("default.svg", "files/resources/default.svg")
 }
 if(!FS.existsSync("./files/manuscripts")){
     console.log(`${FgBlue}Manuscript storage directory did not exist. Creating...${Reset}`)
@@ -266,12 +265,12 @@ app.get("/api/retrieveManuscript", (req, res) => {
     }
 })
 
-app.post("/api/createMap", (req, res) => {
-    const map = req.body["MapResource"];
+app.post("/api/updateMap", (req, res) => {
     const name = req.body["Name"];
     const description = req.body["Description"];
     const replaceMap = req.body["ReplaceName"];
     const project = req.body["Project"];
+    const layers = req.body["Layers"];
 
     if (typeof project == "undefined") {
         res.status(200).send("Fail: Project name is undefined");
@@ -288,20 +287,26 @@ app.post("/api/createMap", (req, res) => {
     let mapIndex = dbFile.projects[projectIndex]["Maps"].findIndex((x) => {
         return x["Name"] == replaceMap;
     })
+    
+    let layersParsed = []
+    if(layers != undefined){
+        layersParsed = JSON.parse(layers)
+    }
 
     if(mapIndex === -1){
         dbFile.projects[projectIndex]["Maps"].push({
             Name: name,
-            MapResource: map,
             Pins: [],
-            Description: description
+            Description: description,
+            Layers: layers
         });
     }else{
         dbFile.projects[projectIndex]["Maps"][replaceMap] = {
             Name: name,
             MapResource: map,
             Pins:  dbFile.projects[projectIndex]["Maps"][replaceMap]["Pins"],
-            Description: description
+            Description: description,
+            Layers: layers
         }
     }
 
@@ -523,6 +528,7 @@ app.post("/api/saveScene", (req, res) => {
     let notes = req.body["notes"];
     try{
         FS.writeFileSync(`./files/manuscripts/${sceneName}`, encodeScene(scene,synopsis,notes),{ encoding: 'utf8', flag: 'w' });
+        res.status(200).send("Success")
     }catch{
         res.status(200).send("Fail: failure when saving scene")
     }

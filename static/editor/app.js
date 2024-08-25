@@ -51,7 +51,7 @@ function saveArticle() {
     let MainText = localStorage.getItem("MainText") ?? ""
     let SideText = localStorage.getItem("SideSections") ?? ""
     let image = localStorage.getItem("Settings") !== null ? (localStorage.getItem("Settings")).split(SEPERATOR)[1] :
-        "/resources/default.png"
+        "/resources/default.svg"
     let ArticleName = (localStorage.getItem("Settings") ?? SEPERATOR).split(SEPERATOR)[0]
     let description = $("#article-description").val() ?? ""
 
@@ -178,7 +178,7 @@ function setCurrentArticle() {
             if (typeof x["SideText"] !== 'undefined') localStorage.setItem("SideSections", x["SideText"])
             if (typeof x["Description"] !== 'undefined') localStorage.setItem("description", x["Description"])
             $(".article-image").attr("src", (localStorage.getItem("Settings") ?? SEPERATOR +
-                '/resources/default.png').split(SEPERATOR)[1])
+                '/resources/default.svg').split(SEPERATOR)[1])
             $("#article-description").val(localStorage.getItem("description") ?? "")
             $(".article-title").html(x["Name"])
             console.log(x)

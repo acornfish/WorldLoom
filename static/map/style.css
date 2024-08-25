@@ -262,3 +262,67 @@ td input{
     border: 1px solid var(--text-color);
     padding: 2%;
 }
+
+.layers-container{
+    width: 95%;
+    margin-left: 5%;
+    height: 95%;
+    position: absolute;
+}
+
+.inner-layers-container{
+    width: 90%;
+    height: 80%;
+    background-color: var(--menu-color);
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 5%;
+    overflow: scroll;
+}
+
+.o-image-selector{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.inner-layers-container tbody tr td:nth-of-type(4){
+   text-align: center;
+   margin-right: 5%; 
+}
+
+.inner-layers-container tbody tr td:nth-of-type(4) i{
+    padding: 7%;
+    border-radius: 30%;
+    background-color: var(--accent);
+}
+
+.inner-layers-container tbody tr td:nth-of-type(4) i:hover, .add-new-layer:hover{
+    filter: brightness(120%);
+}
+.inner-layers-container tbody tr td:nth-of-type(4) i:active, .add-new-layer:active{
+    filter: brightness(140%);
+}
+
+.add-new-layer{
+    background-color: var(--accent);
+    color: var(--text-color);
+    border: none;
+    position: relative;
+    left: 5%;
+    margin-top: 1%;
+    padding: 1%;
+    padding-left: 2%;
+    padding-right: 2%;
+    border-radius: 10%;
+}
+
+.inner-layers-container thead th{
+    width: 30%;
+}
+
+.inner-layers-container thead th:nth-of-type(4){
+    width: 10%;
+}

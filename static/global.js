@@ -129,6 +129,12 @@ const showToast = (
 
 $.get("/temps/navbar.html", function (data) {
     $(".navbar").replaceWith(data);
+    $("body").append($(`
+        <div class="image-selector-container-outer">
+            <div class="close-button" onclick="OpenImageSelector(false)"></div>
+            <div class="image-selector-container"></div>
+        </div>        
+    `))
     setTimeout(() => {
         $(".Navbar .collapse-switch").get(0).addEventListener("click", (e) => {
             if (e.target.parentElement.getAttribute("collapsed") == "") {

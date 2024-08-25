@@ -223,7 +223,7 @@ function saveManuscriptTree(project, manuscriptTree) {
 
     xhr.onload = function () {
         if (xhr.status === 200) {
-            console.log("Manuscript saved successfully");
+
         } else {
             console.error("Error saving manuscript: ", xhr.responseText);
         }
@@ -239,7 +239,7 @@ function saveManuscriptTree(project, manuscriptTree) {
 function saveScene(update = true) {
     saveState();
     if (lastSelectedSceneID == "") {
-        window.showToast("No scene is selected", "warning", 3000)
+        window.showToast("No scene is selected", "warning", 2000)
         return
     }
     const xhr = new XMLHttpRequest();
@@ -251,6 +251,8 @@ function saveScene(update = true) {
         if (xhr.status == 200) {
             if (xhr.responseText.startsWith("Fail")) {
                 window.showToast("Failed to save scene", "danger", 3000)
+            }else{
+                window.showToast("Sucessfuly saved the scene", "success", 2000)
             }
         }
     };

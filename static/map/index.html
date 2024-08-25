@@ -46,7 +46,24 @@
                   </table>
             </div>
         </div>
-        <div class="sub-tab">b</div>
+        <div class="layers-container sub-tab">
+            <div class="inner-layers-container">
+                <table>
+                    <thead>
+                      <tr head>
+                        <th>Title</th>
+                        <th>Image</th>
+                        <th>Weight</th>
+                        <th style="visibility: hidden;">RM</th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <button onclick="window.layersContainer.addNewLayer()" class="add-new-layer"><i class="fa-solid fa-plus"></i>Add new</button>
+        </div>
         <div class="settings-container sub-tab">
             <div class="inner-settings-container">
                 <div class="prompt-container title-container">
@@ -67,7 +84,7 @@
             </div>
         </div>
     </div>
-
+    <canvas id="hiddenCanvas" style="display: none;"></canvas>
 </body>
 
 </html>
