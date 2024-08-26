@@ -1,0 +1,39 @@
+body{
+    background-color: var(--background-color);
+}
+
+.settings-container{
+    position: relative;
+    width: 80%;
+    height: 80%;
+    overflow: scroll;
+    left: 10%;
+    top: 7%;
+    background-color: var(--menu-color);
+}
+
+#theme-selector{
+    background-color: var(--text-color);
+    color: var(--menu-color);
+    position: relative;
+    border: none;
+    width: 20vh;
+    height: 20vh;
+    left: 10%;
+    margin-top: 5%;
+    border-radius: 100%;
+}
+
+#theme-selector:hover{
+    filter: brightness(120%);
+}
+
+#theme-selector:active{
+    filter: brightness(140%);
+}
+
+.theme-selector-label{
+    color: var(--text-color);
+    left: 5%;
+    position: relative;
+}

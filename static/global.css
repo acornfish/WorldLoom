@@ -233,7 +233,7 @@ input {
 
 .select-container .option-container .option label {
     font-size: 1.1rem;
-    color: white;
+    color: var(--text-color);
     cursor: pointer;
 }
 
@@ -247,7 +247,7 @@ input {
     top: 65%;
     left: 50%;
     transform: translateX(-50%);
-    color: var(--text-color);
+    color: var(--text-color) !important;
     border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
