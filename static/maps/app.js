@@ -37,44 +37,60 @@ fetchMaps(localStorage.getItem("CurrentProject"))
         let list = $(".maps-list")
         mapsData.forEach(x => {
             list.html(`
-                <button class="card">
-                    <div class="remove-map"><i class="fa-solid fa-trash-can"></i></div>
-                    <div class="card-title"><h2>${x["Name"]}</h2></div>
-                    <img src="${x["Layers"][0]["image"]}" alt="">
-                    <div class="card-text"><p>${x["Description"]}</p></div>
-                </button>
+                    <li>
+                        <a href="/map" onclick="localStorage.setItem('Map', '${x["Name"]}')">${x["Name"]}</a>
+                        <button class="remove-map"><i class="fa-solid fa-trash-can"></i></button>
+                    </li>
             ` + list.html())
         })
- 
+        $(".new-map").on("click", (e) => {
+            ["MainText", "Settings", "SideSections", "Article", "description"].forEach(x => {
+                localStorage.removeItem(x);
+            })
+            window.location = "/map?new=1"
+        });
+
         $(".remove-map").on("click", (e) => {
             e.stopPropagation();
 
-            let title = (e).currentTarget.parentElement.getElementsByTagName("h2")[0].innerText;
-            if (window.shiftKeyDown || confirm("Are you sure that you want to delete the map " + title +
-                    "?")) {
-                //removeArticle(localStorage.getItem("CurrentProject"), title)
+            let title = (e).currentTarget.parentElement.getElementsByTagName("a")[0].innerText;
+            if (window.shiftKeyDown || confirm("Are you sure that you want to delete the map " + title + "?")) {
+                removeMap(localStorage.getItem("CurrentProject"), title)
                 setTimeout((e) => (e).currentTarget.parentElement.remove(), 100, e);
                 return;
             }
         })
 
-        $(".maps-list").children().on("click", (x) => {
-            localStorage.setItem("Map", x.originalEvent.currentTarget.querySelector(".card-title").innerText)
-            window.location = "/map"
-        })
+
     })
     .catch(error => {
         console.error(error);
     });
 
+    function removeMap(projectName, mapName) {
+        const xhr = new XMLHttpRequest();
+      
+        xhr.open("POST", "/api/removeMap");
+        xhr.setRequestHeader("Content-Type", "application/json");
+      
+        const data = JSON.stringify({ Name: mapName, Project: projectName }); 
+      
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+          } else {
+            console.error("Error:", xhr.responseText);
+          }
+        };
+      
+        xhr.onerror = function () {
+          console.error("Request failed");
+        };
+      
+        xhr.send(data);
+      }
+      
 
-$(".new-card").on("click", (e) => {
-    ["MainText", "Settings", "SideSections", "Article", "description"].forEach(x => {
-        localStorage.removeItem(x);
-    })  
-    window.location = "/map?new=1"
-});
-
-["MainText", "Settings", "SideSections", "Article", "description"].forEach(x => {
+["MainText", "Settings", "SideSections", "Article", "description", "Map"].forEach(x => {
     localStorage.removeItem(x);
 })

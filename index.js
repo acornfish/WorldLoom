@@ -158,7 +158,7 @@ app.post("/api/save", (req, res) => {
         res.status(200).send("Fail: Can't write to database");
         return;
     }
-    res.status(200).send("Sucess");
+    res.status(200).send(dbFile.projects);
 
 })
 
@@ -265,6 +265,32 @@ app.get("/api/retrieveManuscript", (req, res) => {
     }
 })
 
+app.post("/api/removeMap", (req, res) => {
+    const name = req.body["Name"];
+    const project = req.body["Project"];
+    
+    if (typeof project == "undefined") {
+        res.status(200).send("Fail: Project name is undefined");
+        return;
+    }
+    
+    let projectIndex = dbFile.projects.findIndex((x) => {
+        return x["Name"] == project;
+    })
+    
+    if (projectIndex === -1) {
+        res.status(200).send("Fail: Specified project does not exist");
+        return;
+
+    } 
+    
+    let mapIndex = dbFile.projects[projectIndex]["Maps"].findIndex((x) => {
+        return x["Name"] == name;
+    })
+
+    dbFile.projects[projectIndex]["Maps"].splice(mapIndex,1)
+})
+
 app.post("/api/updateMap", (req, res) => {
     const name = req.body["Name"];
     const description = req.body["Description"];
@@ -288,7 +314,6 @@ app.post("/api/updateMap", (req, res) => {
         return x["Name"] == replaceMap;
     })
     
-
     if(mapIndex === -1){
         dbFile.projects[projectIndex]["Maps"].push({
             Name: name,
@@ -297,10 +322,9 @@ app.post("/api/updateMap", (req, res) => {
             Layers: layers
         });
     }else{
-        dbFile.projects[projectIndex]["Maps"][replaceMap] = {
+        dbFile.projects[projectIndex]["Maps"][mapIndex] = {
             Name: name,
-            MapResource: map,
-            Pins:  dbFile.projects[projectIndex]["Maps"][replaceMap]["Pins"],
+            Pins:  dbFile.projects[projectIndex]["Maps"][mapIndex]["Pins"] ?? [],
             Description: description,
             Layers: layers
         }

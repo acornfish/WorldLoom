@@ -7,14 +7,14 @@ const urlParams = new URLSearchParams(window.location.search);
 const hiddenCanvas = document.getElementById("hiddenCanvas")
 
 var mapData = {
-    "Project": localStorage.getItem("CurrentProject"),
-    "Name": localStorage.getItem("Map"),
-    "Description": "",
-    "ReplaceName": undefined,
-    "Layers": []
+    Project : localStorage.getItem("CurrentProject"),
+    Name : localStorage.getItem("Map"),
+    Description : "",
+    ReplaceName : undefined,
+    Layers : []
 }
 
-window.md = () => (console.log(mapData))
+window.md = () => console.log(mapData);
 
 var subTabs = ["Map", "Markers", "Layers", "Settings"]
 
@@ -119,7 +119,6 @@ class MapContainer {
     constructor() {
         this.isActive = false
         this.mapImage = $(".map-image");
-        this.mapImage.attr("src", mapData["MapResource"])
         this.zoomLevel = 1;
         this.minZoom = 0.3;
         this.maxZoom = 3;
@@ -366,9 +365,9 @@ class MarkerListContainer {
         return (JSON.stringify(markersSerialized))
     }
 
-    updateMarkers() {
+    updateMarkers(init) {
         let markers = window.mapContainer.fetchMarkers()
-
+        if (init) markers = mapData["Pins"]
         let container = $(".inner-markers-container tbody")
         let i = 0
         container.empty()
@@ -487,7 +486,7 @@ class SettingsContainer {
 
 
 
-        this.quill.setContents(mapData["Description"])
+        this.quill.setContents(JSON.parse( mapData["Description"] ))
 
         $("#save-map").on("click", this.save.bind(this));
     }
@@ -613,7 +612,7 @@ class LayersContainer {
 
 fetchMap(localStorage.getItem("CurrentProject"), localStorage.getItem("Map")).then((x) => {
     mapData = x;
-    renderMapFromLayers(mapData["Layers"])
+    mapData["Project"] = localStorage.getItem("CurrentProject");
 }).catch((e) => {
     console.error(e);
 })
@@ -642,6 +641,11 @@ $(() => {
         window.mapContainer.activate()
     }
 
+
+    window.markerListContainer.updateMarkers(true);
+    window.mapContainer.updateMarkers()
+    window.layersContainer.updateLayers()
+    renderMapFromLayers(mapData["Layers"])
 })
 
 $(".map-control-button").on("click", (e) => {
@@ -651,14 +655,14 @@ $(".map-control-button").on("click", (e) => {
         $(".map-control-button").css("filter", "")
         e.setAttribute("style", "filter: brightness(80%)")
     }, 100, e.currentTarget);
-
+    
     //activate the selected tab
     let tabIndex = (subTabs.findIndex((x) => x == e.currentTarget.innerText))
-
+    
     if (lastTabIndex == tabIndex) return;
-
+    
     lastTabIndex = tabIndex;
-
+    
     $(".sub-tab").removeClass("active-tab")
     $(`.sub-tab:nth(${tabIndex})`).addClass("active-tab")
 
