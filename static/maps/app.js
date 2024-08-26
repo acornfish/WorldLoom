@@ -40,12 +40,12 @@ fetchMaps(localStorage.getItem("CurrentProject"))
                 <button class="card">
                     <div class="remove-map"><i class="fa-solid fa-trash-can"></i></div>
                     <div class="card-title"><h2>${x["Name"]}</h2></div>
-                    <img src="${x["MapResource"]}" alt="">
+                    <img src="${x["Layers"][0]["image"]}" alt="">
                     <div class="card-text"><p>${x["Description"]}</p></div>
                 </button>
             ` + list.html())
         })
-
+ 
         $(".remove-map").on("click", (e) => {
             e.stopPropagation();
 

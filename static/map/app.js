@@ -6,7 +6,7 @@ const urlParams = new URLSearchParams(window.location.search);
 
 const hiddenCanvas = document.getElementById("hiddenCanvas")
 
-const mapData = {
+var mapData = {
     "Project": localStorage.getItem("CurrentProject"),
     "Name": localStorage.getItem("Map"),
     "Description": "",
@@ -20,47 +20,60 @@ var subTabs = ["Map", "Markers", "Layers", "Settings"]
 
 var lastTabIndex = 0
 
-function renderMapFromLayers(layers) {
+async function renderMapFromLayers(layers) {
     const ctx = hiddenCanvas.getContext('2d');
 
-    layers.sort((a,b) => {a["order"] - b["order"]});
+    layers.sort((a, b) => {
+        parseInt(a["order"]) - parseInt(b["order"])
+    });
+    
 
-    if(layers.length){
-        let img = new Image();
-        img.src = layers[0]["image"];
-        hiddenCanvas.width = img.width;
-        hiddenCanvas.height = img.height;
+    if (layers.length) {
+        let highestWidth = 0;
+        let highestHeight = 0;
+        
+        for(const layer of layers){
+            let img = new Image();
+            img.src = layer["image"];
+            await new Promise((resolve, reject) => {
+                img.onload = () => {
+                    highestWidth = img.width > highestWidth ?  img.width : highestWidth;
+                    highestHeight = img.height > highestHeight ?  img.height : highestHeight;
+                    resolve();
+                }
+                img.onerror = reject;
+            })
+        }
+
+        hiddenCanvas.width = highestWidth;
+        hiddenCanvas.height = highestHeight;
+
+    }
+    for (const layer of layers) {
+        await new Promise((resolve, reject) => {
+            if (parseInt(layer["order"]) < 0) {
+                return;
+            }
+            const image = new Image();
+            image.src = layer["image"];
+            image.onload = () => {
+                ctx.drawImage(image, 0, 0);
+                resolve()
+            }
+
+            image.onerror = reject;
+        });
     }
 
-    let imagesLoaded = 0;
-    let totalImages = layers.length;
-
-    layers.forEach((layer, index) => {
-        if (layer["order"] < 0) {
-            return;
-        }
-        const image = new Image();
-        image.src = layer["image"];
-
-        image.onload = () => {
-            ctx.drawImage(image, 0, 0);
-            imagesLoaded++;
-
-            if (imagesLoaded === totalImages) {
-                const dataUrl = hiddenCanvas.toDataURL();
-                const outputImage = document.getElementsByClassName('map-image')[0];
-                outputImage.src = dataUrl;
-            }
-        };
-    });
+    const dataUrl = hiddenCanvas.toDataURL();
+    const outputImage = document.getElementsByClassName('map-image')[0];
+    outputImage.src = dataUrl;
 }
 
 function updateMap() {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "/api/updateMap", true);
     xhr.setRequestHeader("Content-Type", "application/json");
-
-
 
     xhr.onload = function () {
         if (xhr.status === 200) {} else {
@@ -434,33 +447,65 @@ class SettingsContainer {
                 this.quill.format('link', false);
             }
         }
+        $(".title-input").val(mapData["Name"]);
 
         this.quill = new Quill('#editor', {
             theme: 'snow',
             modules: {
-                toolbar: [
-                    [{
-                        'header': [1, 2, false]
-                    }],
-                    ['bold', 'italic', 'underline'],
-                    [{
-                        'link': quillLinkHandler
-                    }, 'image'],
-                    [{
-                        'list': 'ordered'
-                    }, {
-                        'list': 'bullet'
-                    }],
+                toolbar: {
+                    container: [
+                        [{
+                            'header': [1, 2, false]
+                        }],
+                        ['bold', 'italic', 'underline'],
+                        ["link", 'image'],
+                        [{
+                            'list': 'ordered'
+                        }, {
+                            'list': 'bullet'
+                        }]
+                    ],
+                    handlers: {
+                        link: function (value) {
+                            if (value) {
+                                var href = prompt('Name:');
+                                if (!href.startsWith("manuscript:")) {
+                                    this.quill.format('link', `Articles/${href}`);
+                                } else {
+                                    this.quill.format('link', `Manuscripts/${href}`);
+                                }
+                            } else {
+                                this.quill.format('link', false);
+                            }
 
-                ]
-            }
+                        },
+                    }
+                }
+            },
+
         });
+
+
+
+        this.quill.setContents(mapData["Description"])
+
+        $("#save-map").on("click", this.save.bind(this));
     }
 
     save() {
+        if (lastTabIndex == 0) {
+            window.markerListContainer.updateMarkers();
+        }
         window.markerListContainer.saveMarkers();
-
-
+        mapData["Layers"] = window.layersContainer.fetchLayers()
+        if (mapData["Name"] != null) {
+            mapData["ReplaceName"] = localStorage.getItem("Map")
+        }
+        mapData["Name"] = $(".title-input").val();
+        mapData["Description"] = JSON.stringify(this.quill.getContents())
+        updateMap()
+        localStorage.setItem("Map", mapData["Name"])
+        window.showToast("Saved successfuly", "success", 2000)
     }
 
     activate() {
@@ -479,7 +524,7 @@ class LayersContainer {
 
     }
 
-    addNewLayer(){
+    addNewLayer() {
         let container = $(".inner-layers-container tbody")
         $.get(`/temps/image-selector.html`, ((imageSelectorHTML) => {
             let element = $(`
@@ -492,13 +537,13 @@ class LayersContainer {
             `);
 
             container.append(element);
-
+            element.find("input[type='text']").eq(1).val(0)
             element.find(".o-image-selector").append(imageSelectorHTML);
             mapData["Layers"] = this.fetchLayers();
         }).bind(this))
     }
 
-    deleteLayer(t){
+    deleteLayer(t) {
         t.parentElement.remove()
         mapData["Layers"] = this.fetchLayers()
     }
@@ -510,7 +555,7 @@ class LayersContainer {
             const title = $(this).find("input[name='title']").val();
             const order = $(this).find("input[name='order']").val();
             const image = $(this).find(".o-image-selector .image-selector-button").css("background-image");
-            const imageUrl = image.slice(5,-2);
+            const imageUrl = image.slice(5, -2);
 
             layerData.push({
                 title,
@@ -568,6 +613,7 @@ class LayersContainer {
 
 fetchMap(localStorage.getItem("CurrentProject"), localStorage.getItem("Map")).then((x) => {
     mapData = x;
+    renderMapFromLayers(mapData["Layers"])
 }).catch((e) => {
     console.error(e);
 })
@@ -577,7 +623,7 @@ $(() => {
     window.mapContainer = new MapContainer()
     window.markerListContainer = new MarkerListContainer()
     window.settingsContainer = new SettingsContainer()
-    window.layersContainer = new LayersContainer()    
+    window.layersContainer = new LayersContainer()
 
     if (urlParams.get("new") == 1) {
         setTimeout((e) => {
@@ -592,10 +638,10 @@ $(() => {
             $(".map-control-button").css("filter", "")
             e.setAttribute("style", "filter: brightness(80%)")
         }, 100, document.querySelector(".map-control-button"))
-        $(`.sub-tab:nth-of-type(0)`).addClass("active-tab")
+        $(`.sub-tab:eq(0)`).addClass("active-tab")
         window.mapContainer.activate()
     }
-    
+
 })
 
 $(".map-control-button").on("click", (e) => {
@@ -628,7 +674,7 @@ $(".map-control-button").on("click", (e) => {
         case 1:
             window.markerListContainer.activate();
             break;
-        case 2: 
+        case 2:
             window.layersContainer.activate()
             break
         case 3:
@@ -637,4 +683,3 @@ $(".map-control-button").on("click", (e) => {
     }
 
 })
-

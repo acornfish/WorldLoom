@@ -288,10 +288,6 @@ app.post("/api/updateMap", (req, res) => {
         return x["Name"] == replaceMap;
     })
     
-    let layersParsed = []
-    if(layers != undefined){
-        layersParsed = JSON.parse(layers)
-    }
 
     if(mapIndex === -1){
         dbFile.projects[projectIndex]["Maps"].push({
