@@ -9,12 +9,13 @@ const hiddenCanvas = document.getElementById("hiddenCanvas")
 var mapData = {
     Project : localStorage.getItem("CurrentProject"),
     Name : localStorage.getItem("Map"),
-    Description : "",
+    Description : '{"ops":[{"insert":"\\n"}]}',
+    Pins: [],
     ReplaceName : undefined,
     Layers : []
 }
 
-window.md = () => console.log(mapData);
+window.md = () => (mapData);
 
 var subTabs = ["Map", "Markers", "Layers", "Settings"]
 
@@ -290,18 +291,18 @@ class MapContainer {
         $(".pin").each((ind, e) => {
             let pin = $(`.pin[num=${ind}]`)
             positions.push({
+                title: pin.attr("title"),
                 length: (pin.attr("left")),
                 latitude: (pin.attr("top")),
-                title: pin.attr("title"),
                 type: pin.attr("type")
             })
         })
-        return positions
+        return positions;
     }
 
     updateMarkers() {
         // Not to be confused with markerListContainer.updateMarkers()
-        let markers = JSON.parse(window.markerListContainer.fetchMarkers())
+        let markers = (window.markerListContainer.fetchMarkers())
         let container = $(".inner-map-container")
         let rect = container.get(0).getBoundingClientRect()
         let index = 0
@@ -335,6 +336,7 @@ class MapContainer {
 
     deactivate() {
         this.isActive = false
+        mapData["Pins"] = this.fetchMarkers();
     }
 
     activate() {
@@ -362,7 +364,7 @@ class MarkerListContainer {
             })
             markersSerialized[parseInt(ind / 4)][marker.attr("name")] = marker.val()
         })
-        return (JSON.stringify(markersSerialized))
+        return ((markersSerialized))
     }
 
     updateMarkers(init) {
@@ -421,11 +423,13 @@ class MarkerListContainer {
                 MapName: localStorage.getItem("Map"),
                 Pins: data,
             }));
+            mapData["Pins"] = data;
         });
     }
 
     deactivate() {
         this.isActive = false
+        mapData["Pins"] = this.fetchMarkers();
     }
 
     activate() {
@@ -492,14 +496,22 @@ class SettingsContainer {
     }
 
     save() {
+        if($(".title-input").val() == ""){
+            showToast("Title can not be empty", "warning", 2000)
+            $(".title-input").val(mapData["Name"])
+            return
+        }
+        
         if (lastTabIndex == 0) {
             window.markerListContainer.updateMarkers();
         }
+        
         window.markerListContainer.saveMarkers();
         mapData["Layers"] = window.layersContainer.fetchLayers()
         if (mapData["Name"] != null) {
             mapData["ReplaceName"] = localStorage.getItem("Map")
         }
+
         mapData["Name"] = $(".title-input").val();
         mapData["Description"] = JSON.stringify(this.quill.getContents())
         updateMap()
@@ -610,12 +622,15 @@ class LayersContainer {
     }
 }
 
-fetchMap(localStorage.getItem("CurrentProject"), localStorage.getItem("Map")).then((x) => {
-    mapData = x;
-    mapData["Project"] = localStorage.getItem("CurrentProject");
-}).catch((e) => {
-    console.error(e);
-})
+if(urlParams.get("new") == null){
+    fetchMap(localStorage.getItem("CurrentProject"), localStorage.getItem("Map")).then((x) => {
+        mapData = x;
+        mapData["Project"] = localStorage.getItem("CurrentProject");
+    }).catch((e) => {
+        console.error(e);
+    })
+}
+
 
 
 $(() => {

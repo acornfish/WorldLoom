@@ -359,7 +359,7 @@ app.post("/api/setPins", (req, res) => {
         res.status(200).send("Fail: Specified map does not exist");
         return;
     } else {
-        dbFile.projects[projectIndex]["Maps"][MapIndex]["Pins"] = JSON.parse(pins);
+        dbFile.projects[projectIndex]["Maps"][MapIndex]["Pins"] = (pins);
         res.status(200).send("Sucess");
         return;
     }
