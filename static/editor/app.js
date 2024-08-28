@@ -17,30 +17,38 @@ function setTabHtml(x) {
         WaitForQuill().then((quill) => {
             if (lastTab == 2) return;
             let contents = JSON.stringify(quill.getContents())
-            localStorage.setItem(sectionNames[lastTab], contents);
+            sessionStorage.setItem(sectionNames[lastTab], contents);
         })
     } else {
         let contents = $("#articleName").val()
         contents += SEPERATOR
-        let parts = ($(".image-selector-button").css("background-image").replace(/^url\(["']?(.*?)["']?\)$/, '$1')
+        let imageSelectorButton;
+        (window.waitForElm(".image-selector-button")).then(() => {
+            imageSelectorButton = $(".image-selector-button")
+            let parts = (imageSelectorButton.css("background-image").replace(/^url\(["']?(.*?)["']?\)$/, '$1')
             .split("/"))
-        contents += ("/" + parts[parts.length - 2] + "/" + parts[parts.length - 1])
-        localStorage.setItem(sectionNames[2], contents);
+            contents += ("/" + parts[parts.length - 2] + "/" + parts[parts.length - 1])
+            sessionStorage.setItem(sectionNames[2], contents);
+        })
     }
     $.get(`/temps/${x}.html`, function (data) {
         $("#container").html(data);
         if (selectedTab != 2) {
             WaitForQuill().then((x) => {
-                let contents = localStorage.getItem(sectionNames[selectedTab])
+                let contents = sessionStorage.getItem(sectionNames[selectedTab])
                 x.setContents(JSON.parse(contents))
             })
         } else {
-            let contents = localStorage.getItem(sectionNames[selectedTab])
+            let contents = sessionStorage.getItem(sectionNames[selectedTab])
             if (contents !== null) {
                 let articleName, image;
                 [articleName, image] = contents.split(SEPERATOR)
                 $("#articleName").val(articleName)
-                $(".image-selector-button").attr("style", `background-image: url("${image}");`)
+                let imageSelectorButton;
+                (window.waitForElm(".image-selector-button")).then(() => {
+                    imageSelectorButton = $(".image-selector-button")
+                    imageSelectorButton.css("background-image", `url('${image}')`)
+                })
             }
 
         }
@@ -48,11 +56,11 @@ function setTabHtml(x) {
 }
 
 function saveArticle() {
-    let MainText = localStorage.getItem("MainText") ?? ""
-    let SideText = localStorage.getItem("SideSections") ?? ""
-    let image = localStorage.getItem("Settings") !== null ? (localStorage.getItem("Settings")).split(SEPERATOR)[1] :
+    let MainText = sessionStorage.getItem("MainText") ?? ""
+    let SideText = sessionStorage.getItem("SideSections") ?? ""
+    let image = sessionStorage.getItem("Settings") !== null ? (sessionStorage.getItem("Settings")).split(SEPERATOR)[1] :
         "/resources/default.svg"
-    let ArticleName = (localStorage.getItem("Settings") ?? SEPERATOR).split(SEPERATOR)[0]
+    let ArticleName = (sessionStorage.getItem("Settings") ?? SEPERATOR).split(SEPERATOR)[0]
     let description = $("#article-description").val() ?? ""
 
     if (selectedTab == 0) {
@@ -64,30 +72,35 @@ function saveArticle() {
     } else {
         let contents = $("#articleName").val()
         contents += SEPERATOR
-        let parts = ($(".image-selector-button").css("background-image").replace(/^url\(["']?(.*?)["']?\)$/, '$1')
-            .split("/"))
-        contents += ("/" + parts[parts.length - 2] + "/" + parts[parts.length - 1])
-        image = contents.split(SEPERATOR)[1]
-        ArticleName = contents.split(SEPERATOR)[0]
+        let imageSelectorButton;
+        (window.waitForElm(".image-selector-button")).then(() => {
+            imageSelectorButton = $(".image-selector-button")
+            let parts = (imageSelectorButton.css("background-image").replace(/^url\(["']?(.*?)["']?\)$/, '$1')
+                .split("/"))
+                contents += ("/" + parts[parts.length - 2] + "/" + parts[parts.length - 1])
+                image = contents.split(SEPERATOR)[1]
+                ArticleName = contents.split(SEPERATOR)[0]
+        })
     }
-    let lastArticle = localStorage.getItem("Article") == "" || localStorage.getItem("Article") === null ? undefined :
-        localStorage.getItem("Article");
+    let lastArticle = sessionStorage.getItem("Article") == "" || sessionStorage.getItem("Article") === null ?
+        undefined :
+        sessionStorage.getItem("Article");
     ArticleName = ArticleName == "" ? "Article" : ArticleName
-    if (localStorage.getItem("Article") == "" || localStorage.getItem("Article") === null) {
+    if (sessionStorage.getItem("Article") == "" || sessionStorage.getItem("Article") === null) {
         retrieveArticle(localStorage.getItem("CurrentProject"), ArticleName).then(() => {
             window.showToast("Article with the same name exists", "danger", 3000)
         }).catch(() => {
             articleRequest(localStorage.getItem("CurrentProject"), ArticleName, MainText, SideText, image,
                 description, lastArticle)
             window.showToast("Successfuly saved article", "success", 3000)
-            localStorage.setItem("Article", ArticleName)
+            sessionStorage.setItem("Article", ArticleName)
             setCurrentArticle()
         })
     } else {
         articleRequest(localStorage.getItem("CurrentProject"), ArticleName, MainText, SideText, image, description,
             lastArticle)
         window.showToast("Successfuly saved article", "success", 3000)
-        localStorage.setItem("Article", ArticleName)
+        sessionStorage.setItem("Article", ArticleName)
         setCurrentArticle()
     }
 
@@ -170,17 +183,18 @@ function retrieveArticle(project, name) {
 
 
 function setCurrentArticle() {
-    if (localStorage.getItem("Article") !== "") {
-        retrieveArticle(localStorage.getItem("CurrentProject"), localStorage.getItem("Article")).then(x => {
-            if (typeof x["MainText"] !== 'undefined') localStorage.setItem("MainText", x["MainText"])
-            if (typeof x["image"] !== 'undefined') localStorage.setItem("Settings", x["Name"] + SEPERATOR + x[
+    if (sessionStorage.getItem("Article") !== "") {
+        retrieveArticle(localStorage.getItem("CurrentProject"), sessionStorage.getItem("Article")).then(x => {
+            if (typeof x["MainText"] !== 'undefined') sessionStorage.setItem("MainText", x["MainText"])
+            if (typeof x["image"] !== 'undefined') sessionStorage.setItem("Settings", x["Name"] + SEPERATOR + x[
                 "image"])
-            if (typeof x["SideText"] !== 'undefined') localStorage.setItem("SideSections", x["SideText"])
-            if (typeof x["Description"] !== 'undefined') localStorage.setItem("description", x["Description"])
-            $(".article-image").attr("src", (localStorage.getItem("Settings") ?? SEPERATOR +
+            if (typeof x["SideText"] !== 'undefined') sessionStorage.setItem("SideSections", x["SideText"])
+            if (typeof x["Description"] !== 'undefined') sessionStorage.setItem("description", x["Description"])
+            $(".article-image").attr("src", (sessionStorage.getItem("Settings") ?? SEPERATOR +
                 '/resources/default.svg').split(SEPERATOR)[1])
-            $("#article-description").val(localStorage.getItem("description") ?? "")
+            $("#article-description").val(sessionStorage.getItem("description") ?? "")
             $(".article-title").html(x["Name"])
+            
             console.log(x)
         })
     }

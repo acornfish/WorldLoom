@@ -38,7 +38,7 @@ fetchMaps(localStorage.getItem("CurrentProject"))
         mapsData.forEach(x => {
             list.html(`
                     <li>
-                        <a href="/map" onclick="localStorage.setItem('Map', '${x["Name"]}')">${x["Name"]}</a>
+                        <a href="/map" onclick="sessionStorage.setItem('Map', '${x["Name"]}')">${x["Name"]}</a>
                         <button class="remove-map"><i class="fa-solid fa-trash-can"></i></button>
                     </li>
             ` + list.html())
@@ -46,6 +46,7 @@ fetchMaps(localStorage.getItem("CurrentProject"))
         $(".new-map").on("click", (e) => {
             ["MainText", "Settings", "SideSections", "Article", "description"].forEach(x => {
                 localStorage.removeItem(x);
+                sessionStorage.removeItem(x);
             })
             window.location = "/map?new=1"
         });
@@ -93,4 +94,5 @@ fetchMaps(localStorage.getItem("CurrentProject"))
 
 ["MainText", "Settings", "SideSections", "Article", "description", "Map"].forEach(x => {
     localStorage.removeItem(x);
+    sessionStorage.removeItem(x);
 })

@@ -7,11 +7,11 @@ function openEditor(x){
 }
 
 function createArticle(){
-    localStorage.removeItem("MainText")
-    localStorage.removeItem("Settings")
-    localStorage.removeItem("SideSections")
-    localStorage.removeItem("Article")
-    localStorage.removeItem("description")
+    sessionStorage.removeItem("MainText")
+    sessionStorage.removeItem("Settings")
+    sessionStorage.removeItem("SideSections")
+    sessionStorage.removeItem("Article")
+    sessionStorage.removeItem("description")
     setArticle("")
     window.location = "/editor?new=1"
 }
@@ -64,7 +64,7 @@ for(let i=0;i<cards.length;i++){
 }
 
 function setArticle(article){
-    localStorage.setItem("Article", article)
+    sessionStorage.setItem("Article", article)
 }
 
 var articles = GetArticles()

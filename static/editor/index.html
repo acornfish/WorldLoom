@@ -11,7 +11,7 @@
     <script type="module" src="/global-head.js"></script>
 
     <script>
-        if (localStorage.getItem("Article") == null &&  
+        if (sessionStorage.getItem("Article") == null &&  
         new URLSearchParams(window.location.search).get("new") === null) window.location = "/dashboard";
     </script>
     <script src="app.js" type="module" defer></script>

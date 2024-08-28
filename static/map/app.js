@@ -8,7 +8,7 @@ const hiddenCanvas = document.getElementById("hiddenCanvas")
 
 var mapData = {
     Project : localStorage.getItem("CurrentProject"),
-    Name : localStorage.getItem("Map"),
+    Name : sessionStorage.getItem("Map"),
     Description : '{"ops":[{"insert":"\\n"}]}',
     Pins: [],
     ReplaceName : undefined,
@@ -302,7 +302,7 @@ class MapContainer {
 
     updateMarkers() {
         // Not to be confused with markerListContainer.updateMarkers()
-        let markers = (window.markerListContainer.fetchMarkers())
+        let markers = mapData["Pins"]
         let container = $(".inner-map-container")
         let rect = container.get(0).getBoundingClientRect()
         let index = 0
@@ -368,8 +368,8 @@ class MarkerListContainer {
     }
 
     updateMarkers(init) {
-        let markers = window.mapContainer.fetchMarkers()
-        if (init) markers = mapData["Pins"]
+        if (!init) mapData["Pins"] = window.mapContainer.fetchMarkers()
+        let markers = mapData["Pins"]
         let container = $(".inner-markers-container tbody")
         let i = 0
         container.empty()
@@ -420,7 +420,7 @@ class MarkerListContainer {
 
             xhr.send(JSON.stringify({
                 Project: localStorage.getItem("CurrentProject"),
-                MapName: localStorage.getItem("Map"),
+                MapName: sessionStorage.getItem("Map"),
                 Pins: data,
             }));
             mapData["Pins"] = data;
@@ -506,17 +506,21 @@ class SettingsContainer {
             window.markerListContainer.updateMarkers();
         }
         
-        window.markerListContainer.saveMarkers();
         mapData["Layers"] = window.layersContainer.fetchLayers()
         if (mapData["Name"] != null) {
-            mapData["ReplaceName"] = localStorage.getItem("Map")
+            mapData["ReplaceName"] = sessionStorage.getItem("Map")
         }
-
+        
         mapData["Name"] = $(".title-input").val();
         mapData["Description"] = JSON.stringify(this.quill.getContents())
         updateMap()
-        localStorage.setItem("Map", mapData["Name"])
+        sessionStorage.setItem("Map", mapData["Name"])
+        window.markerListContainer.saveMarkers();
         window.showToast("Saved successfuly", "success", 2000)
+
+        if(urlParams.get("new") == "1"){
+            window.location = "/map"
+        }
     }
 
     activate() {
@@ -623,7 +627,7 @@ class LayersContainer {
 }
 
 if(urlParams.get("new") == null){
-    fetchMap(localStorage.getItem("CurrentProject"), localStorage.getItem("Map")).then((x) => {
+    fetchMap(localStorage.getItem("CurrentProject"), sessionStorage.getItem("Map")).then((x) => {
         mapData = x;
         mapData["Project"] = localStorage.getItem("CurrentProject");
     }).catch((e) => {
