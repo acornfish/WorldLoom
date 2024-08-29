@@ -11,8 +11,8 @@
     <script type="module" src="/global-head.js"></script>
 
     <script>
-        if (sessionStorage.getItem("Article") == null &&  
-        new URLSearchParams(window.location.search).get("new") === null) window.location = "/dashboard";
+        if (sessionStorage.getItem("Article") == null &&
+            new URLSearchParams(window.location.search).get("new") === null) window.location = "/dashboard";
     </script>
     <script src="app.js" type="module" defer></script>
 
@@ -38,14 +38,27 @@
         </div>
     </div>
     <div id="container">
-        <div class="editorContainer">
-            <div id="editor"></div>
+        <div class="sub-tab main-section-container active-tab">
+            <div class="editorContainer">
+                <div id="mainText-editor"></div>
+            </div>
+        </div>
+        <div class="sub-tab side-section-container">
+            <div class="editorContainer">
+                <div id="sideSections-editor"></div>
+            </div>
+        </div>
+        <div class="sub-tab settings-container">
+            <div class="OptionsContainer">
+                <h2 class="article-name-label">Article name</h2>
+                <input type="text" id="articleName">
+                <div class="image-selector"></div>
+            </div>
         </div>
     </div>
     <div class="sidebar">
         <div class="article-image-container">
-            <img src="/resources/default.svg" alt="image"
-                class="article-image">
+            <img src="/resources/default.svg" alt="image" class="article-image">
         </div>
         <div class="article-title-container">
             <h2 class="article-title">Article</h2>

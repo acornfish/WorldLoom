@@ -162,7 +162,7 @@ app.post("/api/save", (req, res) => {
 
 })
 
-app.post("/api/createArticle", (req, res) => {
+app.post("/api/saveArticle", (req, res) => {
     let articleName = req.body["Name"];
     let mainText = req.body["MainText"] ?? "";
     let description = req.body["Description"] ?? "";

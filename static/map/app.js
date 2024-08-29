@@ -7,12 +7,12 @@ const urlParams = new URLSearchParams(window.location.search);
 const hiddenCanvas = document.getElementById("hiddenCanvas")
 
 var mapData = {
-    Project : localStorage.getItem("CurrentProject"),
-    Name : sessionStorage.getItem("Map"),
-    Description : '{"ops":[{"insert":"\\n"}]}',
+    Project: localStorage.getItem("CurrentProject"),
+    Name: sessionStorage.getItem("Map"),
+    Description: '{"ops":[{"insert":"\\n"}]}',
     Pins: [],
-    ReplaceName : undefined,
-    Layers : []
+    ReplaceName: undefined,
+    Layers: []
 }
 
 window.md = () => (mapData);
@@ -27,19 +27,19 @@ async function renderMapFromLayers(layers) {
     layers.sort((a, b) => {
         parseInt(a["order"]) - parseInt(b["order"])
     });
-    
+
 
     if (layers.length) {
         let highestWidth = 0;
         let highestHeight = 0;
-        
-        for(const layer of layers){
+
+        for (const layer of layers) {
             let img = new Image();
             img.src = layer["image"];
             await new Promise((resolve, reject) => {
                 img.onload = () => {
-                    highestWidth = img.width > highestWidth ?  img.width : highestWidth;
-                    highestHeight = img.height > highestHeight ?  img.height : highestHeight;
+                    highestWidth = img.width > highestWidth ? img.width : highestWidth;
+                    highestHeight = img.height > highestHeight ? img.height : highestHeight;
                     resolve();
                 }
                 img.onerror = reject;
@@ -72,17 +72,21 @@ async function renderMapFromLayers(layers) {
 }
 
 function updateMap() {
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/updateMap", true);
-    xhr.setRequestHeader("Content-Type", "application/json");
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/updateMap");
+        xhr.setRequestHeader("Content-Type", "application/json");
 
-    xhr.onload = function () {
-        if (xhr.status === 200) {} else {
-            console.error("Error updating map:", xhr.responseText);
-        }
-    };
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                resolve();
+            } else {
+                reject(new Error("Error updating map: " + xhr.responseText));
+            }
+        };
 
-    xhr.send(JSON.stringify(mapData));
+        xhr.send(JSON.stringify(mapData));
+    });
 }
 
 function fetchMap(project, name) {
@@ -289,11 +293,13 @@ class MapContainer {
         let rect = container.get(0).getBoundingClientRect()
         let positions = []
         $(".pin").each((ind, e) => {
-            let pin = $(`.pin[num=${ind}]`)
+            let pin = $(e)
+            let pos = this.calculateRelativePosition(pin)
+            console.log(pos);
             positions.push({
                 title: pin.attr("title"),
-                length: (pin.attr("left")),
-                latitude: (pin.attr("top")),
+                length: (pos.relativeLeft).toString(),
+                latitude: (pos.relativeTop).toString(),
                 type: pin.attr("type")
             })
         })
@@ -316,9 +322,15 @@ class MapContainer {
             ]
 
             console.log(parseInt(marker["latitude"]))
+
+            let absolutePosition = this.restoreAbsolutePosition({
+                relativeLeft: parseInt(marker["length"]),
+                relativeTop: parseInt(marker["latitude"])
+            })
+            console.log(markers)
             pin.setAttribute("style", `
-                top: ${parseInt(marker["latitude"])}px;
-                left: ${parseInt(marker["length"])}px;
+                top: ${absolutePosition.latitude}px;
+                left: ${absolutePosition.length}px;
             `)
             $(pin).attr({
                 left: marker["length"],
@@ -333,6 +345,26 @@ class MapContainer {
         });
     }
 
+    calculateRelativePosition(pin) {
+        const scale = this.zoomLevel;
+        const pinRect = pin.get(0).getBoundingClientRect();
+        const mapRect = pin.parent().get(0).getBoundingClientRect();
+        const relativeLeft = Math.round((pinRect.left - mapRect.left) / scale);
+        const relativeTop = Math.round((pinRect.top - mapRect.top) / scale);
+        return {relativeLeft, relativeTop};
+    }
+
+    restoreAbsolutePosition(pos) {
+        const scale = this.zoomLevel;
+        const relativeLeft = pos.relativeLeft;
+        const relativeTop = pos.relativeTop;
+        const mapRect = this.mapImage.parent().get(0).getBoundingClientRect();
+
+        return {
+            length: relativeLeft,
+            latitude: relativeTop
+        }
+    }
 
     deactivate() {
         this.isActive = false
@@ -368,7 +400,6 @@ class MarkerListContainer {
     }
 
     updateMarkers(init) {
-        if (!init) mapData["Pins"] = window.mapContainer.fetchMarkers()
         let markers = mapData["Pins"]
         let container = $(".inner-markers-container tbody")
         let i = 0
@@ -384,7 +415,6 @@ class MarkerListContainer {
             `)
 
             container.append(element)
-
 
             element.children().children().get(0).value = (marker["title"]) ?? ""
             element.children().children().get(1).value = (marker["length"])
@@ -490,37 +520,42 @@ class SettingsContainer {
 
 
 
-        this.quill.setContents(JSON.parse( mapData["Description"] ))
+        this.quill.setContents(JSON.parse(mapData["Description"]))
 
         $("#save-map").on("click", this.save.bind(this));
     }
 
     save() {
-        if($(".title-input").val() == ""){
+        if ($(".title-input").val() == "") {
             showToast("Title can not be empty", "warning", 2000)
             $(".title-input").val(mapData["Name"])
             return
         }
-        
+
         if (lastTabIndex == 0) {
             window.markerListContainer.updateMarkers();
         }
-        
+
         mapData["Layers"] = window.layersContainer.fetchLayers()
         if (mapData["Name"] != null) {
             mapData["ReplaceName"] = sessionStorage.getItem("Map")
         }
-        
+
         mapData["Name"] = $(".title-input").val();
         mapData["Description"] = JSON.stringify(this.quill.getContents())
-        updateMap()
-        sessionStorage.setItem("Map", mapData["Name"])
-        window.markerListContainer.saveMarkers();
-        window.showToast("Saved successfuly", "success", 2000)
+        console.log(mapData);
+        updateMap().then(() => {
+            sessionStorage.setItem("Map", mapData["Name"])
+            window.markerListContainer.saveMarkers();
+            window.showToast("Saved successfuly", "success", 2000)
 
-        if(urlParams.get("new") == "1"){
-            window.location = "/map"
-        }
+            if (urlParams.get("new") == "1") {
+                window.location = "/map"
+            }
+        }).catch((e) => {
+            window.showToast(e, "danger", 4000)
+
+        })
     }
 
     activate() {
@@ -626,7 +661,7 @@ class LayersContainer {
     }
 }
 
-if(urlParams.get("new") == null){
+if (urlParams.get("new") == null) {
     fetchMap(localStorage.getItem("CurrentProject"), sessionStorage.getItem("Map")).then((x) => {
         mapData = x;
         mapData["Project"] = localStorage.getItem("CurrentProject");
@@ -674,22 +709,29 @@ $(".map-control-button").on("click", (e) => {
         $(".map-control-button").css("filter", "")
         e.setAttribute("style", "filter: brightness(80%)")
     }, 100, e.currentTarget);
-    
+
     //activate the selected tab
     let tabIndex = (subTabs.findIndex((x) => x == e.currentTarget.innerText))
-    
+
     if (lastTabIndex == tabIndex) return;
-    
-    lastTabIndex = tabIndex;
-    
-    $(".sub-tab").removeClass("active-tab")
-    $(`.sub-tab:nth(${tabIndex})`).addClass("active-tab")
+
+    //deactivate javascript for last tab
+    switch (lastTabIndex) {
+        case 0:
+            window.mapContainer.deactivate()
+            break;
+        case 1:
+            window.markerListContainer.deactivate();
+            break;
+        case 2:
+            window.layersContainer.deactivate()
+            break
+        case 3:
+            window.settingsContainer.deactivate()
+            break;
+    }
 
     //activate the javascript for selected tab
-    window.mapContainer.deactivate()
-    window.markerListContainer.deactivate();
-    window.layersContainer.deactivate();
-    window.settingsContainer.deactivate();
     switch (tabIndex) {
         case 0:
             window.mapContainer.activate()
@@ -704,5 +746,8 @@ $(".map-control-button").on("click", (e) => {
             window.settingsContainer.activate()
             break;
     }
+    $(".sub-tab").removeClass("active-tab")
+    $(`.sub-tab:nth(${tabIndex})`).addClass("active-tab")
 
+    lastTabIndex = tabIndex;
 })
