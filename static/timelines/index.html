@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoryLab</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/global.css">
+    <script src="/global-head.js" type="module"></script>
+    <script src="app.js" type="module" defer></script>
+    <link href="/libs/quill.snow.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="navbar"> </div>
+    <div id="loading-screen" style="width: 100%;height: 100%;background-color: gray;z-index: 999;position: absolute;">
+    </div>
+
+    <div id="timeline-container">
+        <canvas id="timeline" draggable="false"/></canvas>
+        
+    </div>
+    <div class="event-data-popup">
+        <div class="inner-container">
+            <h4 id="eventNameLabel">Name: </h4>
+            <input type="text" name="name" id="eventName" placeholder="Name">
+            <h4 id="startDateLabel">Start date: </h4>
+            <div id="startDate" class="date-input">
+                <input type="number" onblur="return validateNumberInput(this, -9223372036854775808, 9223372036854775807)" value="0">
+                <input type="number" min="1" max="12"  onblur="return validateNumberInput(this, 1, 12)" value="1">
+                <input type="number" min="1" max="31"  onblur="return validateNumberInput(this, 1, 31)" value="1">
+            </div>
+            <h4 id="endDateLabel">End date: </h4>
+            <div id="endData" class="date-input">
+                <input type="number" onblur="return validateNumberInput(this, -9223372036854775808, 9223372036854775807)" value="0">
+                <input type="number" min="1" max="12"  onblur="return validateNumberInput(this, 1, 12)" value="1">
+                <input type="number" min="1" max="31"  onblur="return validateNumberInput(this, 1, 31)" value="1">
+            </div>
+            <h4 id="RowLabel">Row: </h4>
+            <input type="number" id="rowInput" onblur="return validateNumberInput(this, -9223372036854775808, 9223372036854775807)" value="0">
+            <h4 id="ColorLabel">Color: </h4>
+            <input type="color" id="colorInput">
+        </div>
+
+    </div>
+
+
+    <div class="toolbar">
+        <div><i class="fa-solid fa-plus fa-2xl"></i></div>
+        <div><i class="fa-solid fa-hand fa-2xl"></i></div>
+        <div><i class="fa-solid fa-gear fa-2xl"></i></div>
+    </div>
+
+</body>
+
+</html>

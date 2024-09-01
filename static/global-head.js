@@ -54,4 +54,23 @@ window.switchTheme = (shouldSwitch = true) => {
         themeSelector.children[0].classList.add(theme ? "fa-sun" : "fa-moon")
     })
 }
+
+window.validateNumberInput = (input, min, max) => {
+    const value = input.value.trim();
+
+    if (value === '' || !/^\d+$/.test(value)) {
+        input.value = input.oldValue ?? 1;
+        return false;
+    }
+    console.log(input.oldValue)
+    if (value < min || value > max) {
+        input.value = value < min ? min : max;
+        alert(`Please enter a number between ${min} and ${max}.`);
+        return false;
+    }
+
+    input.oldValue = value;
+    return true;
+}
+
 window.switchTheme(false)

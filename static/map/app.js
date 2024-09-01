@@ -28,7 +28,7 @@ async function renderMapFromLayers(layers) {
         parseInt(a["order"]) - parseInt(b["order"])
     });
 
-
+    //resize the canvas to the size of the largest layer. height and width are handled seperately
     if (layers.length) {
         let highestWidth = 0;
         let highestHeight = 0;
@@ -48,8 +48,9 @@ async function renderMapFromLayers(layers) {
 
         hiddenCanvas.width = highestWidth;
         hiddenCanvas.height = highestHeight;
-
     }
+
+    //draw layers to a hidden canvas in order
     for (const layer of layers) {
         await new Promise((resolve, reject) => {
             if (parseInt(layer["order"]) < 0) {
@@ -66,6 +67,7 @@ async function renderMapFromLayers(layers) {
         });
     }
 
+    //set map image to contents of the canvas
     const dataUrl = hiddenCanvas.toDataURL();
     const outputImage = document.getElementsByClassName('map-image')[0];
     outputImage.src = dataUrl;
@@ -120,8 +122,8 @@ function fetchMap(project, name) {
 }
 
 class MapContainer {
-
     constructor() {
+        // variable initalization, mostly for intellisense
         this.isActive = false
         this.mapImage = $(".map-image");
         this.zoomLevel = 1;
@@ -143,6 +145,7 @@ class MapContainer {
 
         $(document).on("mousedown", this.onDragStart.bind(this))
 
+        //Map zoom
         this.mapImage.parent().on('wheel', (event) => {
             if (!this.isActive) return;
             if (event.originalEvent.deltaY > 0) {
@@ -152,6 +155,7 @@ class MapContainer {
             }
         });
 
+        //Map dragging
         this.mapImage.parent().on('mousedown', (e) => {
             if (!this.isActive) return;
             if (e.button == 0 && (!this.CurrentlyDragged)) {
@@ -206,6 +210,7 @@ class MapContainer {
     }
 
     onDragStart(e) {
+        //for dragging pins
         if (!this.isActive) return;
         e.preventDefault();
         e.stopPropagation();
@@ -346,6 +351,7 @@ class MapContainer {
     }
 
     calculateRelativePosition(pin) {
+        //calculates relative position of a pin
         const scale = this.zoomLevel;
         const pinRect = pin.get(0).getBoundingClientRect();
         const mapRect = pin.parent().get(0).getBoundingClientRect();
@@ -355,10 +361,9 @@ class MapContainer {
     }
 
     restoreAbsolutePosition(pos) {
-        const scale = this.zoomLevel;
+        //no longer useful. just here for convenience
         const relativeLeft = pos.relativeLeft;
         const relativeTop = pos.relativeTop;
-        const mapRect = this.mapImage.parent().get(0).getBoundingClientRect();
 
         return {
             length: relativeLeft,
@@ -424,6 +429,7 @@ class MarkerListContainer {
     }
 
     saveMarkers() {
+        //save function in settings mainly handles the pins. This is only for if pins need to be set seperately
         let data = this.fetchMarkers()
 
         return new Promise((resolve, reject) => {
