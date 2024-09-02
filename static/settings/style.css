@@ -37,3 +37,85 @@ body{
     left: 5%;
     position: relative;
 }
+
+h2{
+    color: var(--text-color);
+    left: 5%;
+    position: relative;
+    margin-bottom: 2%;
+    margin-top: 3%;
+}
+
+.export-button, .import-button{
+    width: 20%;
+    height: 10%;
+    left: 5%;
+    position: relative;
+    margin-bottom: 2%;
+    background-color: var(--accent);
+    border: none;
+    color: var(--text-color);
+}
+
+button:hover{
+    filter: brightness(120%);
+}
+
+
+button:active{
+    filter: brightness(140%);
+}
+
+.import-popup{
+    width: 80%;
+    height: 90%;
+    position: fixed;
+    background-color: var(--menu-color);
+    z-index: 9;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+
+.import-popup textarea{
+    height: 90%;
+    width: 98%;
+    left: 1%;
+    top: 1%;
+    position: relative;
+    resize: none;
+    background-color: var(--menu-color);
+    outline: none;
+    color: var(--text-color);
+    padding-left: 1%;
+    border: 1px solid var(--accent);
+}
+
+.import-popup textarea:focus{
+    filter: brightness(120%);
+    margin: 0;
+    border: 2px solid var(--accent);
+}
+
+button.import{
+    width: 30%;
+    height: 7%;
+    left: 50%;
+    margin-top: 1%;
+    transform: translateX(-50%);
+    position: relative;
+    border: none;
+    background-color: var(--accent);   
+}
+
+h4{
+    color: var(--accent);
+    text-shadow: 0 0 4px var(--text-color);
+    position: relative;
+    left: 5%;
+    margin-bottom: 2%;
+    padding: 1%;
+    background-color: var(--text-color);
+    width: 50%;
+}

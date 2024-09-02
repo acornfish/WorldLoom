@@ -15,8 +15,20 @@
     <div class="settings-container">
         <span class="theme-selector-label">Theme: </span>
         <button id="theme-selector" onclick="window.switchTheme()" >
-            <i class="fa-solid fa-moon fa-lg"></i>
+            <i class="fa-solid fa-moon fa-2xl   "></i>
         </button>
+
+        <h2>Export</h2>
+       <button class="export-button">Export Database</button>
+
+       <h2>Import</h2>
+       <h4>Warning: this will wipe your current database.</h4>
+       <button class="import-button">Import Database</button>
+    </div>
+
+    <div class="import-popup">
+        <textarea name="import-textarea" id="import-textarea" placeholder="Paste your database json file here"></textarea>
+        <button class="import">import</button>
     </div>
 </body>
 </html>

@@ -47,6 +47,7 @@ const app = Express();
 app.use(Express.static("./static"));
 app.use(Express.static("./files"));
 app.use(Express.json());
+app.use(Express.text());
 
 app.listen(PORT, '127.0.0.1', function () {
     console.log(`${FgGreen}StoryLab is running.\nAcess the application at ${Reset}${Underscore}http://127.0.0.1:${PORT}`);
@@ -162,6 +163,27 @@ app.post("/api/save", (req, res) => {
     res.status(200).send(dbFile.projects);
 
 })
+
+
+app.post("/api/importDatabase", (req, res) => {
+    try{
+        dbFile = JSON.parse( req.body )
+    }catch{
+        res.status(406).send("Fail: Data is not json")
+        return;
+    }
+    try {
+        FS.writeFileSync("./files/db.json", JSON.stringify(dbFile));
+    } catch (err) {
+        res.status(406).send("Fail: Can't write to database");
+        return;
+    }
+    res.status(200).send(dbFile.projects);
+
+})
+
+
+
 
 app.post("/api/saveArticle", (req, res) => {
     let articleName = req.body["Name"];

@@ -73,4 +73,16 @@ window.validateNumberInput = (input, min, max) => {
     return true;
 }
 
+window.saveData = () =>  {
+    const url = "/api/save"; 
+
+    $.ajax({
+        url,
+        type: "POST",
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error("Error saving data:", textStatus, errorThrown);
+        }
+    });
+}
+
 window.switchTheme(false)
