@@ -32,7 +32,7 @@
                 <input type="number" min="1" max="31"  onblur="return validateNumberInput(this, 1, 31)" value="1">
             </div>
             <h4 id="endDateLabel">End date: </h4>
-            <div id="endData" class="date-input">
+            <div id="endDate" class="date-input">
                 <input type="number" onblur="return validateNumberInput(this, -9223372036854775808, 9223372036854775807)" value="0">
                 <input type="number" min="1" max="12"  onblur="return validateNumberInput(this, 1, 12)" value="1">
                 <input type="number" min="1" max="31"  onblur="return validateNumberInput(this, 1, 31)" value="1">
@@ -42,6 +42,7 @@
             <h4 id="ColorLabel">Color: </h4>
             <input type="color" id="colorInput">
         </div>
+        <button id="saveTimeline" onclick="window.saveEvent()">Save</button>
 
     </div>
 

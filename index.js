@@ -143,7 +143,8 @@ app.post("/api/createProject", (req, res) => {
             "id": 1,
             "text": "Root",
             "children": []
-        }]
+        }],
+        Timeline: []
     });
 
     res.status(200).send("Sucess");
@@ -250,6 +251,28 @@ app.post("/api/saveManuscript", (req, res) => {
     res.status(200).send("Sucess")
 })
 
+app.post("/api/saveTimeline", (req, res) => {
+    const project = req.body["Project"];
+    const timeline = req.body["Data"]
+
+    if (typeof project == "undefined") {
+        res.status(200).send("Fail: Project name is undefined");
+        return;
+    }
+    let projectIndex = dbFile.projects.findIndex((x) => {
+        return x["Name"] == project;
+    })
+
+    if (projectIndex === -1) {
+        res.status(200).send("Fail: Specified project does not exist");
+        return;
+    }
+    
+
+    dbFile.projects[projectIndex]["Timeline"] = timeline; 
+    res.status(200).send("Sucess")
+})
+
 app.get("/api/retrieveManuscript", (req, res) => {
     let project = req.query["Project"];
 
@@ -262,6 +285,22 @@ app.get("/api/retrieveManuscript", (req, res) => {
         res.status(200).send(JSON.stringify(dbFile.projects.find((x) => {
             return x["Name"] == project;
         })["Manuscript"]));
+    }
+})
+
+
+app.get("/api/retrieveTimeline", (req, res) => {
+    let project = req.query["Project"];
+
+    if (typeof project === "undefined" || dbFile.projects.every((x) => {
+            return x["Name"] != project;
+        })) {
+        res.status(200).send("Fail: Specified project does not exist");
+        return;
+    } else {
+        res.status(200).send(JSON.stringify(dbFile.projects.find((x) => {
+            return x["Name"] == project;
+        })["Timeline"]));
     }
 })
 

@@ -128,7 +128,7 @@ body {
 }
 
 .event-data-popup .inner-container{
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
     justify-content: start;
     align-items: start;
@@ -233,4 +233,25 @@ input[type=number]::-webkit-outer-spin-button {
     height: 4vw;
     margin-bottom: 5%;
     position: relative;
+}
+
+#saveTimeline{
+    float: right;
+    position: relative;
+    border: none;
+    width: 20%;
+    height: 15%;
+    top: 80vh;
+    transform: translateY(-100%);
+    right: 2%;
+    background-color: var(--accent);
+}
+
+
+#saveTimeline:hover{
+    filter: brightness(120%);
+}
+
+#saveTimeline:active{
+    filter: brightness(140%);
 }

@@ -44,35 +44,16 @@ class EventDate {
     }
 }
 
+var events = []
+
 var middleTime = 1337;
 var oldMiddleTime = -1;
 var timelineLength = 200;
 var numberOfRows = 12;
-var oldNumberOfRows = 12;
 var scrollSpeed = 6;
 
-/*
-{
-    name: "War of the roses",
-    color: "#ff1A17",
-    start: new EventDate(1455, 4, 22),
-    end: new EventDate(1487, 5, 16),
-    row: 5,
-    computedRect: [],
-    isHovered: false
-}*/
-
 const markReferences = []
-const events = [{
-    name: "100 years war",
-    color: "#1AFF17",
-    start: new EventDate(1337, 4, 22),
-    end: new EventDate(1453, 5, 16),
-    row: 3,
-    computedRect: [],
-    isHovered: false
-}]
-
+const popup = document.getElementsByClassName('event-data-popup')[0];
 const canvas = $("#timeline").get(0)
 
 /** 
@@ -87,15 +68,16 @@ let change = true;
 
 
 function drawTimelineRows() {
-    if (oldNumberOfRows == numberOfRows) return;
-    oldNumberOfRows = numberOfRows
+    ctx.save()
     ctx.strokeStyle = "white"
 
     for (let i = 0; i < numberOfRows; i++) {
+        ctx.beginPath()
         ctx.moveTo(0, i * canvas.height / numberOfRows);
         ctx.lineTo(canvas.width, i * canvas.height / numberOfRows);
         ctx.stroke();
     }
+    ctx.restore()
 }
 
 function drawCenturyMarks() {
@@ -110,8 +92,8 @@ function drawCenturyMarks() {
         markReferences.pop().remove() //remove previously drawn marks
     }
     for (let mark of marks) {
-        let positionX = (canvas.clientWidth / timelineLength) * (mark - middleTime) /
-            2 //Calculate where date is in timeline
+        //Calculate where date is in timeline
+        let positionX = (canvas.clientWidth / timelineLength) * (mark - middleTime) /  2 
         let element = $(`
             <div class="century-marker">
                 <h4 class="century-text">${mark}</h4>
@@ -122,7 +104,7 @@ function drawCenturyMarks() {
         markReferences.push(element)
         $("#timeline-container").append(element)
 
-        //Point of subtracting half of the elements width is to compansate for vertical-line being in center of the century-marker
+        //subtract half of the elements width in order to compansate for vertical-line being in center of the century-marker
         element.css("transform", `translateX(${positionX-(element.width()/2)}px)`)
     }
 }
@@ -150,35 +132,40 @@ const colorShade = (hexColor, magnitude) => {
     }
 };
 
-function drawEvents(updateEvent) {
+function drawEvents() {
     drawTimelineRows();
     const rowHeight = canvas.clientHeight / numberOfRows;
+    const canvasTimelineLengthRatio = (canvas.clientWidth / timelineLength);
     ctx.font = "1rem 'Rubik'"
     for (let event of events) {
+        ctx.save()
         let row = event.row * rowHeight
-        let start = ((event.start.year - middleTime) * (canvas.clientWidth / timelineLength) / 2) + (canvas
+        let start = ((event.start.year - middleTime) * canvasTimelineLengthRatio / 2) + (canvas
             .clientWidth / 2)
-        let length = ((event.end.year - event.start.year) * (canvas.clientWidth / timelineLength) / 2)
+        let length = ((event.end.year - event.start.year) * canvasTimelineLengthRatio / 2)
 
         ctx.fillStyle = event.color;
         if (event.isHovered) {
             ctx.fillStyle = colorShade(event.color, 40)
         }
+        if(event.isSelected){
+            openEditorPopup(event);
+        }
 
         event.computedRect = [Math.floor(start), Math.floor(row), Math.floor(length), Math.floor(rowHeight)]
 
         ctx.fillRect(...event.computedRect)
-        ctx.fillStyle = "white"
         ctx.beginPath()
         ctx.rect(...event.computedRect)
-        ctx.save()
         ctx.clip()
+        ctx.fillStyle = "white"
         ctx.fillText(event.name, event.computedRect[0], event.computedRect[1] + (rowHeight + convertRemToPixels(1) / 2) / 2)
         ctx.restore()
     }
     //this loop is seperated so this menu will be drawn on top of every event
     for (let event of events) {
         if (event.isHovered) {
+            ctx.save()
             ctx.fillStyle = "#ffffff"
             let rect = event.computedRect.slice();
             if (event.row == 0) {
@@ -186,10 +173,61 @@ function drawEvents(updateEvent) {
             } else {
                 rect[1] -= rowHeight;
             }
+            //center text
+            rect[0] -= (ctx.measureText(event.name).width - rect[2]) / 2
+            rect[2] = ctx.measureText(event.name).width
             ctx.fillRect(...rect)
+
+            ctx.fillStyle = "black"
+            ctx.fillText(event.name, rect[0], rect[1]+(rect[3]/2), rect[2])
+            ctx.restore()
         }
     }
 
+}
+
+function retrieveTimeline() {
+    const url = "/api/retrieveTimeline"; 
+  
+    $.ajax({
+      url: url,
+      type: "GET",
+      dataType: "json", 
+      data: { Project: localStorage.getItem("CurrentProject") }, 
+      success: function(response) {
+        if (response === "Fail: Specified project does not exist") {
+          console.error("Specified project does not exist.");
+        } else {
+            if(response == ""){
+                return;
+            }
+            events = JSON.parse(response)
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.error("Error retrieving timeline:", textStatus, errorThrown);
+      }
+    });
+  }
+  
+function openEditorPopup(event){
+    $("#eventName").val(event.name)
+
+    let startDate = $("#startDate").children()
+    startDate[0].value = event.start.year
+    startDate[1].value = event.start.month
+    startDate[2].value = event.start.day
+
+    let endDate = $("#endDate").children()
+    endDate[0].value = event.end.year
+    endDate[1].value = event.end.month
+    endDate[2].value = event.end.day
+
+    $("#rowInput").val(event.row)
+
+    $("#colorInput").val(event.color)
+
+    popup.style.display = 'block';  
 }
 
 $("#timeline-container").on("wheel", (x) => {
@@ -211,7 +249,6 @@ canvas.addEventListener('mousemove', (event) => {
         let xInBounds = (x >= computedRect[0]) && (x <= computedRect[0] + computedRect[2]);
         let yInBounds = (y >= computedRect[1]) && (y <= computedRect[1] + computedRect[3]);
         
-        console.log(x,y,eventData, xInBounds && yInBounds)
         if ( xInBounds && yInBounds) {
             if(!eventData.isHovered){
                 change = true;
@@ -227,6 +264,36 @@ canvas.addEventListener('mousemove', (event) => {
     }
 });
 
+canvas.addEventListener('dblclick', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = parseInt( event.clientX - rect.left );
+    const y = parseInt( event.clientY - rect.top );
+
+    for (const eventData of events) {
+        const {
+            computedRect
+        } = eventData;
+        
+        
+        let xInBounds = (x >= computedRect[0]) && (x <= computedRect[0] + computedRect[2]);
+        let yInBounds = (y >= computedRect[1]) && (y <= computedRect[1] + computedRect[3]);
+        
+        if ( xInBounds && yInBounds) {
+            if(!eventData.isSelected){
+                change = true;
+            }
+            eventData.isSelected = true;
+            break;
+        } else {
+            if(eventData.isSelected){
+                change = true;
+            }
+            eventData.isSelected = false;
+        }
+    }
+});
+
+
 function mainLoop() {
     if (change) {
         ctx.clearRect(0,0,canvas.width,canvas.height)
@@ -237,8 +304,87 @@ function mainLoop() {
     requestAnimationFrame(mainLoop)
 }
 
+function saveTimeline() {
+    const url = "/api/saveTimeline"; 
+  
+    $.ajax({
+      url: url,
+      type: "POST",
+      dataType: "text", 
+      data: JSON.stringify({ Project: localStorage.getItem("CurrentProject"), Data: JSON.stringify(events) }),
+      contentType: "application/json; charset=utf-8", 
+      success: function(response) {
+        if (response === "Sucess") {
+          console.log("Timeline saved successfully!");
+        } else {
+          console.error("Failed to save timeline:", response);
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.error("Error saving timeline:", textStatus, errorThrown);
+      }
+    });
+}
 
-const popup = document.getElementsByClassName('event-data-popup')[0];
+function saveEvent(){
+    let name = $("#eventName").val()  
+    let startDate = (() => {
+        let [year, month, day] = $("#startDate").children().get();
+        return new EventDate(parseInt(year.value), parseInt(month.value), parseInt(day.value))
+    })() 
+    
+    let endDate = (() => {
+        let [year, month, day] = $("#endDate").children().get();
+        return new EventDate(parseInt(year.value), parseInt(month.value), parseInt(day.value))
+    })() 
+
+    let row = $("#rowInput").val()
+    let color = $("#colorInput").val()
+    
+    let eventIndex = events.findIndex((x) => {
+        return x["name"] == name;
+    })
+    if(eventIndex == -1){
+        events.push({
+            name,
+            start: startDate,
+            end: endDate,
+            row,
+            color,
+            isHovered: false,
+            isSelected: false,
+            computedRect: [],
+        })
+    }else{
+        events[eventIndex] = {
+            name,
+            start: startDate,
+            end: endDate,
+            row,
+            color,
+            isHovered: false,
+            isSelected: false,
+            computedRect: [],
+        }
+    }
+
+    //update timeline
+    change = true;
+    
+    //close popup
+    popup.style.display = 'none';
+    
+    //reset form
+    $("#eventName").val("")
+    $("#startDate").children().val(1)
+    $("#endDate").children().val(1)
+    $("#rowInput").val(0)
+    $("#colorInput").val("#000000")
+
+    saveTimeline()
+}
+
+
 const createEventButton = $(".toolbar").children().get(0);
 document.addEventListener('click', (event) => {
     if (!popup.contains(event.target) && !createEventButton.contains(event.target)) {
@@ -250,4 +396,13 @@ createEventButton.addEventListener('click', (event) => {
     popup.style.display = 'block';
 });
 
+retrieveTimeline()
 requestAnimationFrame(mainLoop)
+
+window.saveEvent = saveEvent;
+
+$(window).on('resize', () => {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+    change = true;
+})
