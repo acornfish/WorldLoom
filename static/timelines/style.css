@@ -112,7 +112,7 @@ body {
     user-select: none;
 }
 
-.event-data-popup {
+.event-data-popup ,.settings-popup {
     position: absolute;
     width: 80%;
     height: 85%;
@@ -151,18 +151,6 @@ body {
     font-family: 'Rubik', Arial, Helvetica, sans-serif;
 }
 
-.event-data-popup input[type="date"] {
-    background-color: var(--menu-color);
-    position: relative;
-    margin-top: 1%;
-    padding: 1%;
-    font-family: 'Rubik', Arial, Helvetica, sans-serif;
-    color: var(--text-color);
-    font-size: 18px;
-    border: 2px solid var(--accent);
-    outline: none;
-    border-radius: 5px;
-}
 
 ::-webkit-calendar-picker-indicator {
     background-color: var(--text-color);
@@ -182,7 +170,7 @@ body {
     margin-left: 2% !important;
 }
 
-.event-data-popup .date-input input {
+.event-data-popup .date-input input ,.settings-popup input{
     width: 10%;
     background-color: var(--menu-color);
     position: relative;
@@ -256,3 +244,13 @@ input[type=number]::-webkit-outer-spin-button {
     filter: brightness(140%);
 }
 
+.settings-popup h4{
+    position: relative;
+    color: var(--text-color);
+    margin-bottom: 2%;
+    margin-top: 2%;
+}
+
+.settings-popup * {
+    left: 5%;
+}

@@ -65,13 +65,15 @@ window.validateNumberInput = (input, min, max) => {
     console.log(input.oldValue)
     if (value < min || value > max) {
         input.value = value < min ? min : max;
-        alert(`Please enter a number between ${min} and ${max}.`);
+        window.showToast(`Please enter a number between ${min} and ${max}.`, "warning", 2000);
         return false;
     }
 
     input.oldValue = value;
     return true;
 }
+
+window.clampNumber = (num, min, max) => {return Math.min(max, Math.max(num, min))}
 
 window.saveData = () =>  {
     const url = "/api/save"; 

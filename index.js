@@ -145,7 +145,14 @@ app.post("/api/createProject", (req, res) => {
             "text": "Root",
             "children": []
         }],
-        Timeline: []
+        Timeline: {
+            events: [],
+            settings: {
+                numberOfRows: 10,
+                scrollSpeed: 6,
+                defaultStartTime: 0
+            }
+        }
     });
 
     res.status(200).send("Sucess");

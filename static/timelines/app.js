@@ -46,14 +46,19 @@ class EventDate {
 
 var events = []
 
-var middleTime = 1337;
+
+var middleTime = 0;
 var oldMiddleTime = -1;
 var timelineLength = 200;
+var oldTimelineLength = 200;
 var numberOfRows = 12;
 var scrollSpeed = 6;
+var defaultStartTime = 0;
+var timelineControlSwitchState = 0;
 
 const markReferences = []
-const popup = document.getElementsByClassName('event-data-popup')[0];
+const eventDataPopup = document.getElementsByClassName('event-data-popup')[0];
+const settingsPopup = document.getElementsByClassName('settings-popup')[0];
 const canvas = $("#timeline").get(0)
 
 /** 
@@ -81,8 +86,9 @@ function drawTimelineRows() {
 }
 
 function drawCenturyMarks() {
-    if(middleTime == oldMiddleTime) return;
+    if(middleTime == oldMiddleTime && timelineLength == oldTimelineLength) return;
     oldMiddleTime = middleTime;
+    oldTimelineLength = timelineLength;
     let marks = []
     //calculate centuries which are in the area of timeline
     for (let i = 0; i < (timelineLength / 50) + (middleTime % 100 == 0); i++) {
@@ -194,14 +200,20 @@ function retrieveTimeline() {
       type: "GET",
       dataType: "json", 
       data: { Project: localStorage.getItem("CurrentProject") }, 
-      success: function(response) {
-        if (response === "Fail: Specified project does not exist") {
+      success: function(res) {
+        if (res === "Fail: Specified project does not exist") {
           console.error("Specified project does not exist.");
         } else {
-            if(response == ""){
+            if(res == {}){
                 return;
             }
-            events = JSON.parse(response)
+            let response = (res);
+            events = response["events"];
+            let settings = response["settings"]
+            numberOfRows = settings["numberOfRows"]
+            scrollSpeed = settings["scrollSpeed"]
+            middleTime = defaultStartTime = settings["defaultStartTime"]
+            change = true;
         }
       },
       error: function(jqXHR, textStatus, errorThrown) {
@@ -227,11 +239,16 @@ function openEditorPopup(event){
 
     $("#colorInput").val(event.color)
 
-    popup.style.display = 'block';  
+    eventDataPopup.style.display = 'block';  
 }
 
 $("#timeline-container").on("wheel", (x) => {
-    middleTime -= (x.originalEvent.deltaY) / 100 * scrollSpeed
+    if(timelineControlSwitchState == 0){
+        middleTime -= (x.originalEvent.deltaY) / 100 * scrollSpeed
+    }else if(timelineControlSwitchState == 1){
+        // resizes the canvas and makes sure that timelineLength is in range of 100-1000 and is divisible by 100
+        timelineLength = window.clampNumber(parseInt((timelineLength + (x.originalEvent.deltaY)) / 100) * 100,100,1000)
+    }
     change = true;
 })
 
@@ -299,8 +316,10 @@ function mainLoop() {
         ctx.clearRect(0,0,canvas.width,canvas.height)
         drawEvents()
         drawCenturyMarks();
+        console.log(timelineLength)
         change = false;
     }
+
     requestAnimationFrame(mainLoop)
 }
 
@@ -311,7 +330,14 @@ function saveTimeline() {
       url: url,
       type: "POST",
       dataType: "text", 
-      data: JSON.stringify({ Project: localStorage.getItem("CurrentProject"), Data: JSON.stringify(events) }),
+      data: JSON.stringify({ Project: localStorage.getItem("CurrentProject"), Data: {
+        events, 
+        settings: {
+            scrollSpeed,
+            defaultStartTime,
+            numberOfRows
+        }
+      } }),
       contentType: "application/json; charset=utf-8", 
       success: function(response) {
         if (response === "Sucess") {
@@ -372,7 +398,7 @@ function saveEvent(){
     change = true;
     
     //close popup
-    popup.style.display = 'none';
+    eventDataPopup.style.display = 'none';
     
     //reset form
     $("#eventName").val("")
@@ -385,15 +411,62 @@ function saveEvent(){
 }
 
 
+/** 
+ * @type {HTMLElement}
+ * @type {HTMLElement}
+ * @type {HTMLElement}
+ */
 const createEventButton = $(".toolbar").children().get(0);
+const timelineControlSwitch = $(".toolbar").children().get(1);
+const settingsButton = $(".toolbar").children().get(2);
+
 document.addEventListener('click', (event) => {
-    if (!popup.contains(event.target) && !createEventButton.contains(event.target)) {
-        popup.style.display = 'none';
+    if (!eventDataPopup.contains(event.target) && !createEventButton.contains(event.target)) {
+        eventDataPopup.style.display = 'none';
+    }
+    if(!settingsPopup.contains(event.target) && !settingsButton.contains(event.target)){
+        settingsPopup.style.display = 'none'
+        //save settings 
+        let e = $(".settings-popup").find("input[type=number]").get();
+        [numberOfRows,defaultStartTime,scrollSpeed] = [
+            parseInt(e[0].value),
+            parseInt(e[1].value),
+            parseInt(e[2].value)
+        ]
+        saveTimeline()
     }
 });
 
+timelineControlSwitch.addEventListener("click" , (event) => {
+    event.stopPropagation()
+    timelineControlSwitchState++;
+    timelineControlSwitchState %= 2;
+    let icon = $(timelineControlSwitch).children("i")
+    switch(timelineControlSwitchState){
+        case 0: 
+            //move
+            icon.addClass("fa-left-right")
+            icon.removeClass("fa-arrows-left-right-to-line")
+            break;
+        case 1:
+            //scale
+            icon.addClass("fa-arrows-left-right-to-line")
+            icon.removeClass("fa-left-right")
+            break;
+    }
+    
+})
+
 createEventButton.addEventListener('click', (event) => {
-    popup.style.display = 'block';
+    eventDataPopup.style.display = 'block';
+});
+settingsButton.addEventListener('click', (event) => {
+    let inputs = $(".settings-popup").find("input[type=number]").get()
+    inputs[0].value = numberOfRows;
+    inputs[1].value = defaultStartTime;
+    inputs[2].value = scrollSpeed;
+
+    settingsPopup.style.display = 'block';
 });
 
 retrieveTimeline()
