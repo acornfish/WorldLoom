@@ -11,24 +11,27 @@
 ## Articles
 You can create articles which tell about your characters, areas, religions, species and so more. Provided rich text editor allows adding tables, images, titles and links which can be used to reference other articles. 
 
-![Alt text](https://i.imgur.com/X2Cl3lQ.png "Article")
 
-![Alt text](https://i.imgur.com/Gx4KMYz.png "ArticleList")
+![Alt text](README_assets/articles.png "")
 ## Maps
 
 Map feature allows you to import images and mark areas using pins. It also allows you to put multiple image layers which can be toggled.
+![Alt text](README_assets/maps.png "")
 
 ## Manuscripts
 This feature assists you with the process of writing the story. You can use all features of articles and a few special ones such as searching and word checking.
 
+![Alt text](README_assets/manuscripts.png "")
 ## Timelines
-
 You can chronologicaly list events using the timelines feature.
+![Alt text](README_assets/timelines.png "")
+![Alt text](README_assets/timelines2.png "")
 
 
 # Exporting
 You can export your project both in the json format (to be imported later) and 
 HTML format to upload as a wiki website
+![Alt text](README_assets/settings.png "")
 
 
 # Troubleshooting
