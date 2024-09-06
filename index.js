@@ -1,4 +1,3 @@
-
 const FgRed = "\x1b[31m"
 const FgGreen = "\x1b[32m"
 const FgBlue = "\x1b[34m"
@@ -7,36 +6,40 @@ const Reset = "\x1b[0m"
 
 const Process = require("process");
 const FS = require("fs");
-const Path = require('node:path');    
+const Path = require('node:path');
+const {
+    QuillDeltaToHtmlConverter
+} = require("quill-delta-to-html")
 
 process.chdir(__dirname);
+const outputDir = Path.join(__dirname,"files", "output");
 
-try{
+try {
     var Express = require("express");
-}catch{
+} catch {
     console.log(`${FgRed}Required node modules are not installed.\n${Reset}Please run the start script `)
     process.exit(-1);
 }
 
 
-if(!FS.existsSync("./files")){
+if (!FS.existsSync("./files")) {
     console.log(`${FgBlue}File storage directory did not exist. Creating...${Reset}`)
     FS.mkdirSync(process.cwd() + "/files", (err) => {
         console.log(`${FgRed}Failed creating file storage directory.${Reset} Exiting...`)
         process.exit()
     })
 }
-if(!FS.existsSync("./files/resources")){
+if (!FS.existsSync("./files/resources")) {
     console.log(`${FgBlue}Resource storage directory did not exist. Creating...${Reset}`)
-    FS.mkdirSync(process.cwd() + "/files/resources",(err) => {
+    FS.mkdirSync(process.cwd() + "/files/resources", (err) => {
         console.log(`${FgRed}Failed creating resource storage directory.${Reset} Exiting...`)
         process.exit()
     })
     FS.copyFileSync("default.svg", "files/resources/default.svg")
 }
-if(!FS.existsSync("./files/manuscripts")){
+if (!FS.existsSync("./files/manuscripts")) {
     console.log(`${FgBlue}Manuscript storage directory did not exist. Creating...${Reset}`)
-    FS.mkdirSync(process.cwd() + "/files/manuscripts",(err) => {
+    FS.mkdirSync(process.cwd() + "/files/manuscripts", (err) => {
         console.log(`${FgRed}Failed creating resource storage directory.${Reset} Exiting...`)
         process.exit()
     })
@@ -44,13 +47,17 @@ if(!FS.existsSync("./files/manuscripts")){
 const PORT = 2012
 const app = Express();
 
+const deltaToHTMLConfig = {}
+
 app.use(Express.static("./static"));
 app.use(Express.static("./files"));
 app.use(Express.json());
 app.use(Express.text());
 
 app.listen(PORT, '127.0.0.1', function () {
-    console.log(`${FgGreen}StoryLab is running.\nAcess the application at ${Reset}${Underscore}http://127.0.0.1:${PORT}`);
+    console.log(
+        `${FgGreen}StoryLab is running.\nAcess the application at ${Reset}${Underscore}http://127.0.0.1:${PORT}`
+    );
 })
 
 var dbFile = {
@@ -71,47 +78,130 @@ const fetchAllfiles = (fullPath) => {
     return files
 }
 
+let templates = {}
+
+function fetchTemplate(tempName) {
+    if (templates[tempName]) return templates[tempName];
+    let decoder = new TextDecoder("utf8");
+    try {
+        let res = decoder.decode(FS.readFileSync(Path.join(".", "templates", tempName) + ".html"));
+        templates[tempName] = res;
+        return res;
+    } catch {
+        throw new Error("Template " + tempName + " not found")
+    }
+}
+
+function copyCssFilesToOutput(){
+    let files = fetchAllfiles("./templates");
+    for(let file of files){
+        if(file.endsWith(".css")){
+            FS.cpSync(Path.join(__dirname, file), Path.join(outputDir, Path.basename(file)), {force: true})
+        }
+    }
+}
+
+function copyResourcesToOutput(){
+    FS.cpSync(Path.join("." , "files", "resources"), Path.join(outputDir, "resources"), {force: true, recursive: true})
+}
+
+function writeFileToOutput(filename, content) {
+    try {
+        FS.writeFileSync(Path.join(outputDir, filename), content, {
+            encoding: "utf8"
+        })
+    } catch(e) {
+        console.log(e)
+        throw new Error("Cannot write " + filename + " to output.")
+    }
+}
+
+
+function convertDeltaToHTML(delta) {
+    return (new QuillDeltaToHtmlConverter(delta["ops"], deltaToHTMLConfig)).convert()
+}
+
 function encodeScene(scene, synopsis, notes) {
     const encoder = new TextEncoder();
-  
+
     const sceneBytes = encoder.encode(scene);
     const synopsisBytes = encoder.encode(synopsis);
     const notesBytes = encoder.encode(notes);
-  
+
     const headerBytes = new Uint8Array(12);
     headerBytes.set([
-      sceneBytes.length >> 24, (sceneBytes.length >> 16) & 0xFF, (sceneBytes.length >> 8) & 0xFF, sceneBytes.length & 0xFF,
-      synopsisBytes.length >> 24, (synopsisBytes.length >> 16) & 0xFF, (synopsisBytes.length >> 8) & 0xFF, synopsisBytes.length & 0xFF,
-      notesBytes.length >> 24, (notesBytes.length >> 16) & 0xFF, (notesBytes.length >> 8) & 0xFF, notesBytes.length & 0xFF,
+        sceneBytes.length >> 24, (sceneBytes.length >> 16) & 0xFF, (sceneBytes.length >> 8) & 0xFF, sceneBytes
+        .length & 0xFF,
+        synopsisBytes.length >> 24, (synopsisBytes.length >> 16) & 0xFF, (synopsisBytes.length >> 8) & 0xFF,
+        synopsisBytes.length & 0xFF,
+        notesBytes.length >> 24, (notesBytes.length >> 16) & 0xFF, (notesBytes.length >> 8) & 0xFF, notesBytes
+        .length & 0xFF,
     ]);
-  
+
     const fileData = new Uint8Array(headerBytes.length + sceneBytes.length + synopsisBytes.length + notesBytes.length);
     fileData.set(headerBytes);
     fileData.set(sceneBytes, headerBytes.length);
     fileData.set(synopsisBytes, headerBytes.length + sceneBytes.length);
     fileData.set(notesBytes, headerBytes.length + sceneBytes.length + synopsisBytes.length);
-  
+
     return fileData;
 }
 
 function parseScene(fileData) {
     const dataView = new DataView(fileData);
-  
+
     const sceneLength = dataView.getUint32(0);
     const synopsisLength = dataView.getUint32(4);
     const notesLength = dataView.getUint32(8);
-  
+
     const sceneOffset = 12;
     const synopsisOffset = sceneOffset + sceneLength;
     const notesOffset = synopsisOffset + synopsisLength;
-  
+
     const decoder = new TextDecoder();
-  
+
     const scene = decoder.decode(fileData.slice(sceneOffset, sceneOffset + sceneLength));
     const synopsis = decoder.decode(fileData.slice(synopsisOffset, synopsisOffset + synopsisLength));
     const notes = decoder.decode(fileData.slice(notesOffset, notesOffset + notesLength));
-  
-    return { scene, synopsis, notes };
+
+    return {
+        scene,
+        synopsis,
+        notes
+    };
+}
+
+function exportProject(project) {
+    let projectIndex = dbFile.projects.findIndex(x => {
+        return x["Name"] == project;
+    })
+
+    try {
+        FS.rmSync(outputDir, {recursive: true});
+    } catch (err) {}
+
+    FS.mkdirSync(outputDir);
+    FS.mkdirSync(Path.join(outputDir, "articles"));
+
+    copyCssFilesToOutput();
+    copyResourcesToOutput();
+
+    //articles 
+    let articleTemplate = fetchTemplate("article");
+    let articles = dbFile.projects[projectIndex]["Articles"];
+
+    for (let article of articles) {
+        let outputArticle = articleTemplate;
+        console.log(article)
+        outputArticle = outputArticle
+            .replaceAll("${title}", article["Name"])
+            .replaceAll("${maintext}", convertDeltaToHTML(JSON.parse(article["MainText"])))
+            .replaceAll("${sidetext}", convertDeltaToHTML(JSON.parse(article["SideText"])))
+            .replaceAll("${image}", article["image"])
+            .replaceAll("${description}", article["Description"])
+        writeFileToOutput(`articles/${article["Name"]}.html`, outputArticle)
+    }
+
 }
 
 app.post("/api/createProject", (req, res) => {
@@ -173,9 +263,9 @@ app.post("/api/save", (req, res) => {
 
 
 app.post("/api/importDatabase", (req, res) => {
-    try{
-        dbFile = JSON.parse( req.body )
-    }catch{
+    try {
+        dbFile = JSON.parse(req.body)
+    } catch {
         res.status(406).send("Fail: Data is not json")
         return;
     }
@@ -274,9 +364,9 @@ app.post("/api/saveManuscript", (req, res) => {
         res.status(200).send("Fail: Specified project does not exist");
         return;
     }
-    
 
-    dbFile.projects[projectIndex]["Manuscript"] = manuScriptTree; 
+
+    dbFile.projects[projectIndex]["Manuscript"] = manuScriptTree;
     res.status(200).send("Sucess")
 })
 
@@ -296,9 +386,9 @@ app.post("/api/saveTimeline", (req, res) => {
         res.status(200).send("Fail: Specified project does not exist");
         return;
     }
-    
 
-    dbFile.projects[projectIndex]["Timeline"] = timeline; 
+
+    dbFile.projects[projectIndex]["Timeline"] = timeline;
     res.status(200).send("Sucess")
 })
 
@@ -336,27 +426,27 @@ app.get("/api/retrieveTimeline", (req, res) => {
 app.post("/api/removeMap", (req, res) => {
     const name = req.body["Name"];
     const project = req.body["Project"];
-    
+
     if (typeof project == "undefined") {
         res.status(200).send("Fail: Project name is undefined");
         return;
     }
-    
+
     let projectIndex = dbFile.projects.findIndex((x) => {
         return x["Name"] == project;
     })
-    
+
     if (projectIndex === -1) {
         res.status(200).send("Fail: Specified project does not exist");
         return;
 
-    } 
-    
+    }
+
     let mapIndex = dbFile.projects[projectIndex]["Maps"].findIndex((x) => {
         return x["Name"] == name;
     })
 
-    dbFile.projects[projectIndex]["Maps"].splice(mapIndex,1)
+    dbFile.projects[projectIndex]["Maps"].splice(mapIndex, 1)
 })
 
 app.post("/api/updateMap", (req, res) => {
@@ -377,28 +467,28 @@ app.post("/api/updateMap", (req, res) => {
         res.status(200).send("Fail: Specified project does not exist");
         return;
 
-    } 
+    }
     let mapIndex = dbFile.projects[projectIndex]["Maps"].findIndex((x) => {
         return x["Name"] == replaceMap;
     })
-    
-    if(mapIndex === -1){
+
+    if (mapIndex === -1) {
         dbFile.projects[projectIndex]["Maps"].push({
             Name: name,
             Pins: [],
             Description: description,
             Layers: layers
         });
-    }else{
+    } else {
         dbFile.projects[projectIndex]["Maps"][mapIndex] = {
             Name: name,
-            Pins:  dbFile.projects[projectIndex]["Maps"][mapIndex]["Pins"] ?? [],
+            Pins: dbFile.projects[projectIndex]["Maps"][mapIndex]["Pins"] ?? [],
             Description: description,
             Layers: layers
         }
     }
 
-    
+
     res.status(200).send("Sucess");
 
 })
@@ -598,13 +688,34 @@ app.get("/api/retrieveImageList", (req, res) => {
 
 app.get("/api/retrieveScene", (req, res) => {
     let sceneName = req.query["name"];
-    if(FS.existsSync(`./files/manuscripts/${sceneName}`)){
-        let sceneContents = FS.readFileSync(`./files/manuscripts/${sceneName}`, { encoding: 'utf8', flag: 'r' });
+    if (FS.existsSync(`./files/manuscripts/${sceneName}`)) {
+        let sceneContents = FS.readFileSync(`./files/manuscripts/${sceneName}`, {
+            encoding: 'utf8',
+            flag: 'r'
+        });
         let encoded = new TextEncoder().encode(sceneContents)
         res.status(200).send(parseScene(encoded.buffer));
-    }else{
+    } else {
         res.status(200).send("Fail: Scene does not exist")
         return;
+    }
+})
+
+app.get("/api/exportProject", (req, res) => {
+    let project = req.query["Project"]
+    if (typeof project === "undefined" || dbFile.projects.every((x) => {
+            return x["Name"] != project
+        })) {
+        res.status(404).send("Fail: Specified project does not exist")
+        return
+    } else {
+        try{
+            exportProject(project)
+        }catch{
+            res.status(406).send("Fail")
+            return;
+        }
+        res.status(200).send("Success")
     }
 })
 
@@ -614,19 +725,22 @@ app.post("/api/saveScene", (req, res) => {
     let scene = req.body["scene"];
     let synopsis = req.body["synopsis"];
     let notes = req.body["notes"];
-    try{
-        FS.writeFileSync(`./files/manuscripts/${sceneName}`, encodeScene(scene,synopsis,notes),{ encoding: 'utf8', flag: 'w' });
+    try {
+        FS.writeFileSync(`./files/manuscripts/${sceneName}`, encodeScene(scene, synopsis, notes), {
+            encoding: 'utf8',
+            flag: 'w'
+        });
         res.status(200).send("Success")
-    }catch{
+    } catch {
         res.status(200).send("Fail: failure when saving scene")
     }
 })
 app.post("/api/deleteScene", (req, res) => {
     let sceneName = req.body["name"];
 
-    try{
+    try {
         FS.unlink(`./files/manuscripts/${sceneName}`);
-    }catch{
+    } catch {
         res.status(200).send("Fail: failure when deleting scene")
     }
 })
@@ -650,6 +764,7 @@ function onExit() {
     FS.writeFileSync("./files/db.json", JSON.stringify(dbFile))
     Process.exit(0)
 }
+
 
 Process.on("SIGINT", onExit);
 Process.on("SIGTERM", onExit);

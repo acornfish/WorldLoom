@@ -44,7 +44,7 @@ let quillTopbar = [
         'list': 'ordered'
     }, {
         'list': 'bullet'
-    }]
+    },{ 'color': [] }]
 ]
 
 let saveFunctions = [() => {
