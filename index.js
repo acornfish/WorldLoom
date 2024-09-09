@@ -182,6 +182,7 @@ function exportProject(project) {
 
     FS.mkdirSync(outputDir);
     FS.mkdirSync(Path.join(outputDir, "articles"));
+    FS.mkdirSync(Path.join(outputDir, "maps"));
 
     copyCssFilesToOutput();
     copyResourcesToOutput();
@@ -192,7 +193,6 @@ function exportProject(project) {
 
     for (let article of articles) {
         let outputArticle = articleTemplate;
-        console.log(article)
         outputArticle = outputArticle
             .replaceAll("${title}", article["Name"])
             .replaceAll("${maintext}", convertDeltaToHTML(JSON.parse(article["MainText"])))
@@ -200,6 +200,18 @@ function exportProject(project) {
             .replaceAll("${image}", article["image"])
             .replaceAll("${description}", article["Description"])
         writeFileToOutput(`articles/${article["Name"]}.html`, outputArticle)
+    }
+
+    //maps
+    let mapTemplate = fetchTemplate("map");
+    let maps = dbFile.projects[projectIndex]["Maps"];
+
+    for(let map of maps){
+        let outputMap = mapTemplate;
+        outputMap = outputMap
+            .replaceAll("${mapName}", map["title"])
+            .replaceAll("${mapData}", JSON.stringify(map));
+        writeFileToOutput(`maps/${map["title"]}.html`, outputMap)
     }
 
 }

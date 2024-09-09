@@ -5,7 +5,7 @@
   },
   "name": "storylab",
   "version": "1.0.0",
-  "description": "An open-source alternative to world anvil",
+  "description": " StoryLab is a powerful open-source tool designed to streamline the process of worldbuilding and storywriting.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

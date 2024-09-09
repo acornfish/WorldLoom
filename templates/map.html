@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${mapName}</title>
+    <link rel="stylesheet" href="/map.css">
+</head>
+
+<body oncontextmenu="return false">
+    <canvas id="hiddenCanvas" style="display: none;"></canvas>
+    <div class="inner-map-container">
+        <img src="" alt="" class="map-image">
+    </div>
+    <div class="pin-data-panel">
+        <h3>Title: </h3>
+        <h3>Longitude: </h3>
+        <h3>Latitude: </h3>
+        <h3>Type: </h3>
+    </div>
+
+    <script>
+        let map = ${mapData}
+        const renderMapFromLayers = async function(e) {
+            const t = document.getElementById("hiddenCanvas"),
+                n = t.getContext("2d");
+            if (e.sort(((e, t) => {
+                    parseInt(e.order), parseInt(t.order)
+                })), e.length) {
+                let n = 0,
+                    o = 0;
+                for (const t of e) {
+                    let e = new Image;
+                    e.src = t.image, await new Promise(((t, r) => {
+                        e.onload = () => {
+                            n = e.width > n ? e.width : n, o = e.height > o ? e.height : o, t()
+                        }, e.onerror = r
+                    }))
+                }
+                t.width = n, t.height = o
+            }
+            for (const r of e) await new Promise(((e, t) => {
+                if (parseInt(r.order) < 0) return;
+                const o = new Image;
+                o.src = r.image, o.onload = () => {
+                    n.drawImage(o, 0, 0), e()
+                }, o.onerror = t
+            }));
+            const o = t.toDataURL();
+            document.getElementsByClassName("map-image")[0].src = o
+        }
+
+        renderMapFromLayers(map["Layers"])
+
+        const innerMapContainer = document.getElementsByClassName("inner-map-container")[0]
+
+        for (let pin of map["Pins"]) {
+            let pinObj = new Image();
+            pinObj.src = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSI1LjY0NDQ0NDVtbSIgaGVpZ2h0PSI5Ljg0NzM5M21tIiB2aWV3Qm94PSIwIDAgMjAgMzQuODkyMzM3IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Im0gODE3LjExMjQ5LDI4Mi45NzExOCBjIC0xLjI1ODE2LDEuMzQyNzcgLTIuMDQ2MjMsMy4yOTg4MSAtMi4wMTU2Myw1LjEzODY3IDAuMDYzOSwzLjg0NDc2IDEuNzk2OTMsNS4zMDAyIDQuNTY4MzYsMTAuNTkxNzkgMC45OTgzMiwyLjMyODUxIDIuMDQwMjcsNC43OTIzNyAzLjAzMTI1LDguODczMDUgMC4xMzc3MiwwLjYwMTkzIDAuMjcyMDMsMS4xNjEwNCAwLjMzNDE2LDEuMjA5NDggMC4wNjIxLDAuMDQ4NSAwLjE5NjQ0LC0wLjUxMjYyIDAuMzM0MTYsLTEuMTE0NTUgMC45OTA5OCwtNC4wODA2OCAyLjAzMjkzLC02LjU0MjU4IDMuMDMxMjUsLTguODcxMDkgMi43NzE0MywtNS4yOTE1OSA0LjUwNDQ0LC02Ljc0NzA0IDQuNTY4MzYsLTEwLjU5MTggMC4wMzA2LC0xLjgzOTg2IC0wLjc1OTQyLC0zLjc5Nzg1IC0yLjAxNzU4LC01LjE0MDYyIC0xLjQzNzI0LC0xLjUzMzg5IC0zLjYwNTA0LC0yLjY2OTA4IC01LjkxNjE5LC0yLjcxNjU1IC0yLjMxMTE1LC0wLjA0NzUgLTQuNDgwOSwxLjA4NzczIC01LjkxODE0LDIuNjIxNjIgeiIgZmlsbD0iI2ZmNDY0NiIgZmlsbC1vcGFjaXR5PSIxIiBzdHJva2U9IiNkNzM1MzQiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLW1pdGVybGltaXQ9IjQiIC8+PGNpcmNsZSByPSIzLjAzNTUiIGN5PSIyODguMjUyNzgiIGN4PSI4MjMuMDMwNjQiIGZpbGw9IiM1OTAwMDAiIGZpbGwtb3BhY2l0eT0iMSIgLz48L3N2Zz4="
+            pinObj.classList.add("pin")
+            pinObj.style.left = `${pin["length"]}px`
+            pinObj.style.top = `${pin["latitude"]}px`
+            pinObj.setAttribute("title", pin["title"])
+            pinObj.setAttribute("type", pin["type"])
+            innerMapContainer.append(pinObj);
+
+            pinObj.addEventListener("click", (e) => {
+                e.stopPropagation();
+                let values = [
+                    pinObj.getAttribute("title"),
+                    pinObj.style.left.slice(0, -2),
+                    pinObj.style.top.slice(0, -2),
+                    pinObj.getAttribute("type")
+                ]
+                let headerIdentifiers = [
+                    "Title: ",
+                    "Longitude: ",
+                    "Latitude: ",
+                    "Type: "
+                ]
+                let i = 0;
+                for(let header of document.getElementsByClassName("pin-data-panel")[0].children){
+                    header.innerText = headerIdentifiers[i] + values[i];
+                    i++;
+                }
+            })
+        }
+
+        class MapContainer {
+            constructor() {
+                // variable initialization, mostly for intellisense
+                this.isActive = true;
+                this.mapImage = document.querySelector(".map-image");
+                this.zoomLevel = 1;
+                this.minZoom = 0.3;
+                this.maxZoom = 3;
+                this.MapObject = {
+                    left: 0,
+                    top: 0,
+                    offsetX: 0,
+                    offsetY: 0,
+                    startOffset: {
+                        x: 0,
+                        y: 0
+                    },
+                    currentlyDragged: false,
+                    timer: null
+                }
+
+                // Map zoom
+                this.mapImage.parentNode.addEventListener('wheel', (event) => {
+                    if (!this.isActive) return;
+                    if (event.deltaY > 0) {
+                        this.zoomOut();
+                    } else {
+                        this.zoomIn();
+                    }
+                });
+
+                // Map dragging
+                this.mapImage.parentNode.addEventListener('mousedown', (e) => {
+                    if (!this.isActive) return;
+                    if (e.button === 0 && !this.MapObject.currentlyDragged) {
+                        this.MapObject.left = parseInt(getComputedStyle(this.mapImage.parentNode).left);
+                        this.MapObject.top = parseInt(getComputedStyle(this.mapImage.parentNode).top);
+                        this.MapObject.startOffset.x = e.pageX;
+                        this.MapObject.startOffset.y = e.pageY;
+                        this.MapObject.currentlyDragged = true;
+                    }
+                });
+
+                this.mapImage.parentNode.addEventListener('mousemove', (e) => {
+                    if (!this.isActive) return;
+                    if (e.button === 0 && !this.MapObject.currentlyDragged) return;
+
+                    const dx = e.pageX - this.MapObject.startOffset.x;
+                    const dy = e.pageY - this.MapObject.startOffset.y;
+
+                    const dragDistance = Math.hypot(dx, dy);
+
+                    if (dragDistance < 15) return;
+
+                    this.MapObject.offsetX = e.pageX - this.MapObject.startOffset.x;
+                    this.MapObject.offsetY = e.pageY - this.MapObject.startOffset.y;
+
+                    this.mapImage.parentNode.style.left =
+                        `${this.MapObject.left + this.MapObject.offsetX}px`;
+                    this.mapImage.parentNode.style.top = `${this.MapObject.top + this.MapObject.offsetY}px`;
+
+                    if (this.timer === null) {
+                        this.timer = setTimeout(() => {
+                            this.MapObject.currentlyDragged = false;
+                        }, 500);
+                    } else {
+                        clearTimeout(this.timer);
+                        this.timer = setTimeout(() => {
+                            this.MapObject.currentlyDragged = false;
+                        }, 500);
+                    }
+                });
+
+                this.mapImage.parentNode.addEventListener('mouseup', (e) => {
+                    if (!this.isActive) return;
+                    if (e.button === 0 && this.MapObject.currentlyDragged) {
+                        this.mapImage.parentNode.style.left =
+                            `${this.MapObject.left + this.MapObject.offsetX}px`;
+                        this.mapImage.parentNode.style.top =
+                            `${this.MapObject.top + this.MapObject.offsetY}px`;
+                        this.MapObject.offsetX = 0;
+                        this.MapObject.offsetY = 0;
+                        clearTimeout(this.timer);
+                    }
+                    this.MapObject.currentlyDragged = false;
+                });
+            }
+
+            zoomIn() {
+                if (this.zoomLevel < this.maxZoom) {
+                    this.zoomLevel += 0.1;
+                    this.mapImage.parentNode.style.transform = `scale(${this.zoomLevel})`;
+                }
+            }
+
+            zoomOut() {
+                if (this.zoomLevel > this.minZoom) {
+                    this.zoomLevel -= 0.1;
+                    this.mapImage.parentNode.style.transform = `scale(${this.zoomLevel})`;
+                }
+            }
+        }
+
+        new MapContainer()
+    </script>
+</body>
+
+</html>
