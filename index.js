@@ -12,7 +12,7 @@ const {
 } = require("quill-delta-to-html")
 
 process.chdir(__dirname);
-const outputDir = Path.join(__dirname,"files", "output");
+const outputDir = Path.join(__dirname, "files", "output");
 
 try {
     var Express = require("express");
@@ -92,17 +92,22 @@ function fetchTemplate(tempName) {
     }
 }
 
-function copyCssFilesToOutput(){
+function copyCssFilesToOutput() {
     let files = fetchAllfiles("./templates");
-    for(let file of files){
-        if(file.endsWith(".css")){
-            FS.cpSync(Path.join(__dirname, file), Path.join(outputDir, Path.basename(file)), {force: true})
+    for (let file of files) {
+        if (file.endsWith(".css")) {
+            FS.cpSync(Path.join(__dirname, file), Path.join(outputDir, Path.basename(file)), {
+                force: true
+            })
         }
     }
 }
 
-function copyResourcesToOutput(){
-    FS.cpSync(Path.join("." , "files", "resources"), Path.join(outputDir, "resources"), {force: true, recursive: true})
+function copyResourcesToOutput() {
+    FS.cpSync(Path.join(".", "files", "resources"), Path.join(outputDir, "resources"), {
+        force: true,
+        recursive: true
+    })
 }
 
 function writeFileToOutput(filename, content) {
@@ -110,7 +115,7 @@ function writeFileToOutput(filename, content) {
         FS.writeFileSync(Path.join(outputDir, filename), content, {
             encoding: "utf8"
         })
-    } catch(e) {
+    } catch (e) {
         console.log(e)
         throw new Error("Cannot write " + filename + " to output.")
     }
@@ -171,13 +176,34 @@ function parseScene(fileData) {
     };
 }
 
+function traverseManuscriptTree(tree, currentPath="./") {
+    let files = []
+    for (let child of tree) {
+        if (child["type"] == "default") {
+            //a folder
+            files = files.concat( traverseManuscriptTree(child["children"], Path.join(currentPath, child["text"])) )
+        } else {
+            let path = Path.join("files", "manuscripts", (child["data"]["uid"]))
+            let sceneContents = FS.readFileSync(path , {
+                encoding: 'utf8',
+                flag: 'r'
+            });
+            let encoded = new TextEncoder().encode(sceneContents)
+            files.push({content: parseScene(encoded.buffer), path: currentPath.slice("Root/".length), name: child["text"]});
+        }
+    }
+    return files;
+}
+
 function exportProject(project) {
     let projectIndex = dbFile.projects.findIndex(x => {
         return x["Name"] == project;
     })
 
     try {
-        FS.rmSync(outputDir, {recursive: true});
+        FS.rmSync(outputDir, {
+            recursive: true
+        });
     } catch (err) {}
 
     FS.mkdirSync(outputDir);
@@ -206,14 +232,40 @@ function exportProject(project) {
     let mapTemplate = fetchTemplate("map");
     let maps = dbFile.projects[projectIndex]["Maps"];
 
-    for(let map of maps){
+    for (let map of maps) {
         let outputMap = mapTemplate;
         outputMap = outputMap
-            .replaceAll("${mapName}", map["title"])
+            .replaceAll("${mapName}", map["Name"])
             .replaceAll("${mapData}", JSON.stringify(map));
-        writeFileToOutput(`maps/${map["title"]}.html`, outputMap)
+        writeFileToOutput(`maps/${map["Name"]}.html`, outputMap)
     }
 
+    //manuscripts
+    let manuscriptTemplate = fetchTemplate("manuscript");
+    let manuscriptsTree = dbFile.projects[projectIndex]["Manuscript"];
+    let parsedManuscripts = (traverseManuscriptTree(manuscriptsTree))
+    for(let manuscript of parsedManuscripts){
+        let outputManuscript = manuscriptTemplate;
+        outputManuscript = outputManuscript
+            .replaceAll("${scriptName}", manuscript["name"])
+            .replaceAll("${scriptSynopsis}", manuscript["content"]["synopsis"])
+            .replaceAll("${scriptText}", convertDeltaToHTML(JSON.parse( manuscript["content"]["scene"] )))
+        let dirName = Path.join(outputDir, "manuscripts" ,manuscript["path"]);
+        FS.mkdir(dirName, { recursive: true }, (err) => {
+            if (err) {
+              console.error('Error creating directories:', err);
+              return;
+            }
+        
+            FS.writeFile(Path.join(dirName, manuscript["name"]) + ".html", outputManuscript, (err) => {
+              if (err) {
+                console.error('Error creating file:', err);
+                return;
+              }
+        
+            });
+        });
+    }
 }
 
 app.post("/api/createProject", (req, res) => {
@@ -721,10 +773,10 @@ app.get("/api/exportProject", (req, res) => {
         res.status(404).send("Fail: Specified project does not exist")
         return
     } else {
-        try{
+        try {
             exportProject(project)
-        }catch{
-            res.status(406).send("Fail")
+        } catch (e) {
+            res.status(406).send("Fail: " + e)
             return;
         }
         res.status(200).send("Success")
