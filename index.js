@@ -10,6 +10,7 @@ const Path = require('node:path');
 const {
     QuillDeltaToHtmlConverter
 } = require("quill-delta-to-html")
+const Archiver = require("archiver")
 
 process.chdir(__dirname);
 const outputDir = Path.join(__dirname, "files", "output");
@@ -176,26 +177,30 @@ function parseScene(fileData) {
     };
 }
 
-function traverseManuscriptTree(tree, currentPath="./") {
+function traverseManuscriptTree(tree, currentPath = "./") {
     let files = []
     for (let child of tree) {
         if (child["type"] == "default") {
             //a folder
-            files = files.concat( traverseManuscriptTree(child["children"], Path.join(currentPath, child["text"])) )
+            files = files.concat(traverseManuscriptTree(child["children"], Path.join(currentPath, child["text"])))
         } else {
             let path = Path.join("files", "manuscripts", (child["data"]["uid"]))
-            let sceneContents = FS.readFileSync(path , {
+            let sceneContents = FS.readFileSync(path, {
                 encoding: 'utf8',
                 flag: 'r'
             });
             let encoded = new TextEncoder().encode(sceneContents)
-            files.push({content: parseScene(encoded.buffer), path: currentPath.slice("Root/".length), name: child["text"]});
+            files.push({
+                content: parseScene(encoded.buffer),
+                path: currentPath.slice("Root/".length),
+                name: child["text"]
+            });
         }
     }
     return files;
 }
 
-function exportProject(project) {
+function exportProject(project, res) {
     let projectIndex = dbFile.projects.findIndex(x => {
         return x["Name"] == project;
     })
@@ -244,28 +249,53 @@ function exportProject(project) {
     let manuscriptTemplate = fetchTemplate("manuscript");
     let manuscriptsTree = dbFile.projects[projectIndex]["Manuscript"];
     let parsedManuscripts = (traverseManuscriptTree(manuscriptsTree))
-    for(let manuscript of parsedManuscripts){
+    for (let manuscript of parsedManuscripts) {
         let outputManuscript = manuscriptTemplate;
         outputManuscript = outputManuscript
             .replaceAll("${scriptName}", manuscript["name"])
             .replaceAll("${scriptSynopsis}", manuscript["content"]["synopsis"])
-            .replaceAll("${scriptText}", convertDeltaToHTML(JSON.parse( manuscript["content"]["scene"] )))
-        let dirName = Path.join(outputDir, "manuscripts" ,manuscript["path"]);
-        FS.mkdir(dirName, { recursive: true }, (err) => {
+            .replaceAll("${scriptText}", convertDeltaToHTML(JSON.parse(manuscript["content"]["scene"])))
+        let dirName = Path.join(outputDir, "manuscripts", manuscript["path"]);
+        FS.mkdir(dirName, {
+            recursive: true
+        }, (err) => {
             if (err) {
-              console.error('Error creating directories:', err);
-              return;
-            }
-        
-            FS.writeFile(Path.join(dirName, manuscript["name"]) + ".html", outputManuscript, (err) => {
-              if (err) {
-                console.error('Error creating file:', err);
+                console.error('Error creating directories:', err);
                 return;
-              }
-        
+            }
+
+            FS.writeFile(Path.join(dirName, manuscript["name"]) + ".html", outputManuscript, (err) => {
+                if (err) {
+                    console.error('Error creating file:', err);
+                    return;
+                }
+
             });
         });
     }
+
+
+    //finish
+    const archive = Archiver('zip', {
+        zlib: {
+            level: 9
+        } 
+    });
+
+    res.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Disposition': 'attachment; filename="' + project + '.zip"' });
+
+    archive.on('data', (chunk) => {
+        res.write(chunk);
+    });
+    
+    archive.on('finish', () => {
+        res.end()
+    });
+
+    archive.directory(outputDir, false)
+
+    archive.finalize()
+
 }
 
 app.post("/api/createProject", (req, res) => {
@@ -774,12 +804,11 @@ app.get("/api/exportProject", (req, res) => {
         return
     } else {
         try {
-            exportProject(project)
+            exportProject(project,res)
         } catch (e) {
             res.status(406).send("Fail: " + e)
             return;
         }
-        res.status(200).send("Success")
     }
 })
 
