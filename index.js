@@ -287,7 +287,7 @@ function exportProject(project, res) {
                     return;
                 }
             });
-            manuscriptList += `<li><a href="manuscripts/${manuscript["name"]}.html">${manuscript["name"]}</a></li>`
+            manuscriptList += `<li><a href="manuscripts/${Path.join(manuscript["path"],manuscript["name"])}.html">${manuscript["name"]}</a></li>`
         });
     }
 
