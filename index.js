@@ -54,6 +54,16 @@ app.use(Express.static("./static"));
 app.use(Express.static("./files"));
 app.use(Express.json());
 app.use(Express.text());
+app.use((req, res, next) => { 
+    const date = new Date().toISOString();
+    const endpoint = req.url;
+    const statusCode = res.statusCode;
+  
+    console.log(`[${date}] - ${endpoint} - ${statusCode}`);
+  
+    next();
+  }
+)
 
 app.listen(PORT, '127.0.0.1', function () {
     console.log(
@@ -467,6 +477,7 @@ app.post("/api/saveManuscript", (req, res) => {
 app.post("/api/saveTimeline", (req, res) => {
     const project = req.body["Project"];
     const timeline = req.body["Data"]
+    console.log(timeline["settings"])
 
     if (typeof project == "undefined") {
         res.status(200).send("Fail: Project name is undefined");

@@ -56,6 +56,10 @@ var scrollSpeed = 6;
 var defaultStartTime = 0;
 var timelineControlSwitchState = 0;
 
+window.dbg = () => {
+    console.log(numberOfRows ,scrollSpeed, defaultStartTime)
+}
+
 const markReferences = []
 const eventDataPopup = document.getElementsByClassName('event-data-popup')[0];
 const settingsPopup = document.getElementsByClassName('settings-popup')[0];
@@ -74,7 +78,7 @@ let change = true;
 
 function drawTimelineRows() {
     ctx.save()
-    ctx.strokeStyle = "white"
+    ctx.strokeStyle = document.documentElement.style.getPropertyValue("--text-color")
 
     for (let i = 0; i < numberOfRows; i++) {
         ctx.beginPath()
@@ -220,6 +224,11 @@ function retrieveTimeline() {
         console.error("Error retrieving timeline:", textStatus, errorThrown);
       }
     });
+
+    let inputs = $(".settings-popup").find("input[type=number]").get()
+    inputs[0].value = numberOfRows;
+    inputs[1].value = defaultStartTime;
+    inputs[2].value = scrollSpeed;
   }
   
 function openEditorPopup(event){
@@ -325,7 +334,6 @@ function mainLoop() {
 
 function saveTimeline() {
     const url = "/api/saveTimeline"; 
-  
     $.ajax({
       url: url,
       type: "POST",
@@ -424,7 +432,7 @@ document.addEventListener('click', (event) => {
     if (!eventDataPopup.contains(event.target) && !createEventButton.contains(event.target)) {
         eventDataPopup.style.display = 'none';
     }
-    if(!settingsPopup.contains(event.target) && !settingsButton.contains(event.target)){
+    if(!settingsPopup.contains(event.target) && !settingsButton.contains(event.target) && settingsPopup.style.display == 'block'){
         settingsPopup.style.display = 'none'
         //save settings 
         let e = $(".settings-popup").find("input[type=number]").get();
