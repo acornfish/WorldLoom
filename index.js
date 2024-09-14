@@ -284,6 +284,14 @@ function exportProject(project, res) {
         });
     }
 
+    //timelines
+    let timelineTemplate = fetchTemplate("timeline");
+    let timeline = dbFile.projects[projectIndex]["Timeline"];
+
+    let outputTimeline = timelineTemplate;
+    outputTimeline = outputTimeline
+        .replaceAll("${timelineData}", JSON.stringify(timeline))
+    writeFileToOutput(`timeline.html`, outputTimeline)
 
     //finish
     const archive = Archiver('zip', {
