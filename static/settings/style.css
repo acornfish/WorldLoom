@@ -6,7 +6,8 @@ body{
     position: relative;
     width: 80%;
     height: 80%;
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
     left: 10%;
     top: 7%;
     background-color: var(--menu-color);
@@ -46,7 +47,7 @@ h2{
     margin-top: 3%;
 }
 
-.export-button, .import-button{
+.export-button, .import-button, .export-html-button{
     width: 20%;
     height: 10%;
     left: 5%;

@@ -228,9 +228,11 @@ function exportProject(project, res) {
     copyCssFilesToOutput();
     copyResourcesToOutput();
 
+
     //articles 
     let articleTemplate = fetchTemplate("article");
     let articles = dbFile.projects[projectIndex]["Articles"];
+    let articleList = ""
 
     for (let article of articles) {
         let outputArticle = articleTemplate;
@@ -241,11 +243,13 @@ function exportProject(project, res) {
             .replaceAll("${image}", article["image"])
             .replaceAll("${description}", article["Description"])
         writeFileToOutput(`articles/${article["Name"]}.html`, outputArticle)
+        articleList += `<li><a href="articles/${article["Name"]}.html">${article["Name"]}</a></li>`
     }
-
+    
     //maps
     let mapTemplate = fetchTemplate("map");
     let maps = dbFile.projects[projectIndex]["Maps"];
+    let mapList = ""
 
     for (let map of maps) {
         let outputMap = mapTemplate;
@@ -253,12 +257,15 @@ function exportProject(project, res) {
             .replaceAll("${mapName}", map["Name"])
             .replaceAll("${mapData}", JSON.stringify(map));
         writeFileToOutput(`maps/${map["Name"]}.html`, outputMap)
+        mapList += `<li><a href="maps/${map["Name"]}.html">${map["Name"]}</a></li>`
     }
 
     //manuscripts
     let manuscriptTemplate = fetchTemplate("manuscript");
     let manuscriptsTree = dbFile.projects[projectIndex]["Manuscript"];
-    let parsedManuscripts = (traverseManuscriptTree(manuscriptsTree))
+    let parsedManuscripts = (traverseManuscriptTree(manuscriptsTree));
+    let manuscriptList = ""
+
     for (let manuscript of parsedManuscripts) {
         let outputManuscript = manuscriptTemplate;
         outputManuscript = outputManuscript
@@ -279,8 +286,8 @@ function exportProject(project, res) {
                     console.error('Error creating file:', err);
                     return;
                 }
-
             });
+            manuscriptList += `<li><a href="manuscripts/${manuscript["name"]}.html">${manuscript["name"]}</a></li>`
         });
     }
 
@@ -292,6 +299,16 @@ function exportProject(project, res) {
     outputTimeline = outputTimeline
         .replaceAll("${timelineData}", JSON.stringify(timeline))
     writeFileToOutput(`timeline.html`, outputTimeline)
+
+    //generate Index
+    let outputIndex = fetchTemplate("index");
+    outputIndex = outputIndex
+        .replaceAll("${projectName}", project)
+        .replaceAll("${articleList}", articleList)
+        .replaceAll("${ManuscriptList}", manuscriptList)
+        .replaceAll("${mapList}", mapList)
+
+    writeFileToOutput("index.html", outputIndex);
 
     //finish
     const archive = Archiver('zip', {

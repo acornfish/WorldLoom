@@ -9,6 +9,12 @@ $(".export-button").on("click", () => {
     window.showToast("Exporting...", "info", 1000)
 })
 
+$(".export-html-button").on("click", () => {
+    window.saveData();
+    window.open("/api/exportProject?Project=" + localStorage.getItem("CurrentProject"))
+    window.showToast("Exporting...", "info", 1000)
+})
+
 $(".import-button").on("click", () => {
     $(".import-popup").fadeIn(0)
 })
