@@ -6,7 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>World Loom</title>
     <script>
-        window.location = "/articles"
+        const urlParams = new URLSearchParams(window.location.search);
+        const ref = urlParams.get('ref');
+        const type = urlParams.get('type');
+
+        if (ref && type) {
+            if (type === 'manuscript') {
+                window.location = "/manuscripts?ref=" + ref
+            } else if (type === 'map') {
+                sessionStorage.setItem("Map", ref)
+                window.location = "/map";
+            } else {
+                sessionStorage.setItem("Article", ref)
+                window.location = "/editor"
+            }
+        } else {
+            window.location = "/articles"
+        }
     </script>
 </head>
 

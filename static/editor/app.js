@@ -23,14 +23,16 @@ var mainTextQuill, sideTextQuill;
 function handleQuillLinks(value) {
     if (value) {
         var href = prompt('Name:');
-        if (!href.startsWith("manuscript:")) {
-            this.quill.format('link', `Articles/${href}`);
+        if (href.startsWith("manuscript:")){
+            this.quill.format('link', `/index.html?ref=${encodeURIComponent(href.split(':')[1])}&type=manuscript`);
+        } else if (href.startsWith("map:")){
+            this.quill.format('link', `/index.html?ref=${encodeURIComponent((href.split(':')[1]))}&type=map`);
         } else {
-            this.quill.format('link', `Manuscripts/${href}`);
-        }
+            this.quill.format('link', `/index.html?ref=${encodeURIComponent((href.split(':')[1]))}&type=article`);
+        } 
     } else {
         this.quill.format('link', false);
-    }
+    }   
 
 }
 

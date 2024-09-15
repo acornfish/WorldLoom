@@ -4,6 +4,7 @@ import "../libs/dist/jstree.js"
 import "../libs/quill.js"
 
 var lastSelectedSceneID = ""
+const urlParams = new URLSearchParams(window.location.search);
 
 function retrieveManuscript() {
     return new Promise((resolve, reject) => {
@@ -56,22 +57,24 @@ function retrieveScene(sceneName) {
 function deleteScene(sceneName) {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "/api/deleteScene", true);
-  
-    xhr.setRequestHeader("Content-Type", "application/json"); 
-  
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          console.log("Scene deleted successfully!");
-        } else {
-          console.error("Failed to delete scene:", xhr.responseText);
+
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                console.log("Scene deleted successfully!");
+            } else {
+                console.error("Failed to delete scene:", xhr.responseText);
+            }
         }
-      }
     };
-  
-    xhr.send(JSON.stringify({ name: sceneName }));
-  }
-  
+
+    xhr.send(JSON.stringify({
+        name: sceneName
+    }));
+}
+
 
 document.quill = new Quill('#text-editor', {
     theme: 'snow',
@@ -169,12 +172,47 @@ retrieveManuscript().then(x => {
         saveScene(false)
     }).on("delete_node.jstree", (e, data) => {
         if (lastSelectedSceneID = data.node.data.uid) {
-            deleteScene( data.node.data.uid )
+            deleteScene(data.node.data.uid)
             lastSelectedSceneID = ""
+        }
+    }).on('loaded.jstree', (e, data) => {
+        if (urlParams.get("ref")) {
+            $("#tree").jstree().deselect_all(true);
+            selectNodeFromPath(urlParams.get("ref"))
         }
     });
 
 })
+
+function selectNodeFromPath(pathString) {
+    var pathArray = (pathString).split('/');
+    pathArray.unshift("Root")
+
+    var currentNodeId = '#';
+
+    for (var i = 0; i < pathArray.length; i++) {
+        var childNodes = $('#tree').jstree('get_children_dom', currentNodeId);
+
+        var matchingChildNode = null;
+        for (var j = 0; j < childNodes.length; j++) {
+            var childNode = childNodes[j];
+            var childNodeText = $('#tree').jstree('get_text', childNode);
+            if (childNodeText === pathArray[i]) {
+                matchingChildNode = childNode;
+                break;
+            }
+        }
+
+        if (matchingChildNode) {
+            currentNodeId = matchingChildNode;
+        } else {
+            window.showToast("Invalid path", "warning", 3000)
+            return;
+        }
+    }
+
+    $('#tree').jstree('select_node', currentNodeId);
+}
 
 
 const resizeable = (containerName) => {
@@ -251,7 +289,7 @@ function saveScene(update = true) {
         if (xhr.status == 200) {
             if (xhr.responseText.startsWith("Fail")) {
                 window.showToast("Failed to save scene", "danger", 3000)
-            }else{
+            } else {
                 window.showToast("Sucessfuly saved the scene", "success", 2000)
             }
         }
@@ -277,5 +315,7 @@ function saveScene(update = true) {
         notes
     }));
 }
+
+
 
 window.saveScene = saveScene;

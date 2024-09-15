@@ -54,16 +54,15 @@ app.use(Express.static("./static"));
 app.use(Express.static("./files"));
 app.use(Express.json());
 app.use(Express.text());
-app.use((req, res, next) => { 
+app.use((req, res, next) => {
     const date = new Date().toISOString();
     const endpoint = req.url;
     const statusCode = res.statusCode;
-  
+
     console.log(`[${date}] - ${endpoint} - ${statusCode}`);
-  
+
     next();
-  }
-)
+})
 
 app.listen(PORT, '127.0.0.1', function () {
     console.log(
@@ -245,7 +244,7 @@ function exportProject(project, res) {
         writeFileToOutput(`articles/${article["Name"]}.html`, outputArticle)
         articleList += `<li><a href="articles/${article["Name"]}.html">${article["Name"]}</a></li>`
     }
-    
+
     //maps
     let mapTemplate = fetchTemplate("map");
     let maps = dbFile.projects[projectIndex]["Maps"];
@@ -287,7 +286,8 @@ function exportProject(project, res) {
                     return;
                 }
             });
-            manuscriptList += `<li><a href="manuscripts/${Path.join(manuscript["path"],manuscript["name"])}.html">${manuscript["name"]}</a></li>`
+            manuscriptList +=
+                `<li><a href="manuscripts/${Path.join(manuscript["path"],manuscript["name"])}.html">${manuscript["name"]}</a></li>`
         });
     }
 
@@ -314,15 +314,18 @@ function exportProject(project, res) {
     const archive = Archiver('zip', {
         zlib: {
             level: 9
-        } 
+        }
     });
 
-    res.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Disposition': 'attachment; filename="' + project + '.zip"' });
+    res.writeHead(200, {
+        'Content-Type': 'application/zip',
+        'Content-Disposition': 'attachment; filename="' + project + '.zip"'
+    });
 
     archive.on('data', (chunk) => {
         res.write(chunk);
     });
-    
+
     archive.on('finish', () => {
         res.end()
     });
@@ -537,7 +540,6 @@ app.get("/api/retrieveManuscript", (req, res) => {
     }
 })
 
-
 app.get("/api/retrieveTimeline", (req, res) => {
     let project = req.query["Project"];
 
@@ -654,7 +656,6 @@ app.post("/api/setPins", (req, res) => {
 
 
 })
-
 
 app.post("/api/retrievePins", (req, res) => {
     const map = req.body["MapName"];
@@ -840,7 +841,7 @@ app.get("/api/exportProject", (req, res) => {
         return
     } else {
         try {
-            exportProject(project,res)
+            exportProject(project, res)
         } catch (e) {
             res.status(406).send("Fail: " + e)
             return;
@@ -854,6 +855,7 @@ app.post("/api/saveScene", (req, res) => {
     let scene = req.body["scene"];
     let synopsis = req.body["synopsis"];
     let notes = req.body["notes"];
+
     try {
         FS.writeFileSync(`./files/manuscripts/${sceneName}`, encodeScene(scene, synopsis, notes), {
             encoding: 'utf8',
@@ -893,7 +895,6 @@ function onExit() {
     FS.writeFileSync("./files/db.json", JSON.stringify(dbFile))
     Process.exit(0)
 }
-
 
 Process.on("SIGINT", onExit);
 Process.on("SIGTERM", onExit);

@@ -480,11 +480,18 @@ class SettingsContainer {
 
         const quillLinkHandler = (value) => {
             if (value) {
-                const href = prompt('Enter the article name: ');
-                this.quill.format('link', "/Articles/" + href);
+                var href = prompt('Name:');
+                if (href.startsWith("manuscript:")){
+                    this.quill.format('link', `/index.html?ref=${encodeURIComponent(href.split(':')[1])}&type=manuscript`);
+                } else if (href.startsWith("map:")){
+                    this.quill.format('link', `/index.html?ref=${encodeURIComponent((href.split(':')[1]))}&type=map`);
+                } else {
+                    this.quill.format('link', `/index.html?ref=${encodeURIComponent((href.split(':')[1]))}&type=article`);
+                } 
             } else {
                 this.quill.format('link', false);
-            }
+            }   
+        
         }
         $(".title-input").val(mapData["Name"]);
 
