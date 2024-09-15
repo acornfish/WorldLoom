@@ -67,7 +67,7 @@ app.use((req, res, next) => {
 
 app.listen(PORT, '127.0.0.1', function () {
     console.log(
-        `${FgGreen}StoryLab is running.\nAcess the application at ${Reset}${Underscore}http://127.0.0.1:${PORT}`
+        `${FgGreen}World Loom is running.\nAcess the application at ${Reset}${Underscore}http://127.0.0.1:${PORT}`
     );
 })
 

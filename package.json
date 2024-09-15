@@ -4,9 +4,9 @@
     "express": "^4.19.2",
     "quill-delta-to-html": "^0.12.1"
   },
-  "name": "storylab",
+  "name": "World Loom",
   "version": "1.0.0",
-  "description": " StoryLab is a powerful open-source tool designed to streamline the process of worldbuilding and storywriting.",
+  "description": " World Loom is a powerful open-source tool designed to streamline the process of worldbuilding and storywriting.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

@@ -5,7 +5,7 @@ document.documentElement.style.setProperty('--navbar-pages', '4');
 
 var isChangeProjectPopupOpen = false;
 
-document.title = "Story Lab"
+document.title = "World Loom"
 
 function ChangeProject() {
     window.waitForElm(".change-project-popup").then(x => {
