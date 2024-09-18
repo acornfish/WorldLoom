@@ -6,6 +6,9 @@ const Reset = "\x1b[0m"
 
 const Process = require("process");
 const FS = require("fs");
+const {
+    JSDOM
+} = require("jsdom")
 const Path = require('node:path');
 const {
     QuillDeltaToHtmlConverter
@@ -186,27 +189,112 @@ function parseScene(fileData) {
     };
 }
 
-function traverseManuscriptTree(tree, currentPath = "./") {
-    let files = []
+function traverseManuscriptTree(tree, currentPath = "./", depth=0) {
+    let manuscriptTemplate = fetchTemplate("manuscript");
+    let indexTemplate = fetchTemplate("subdirIndex")
+    FS.writeFileSync(Path.join(outputDir, "manuscripts", "index.html"), indexTemplate.replaceAll("${name}", "manuscripts"), (
+        err) => {
+            if (err) {
+                console.error('Error creating file:', err);
+                return;
+            }
+        });
+    
+
     for (let child of tree) {
         if (child["type"] == "default") {
             //a folder
-            files = files.concat(traverseManuscriptTree(child["children"], Path.join(currentPath, child["text"])))
+            let dirName = Path.join(outputDir, "manuscripts", Path.join(currentPath, child["text"]));
+
+            //create the directory in output folder
+            FS.mkdirSync(dirName, {
+                recursive: true
+            }, (err) => {
+                if (err) {
+                    console.error('Error creating directories:', err);
+                    return;
+                }
+            });
+
+
+            //create the index file to list manuscripts. Content is added when a file is created
+            FS.writeFileSync(Path.join(dirName, "index.html"), indexTemplate.replaceAll("${name}", child["text"]), (
+                err) => {
+                    if (err) {
+                        console.error('Error creating file:', err);
+                        return;
+                    }
+                });
+
+            //recur for the new directory
+            traverseManuscriptTree(child["children"], Path.join(currentPath, child["text"]), depth+1)
+
+            //add a entry to the index
+            let indexFile = FS.readFileSync(Path.join(outputDir, "manuscripts", currentPath, "index.html"), {
+                encoding: 'utf8',
+                flag: 'r'
+            });
+
+            let parsedIndexFile = new JSDOM(indexFile).window.document;
+            
+            parsedIndexFile.querySelector(".file-list-ul").innerHTML +=
+                `<li><a href="/manuscripts/${Path.join(currentPath , child["text"])}">${child["text"]}</a></li>`
+
+            FS.writeFileSync(Path.join(outputDir, "manuscripts", currentPath, "index.html"),
+                parsedIndexFile.documentElement.outerHTML, (err) => {
+                    if (err) {
+                        console.error('Error creating file:', err);
+                        return;
+                    }
+                });
         } else {
+            //retrieve the data for manuscript from the disk
             let path = Path.join("files", "manuscripts", (child["data"]["uid"]))
             let sceneContents = FS.readFileSync(path, {
                 encoding: 'utf8',
                 flag: 'r'
             });
+
+            //decode the file format
             let encoded = new TextEncoder().encode(sceneContents)
-            files.push({
-                content: parseScene(encoded.buffer),
-                path: currentPath.slice("Root/".length),
-                name: child["text"]
+            let parsedSceneContents = parseScene(encoded.buffer);
+
+            let dirName = Path.join(outputDir, "manuscripts", currentPath);
+
+            //put data into a html template
+            let outputManuscript = manuscriptTemplate;
+            outputManuscript = outputManuscript
+                .replaceAll("${scriptName}", child["text"])
+                .replaceAll("${scriptSynopsis}", parsedSceneContents["synopsis"])
+                .replaceAll("${scriptText}", convertDeltaToHTML(JSON.parse(parsedSceneContents["scene"])))
+
+            //write to the manuscript file
+            FS.writeFileSync(Path.join(dirName, child["text"]) + ".html", outputManuscript, (err) => {
+                if (err) {
+                    console.error('Error creating file:', err);
+                    return;
+                }
+            });
+
+            //add a entry to the index
+            let indexFile = FS.readFileSync(Path.join(dirName, "index.html"), {
+                encoding: 'utf8',
+                flag: 'r'
+            });
+
+            let parsedIndexFile = new JSDOM(indexFile).window.document;
+
+            parsedIndexFile.querySelector(".file-list-ul").innerHTML +=
+                `<li><a href="/manuscripts/${Path.join(currentPath , child["text"])}.html">${child["text"]}</a></li>`
+
+            FS.writeFileSync(Path.join(dirName, "index.html"), parsedIndexFile.documentElement.outerHTML, (err) => {
+                if (err) {
+                    console.error('Error creating file:', err);
+                    return;
+                }
             });
         }
     }
-    return files;
 }
 
 function exportProject(project, res) {
@@ -223,6 +311,7 @@ function exportProject(project, res) {
     FS.mkdirSync(outputDir);
     FS.mkdirSync(Path.join(outputDir, "articles"));
     FS.mkdirSync(Path.join(outputDir, "maps"));
+    FS.mkdirSync(Path.join(outputDir, "manuscripts"));
 
     copyCssFilesToOutput();
     copyResourcesToOutput();
@@ -260,37 +349,16 @@ function exportProject(project, res) {
     }
 
     //manuscripts
-    let manuscriptTemplate = fetchTemplate("manuscript");
+
     let manuscriptsTree = dbFile.projects[projectIndex]["Manuscript"];
-    let parsedManuscripts = (traverseManuscriptTree(manuscriptsTree));
     let manuscriptList = ""
 
-    for (let manuscript of parsedManuscripts) {
-        let outputManuscript = manuscriptTemplate;
-        outputManuscript = outputManuscript
-            .replaceAll("${scriptName}", manuscript["name"])
-            .replaceAll("${scriptSynopsis}", manuscript["content"]["synopsis"])
-            .replaceAll("${scriptText}", convertDeltaToHTML(JSON.parse(manuscript["content"]["scene"])))
-        let dirName = Path.join(outputDir, "manuscripts", manuscript["path"]);
-        FS.mkdir(dirName, {
-            recursive: true
-        }, (err) => {
-            if (err) {
-                console.error('Error creating directories:', err);
-                return;
-            }
-
-            FS.writeFile(Path.join(dirName, manuscript["name"]) + ".html", outputManuscript, (err) => {
-                if (err) {
-                    console.error('Error creating file:', err);
-                    return;
-                }
-            });
-            manuscriptList +=
-                `<li><a href="manuscripts/${Path.join(manuscript["path"],manuscript["name"])}.html">${manuscript["name"]}</a></li>`
-        });
+    //[0]["children"] is to ignore the Root node
+    traverseManuscriptTree(manuscriptsTree[0]["children"])
+    for(let child of manuscriptsTree[0]["children"]){
+        manuscriptList += `<li><a href="/manuscripts/${child["text"]}${child["type"] != 'default' ? ".html" : ""}">${child["text"]}</a></li>`;
     }
-
+    
     //timelines
     let timelineTemplate = fetchTemplate("timeline");
     let timeline = dbFile.projects[projectIndex]["Timeline"];

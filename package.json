@@ -2,6 +2,7 @@
   "dependencies": {
     "archiver": "^7.0.1",
     "express": "^4.19.2",
+    "jsdom": "^25.0.0",
     "quill-delta-to-html": "^0.12.1"
   },
   "name": "World Loom",
@@ -9,7 +10,7 @@
   "description": " World Loom is a powerful open-source tool designed to streamline the process of worldbuilding and storywriting.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node --no-deprecation index.js",
     "compile": " em++ WASM_source/kmp.cpp -std=c++17 -sEXPORTED_FUNCTIONS=_KMP,_free -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o static/WASM/kmp.wasm"
   },
   "author": "Ege Açikgöz",
