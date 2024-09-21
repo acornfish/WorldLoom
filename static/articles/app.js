@@ -1,4 +1,5 @@
 import '/global.js'
+import { removeArticle } from '../editor/articleManagement.js'
 
 function openEditor(x){
     let title = (x).getElementsByTagName("h2")[0].innerText;
@@ -39,23 +40,7 @@ function GetArticles(){
     
     return Articles
 }
-function removeArticle(project, name) {
-    $.ajax({
-      url: '/api/removeArticle',
-      type: 'GET',
-      data: {
-        Project: project,
-        Name: name
-      },
-      success: function(response) {
-        console.log(response); 
-      },
-      error: function(xhr, status, error) {
-        console.error(error); 
-   error
-      }
-    });
-  }
+
   
 
 const cards = document.getElementsByClassName("card")

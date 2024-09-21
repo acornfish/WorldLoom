@@ -429,6 +429,11 @@ app.post("/api/createProject", (req, res) => {
         Name: projectName,
         Description: projectDescription,
         Articles: [],
+        ArticleTree: [{
+            "id": 1,
+            "text": "Root",
+            "children": []
+        }],
         Maps: [],
         Manuscript: [{
             "id": 1,
@@ -479,9 +484,6 @@ app.post("/api/importDatabase", (req, res) => {
 
 })
 
-
-
-
 app.post("/api/saveArticle", (req, res) => {
     let articleName = req.body["Name"];
     let mainText = req.body["MainText"] ?? "";
@@ -492,12 +494,12 @@ app.post("/api/saveArticle", (req, res) => {
     let replaceArticle = req.body["ReplaceArticle"];
 
     if (typeof articleName == "undefined") {
-        res.status(200).send("Fail: Article name is undefined");
+        res.status(406).send("Fail: Article name is undefined");
         return;
     }
 
     if (typeof project == "undefined") {
-        res.status(200).send("Fail: Project name is undefined");
+        res.status(406).send("Fail: Project name is undefined");
         return;
     }
     if (dbFile.projects.some((x) => {
@@ -518,6 +520,9 @@ app.post("/api/saveArticle", (req, res) => {
             let articleIndex = dbFile.projects[index]["Articles"].findIndex(x => {
                 return x["Name"] === replaceArticle
             });
+            if(articleIndex == -1){
+                res.status(406).send("Fail: Article to replace not found");
+            }
             dbFile.projects[index]["Articles"][articleIndex].MainText = mainText === "" ? dbFile.projects[index]
                 [
                     "Articles"
@@ -542,10 +547,32 @@ app.post("/api/saveArticle", (req, res) => {
         res.status(200).send("Sucess");
         return;
     } else {
-        res.status(200).send("Fail: Mentioned project does not exist");
+        res.status(406).send("Fail: Mentioned project does not exist");
         return
     }
 
+})
+
+
+app.post("/api/saveArticleTree", (req, res) => {
+    const project = req.body["Project"];
+    const articleTree = req.body["Data"]
+
+    if (typeof project == "undefined") {
+        res.status(200).send("Fail: Project name is undefined");
+        return;
+    }
+    let projectIndex = dbFile.projects.findIndex((x) => {
+        return x["Name"] == project;
+    })
+
+    if (projectIndex === -1) {
+        res.status(406).send("Fail: Specified project does not exist");
+        return;
+    }
+
+    dbFile.projects[projectIndex]["ArticleTree"] = articleTree;
+    res.status(200).send("Sucess")
 })
 
 app.post("/api/saveManuscript", (req, res) => {
@@ -561,7 +588,7 @@ app.post("/api/saveManuscript", (req, res) => {
     })
 
     if (projectIndex === -1) {
-        res.status(200).send("Fail: Specified project does not exist");
+        res.status(406).send("Fail: Specified project does not exist");
         return;
     }
 
@@ -584,7 +611,7 @@ app.post("/api/saveTimeline", (req, res) => {
     })
 
     if (projectIndex === -1) {
-        res.status(200).send("Fail: Specified project does not exist");
+        res.status(406).send("Fail: Specified project does not exist");
         return;
     }
 
@@ -599,12 +626,27 @@ app.get("/api/retrieveManuscript", (req, res) => {
     if (typeof project === "undefined" || dbFile.projects.every((x) => {
             return x["Name"] != project;
         })) {
-        res.status(200).send("Fail: Specified project does not exist");
+        res.status(406).send("Fail: Specified project does not exist");
         return;
     } else {
         res.status(200).send(JSON.stringify(dbFile.projects.find((x) => {
             return x["Name"] == project;
         })["Manuscript"]));
+    }
+})
+
+app.get("/api/retrieveArticleTree", (req, res) => {
+    let project = req.query["Project"];
+
+    if (typeof project === "undefined" || dbFile.projects.every((x) => {
+            return x["Name"] != project;
+        })) {
+        res.status(406).send("Fail: Specified project does not exist");
+        return;
+    } else {
+        res.status(200).send(JSON.stringify(dbFile.projects.find((x) => {
+            return x["Name"] == project;
+        })["ArticleTree"]));
     }
 })
 
@@ -614,7 +656,7 @@ app.get("/api/retrieveTimeline", (req, res) => {
     if (typeof project === "undefined" || dbFile.projects.every((x) => {
             return x["Name"] != project;
         })) {
-        res.status(200).send("Fail: Specified project does not exist");
+        res.status(406).send("Fail: Specified project does not exist");
         return;
     } else {
         res.status(200).send(JSON.stringify(dbFile.projects.find((x) => {
@@ -637,7 +679,7 @@ app.post("/api/removeMap", (req, res) => {
     })
 
     if (projectIndex === -1) {
-        res.status(200).send("Fail: Specified project does not exist");
+        res.status(406).send("Fail: Specified project does not exist");
         return;
 
     }
@@ -664,7 +706,7 @@ app.post("/api/updateMap", (req, res) => {
         return x["Name"] == project;
     })
     if (projectIndex === -1) {
-        res.status(200).send("Fail: Specified project does not exist");
+        res.status(406).send("Fail: Specified project does not exist");
         return;
 
     }
@@ -707,7 +749,7 @@ app.post("/api/setPins", (req, res) => {
         return x["Name"] == project;
     })
     if (projectIndex == -1) {
-        res.status(200).send("Fail: Specified project does not exist");
+        res.status(406).send("Fail: Specified project does not exist");
         return;
     }
     let MapIndex = dbFile.projects[projectIndex]["Maps"].findIndex(x => {
@@ -738,7 +780,7 @@ app.post("/api/retrievePins", (req, res) => {
         return x["Name"] == project
     });
     if (projectIndex == -1) {
-        res.status(200).send("Fail: Specified project does not exist");
+        res.status(406).send("Fail: Specified project does not exist");
         return;
     }
     let MapIndex = dbFile.projects[projectIndex]["Maps"].findIndex(x => {
@@ -760,7 +802,7 @@ app.get("/api/retrieveMaps", (req, res) => {
     if (typeof project === "undefined" || dbFile.projects.every((x) => {
             return x["Name"] != project;
         })) {
-        res.status(200).send("Fail: Specified project does not exist");
+        res.status(406).send("Fail: Specified project does not exist");
         return;
     } else {
         res.status(200).send(JSON.stringify(dbFile.projects.find((x) => {
@@ -775,7 +817,7 @@ app.get("/api/retrieveMap", (req, res) => {
     if (typeof project === "undefined" || dbFile.projects.every((x) => {
             return x["Name"] != project;
         })) {
-        res.status(200).send("Fail: Specified project does not exist");
+        res.status(406).send("Fail: Specified project does not exist");
         return;
     } else {
         let articles = dbFile.projects.find((x) => {
@@ -801,7 +843,7 @@ app.get("/api/retrieveArticles", (req, res) => {
     if (typeof project === "undefined" || dbFile.projects.every((x) => {
             return x["Name"] != project
         })) {
-        res.status(200).send("Fail: Specified project does not exist")
+        res.status(406).send("Fail: Specified project does not exist");
         return
     } else {
         res.status(200).send(JSON.stringify(dbFile.projects.find((x) => {
@@ -817,7 +859,7 @@ app.get("/api/retrieveArticle", (req, res) => {
     if (typeof project === "undefined" || dbFile.projects.every((x) => {
             return x["Name"] != project
         })) {
-        res.status(200).send("Fail: Specified project does not exist")
+        res.status(406).send("Fail: Specified project does not exist")
         return
     } else {
         let articles = dbFile.projects.find((x) => {
@@ -827,7 +869,7 @@ app.get("/api/retrieveArticle", (req, res) => {
         if (articles.find((x) => {
                 return x["Name"] === name
             }) === undefined) {
-            res.status(200).send("Fail: Specified article does not exist")
+            res.status(404).send("Fail: Specified article does not exist")
             return
         }
         res.status(200).send(JSON.stringify(articles.find((x) => {
@@ -843,7 +885,7 @@ app.get("/api/removeArticle", (req, res) => {
     if (typeof project === "undefined" || dbFile.projects.every((x) => {
             return x["Name"] != project
         })) {
-        res.status(200).send("Fail: Specified project does not exist")
+        res.status(406).send("Fail: Specified project does not exist");
         return
     } else {
         let projectIndex = dbFile.projects.findIndex((x) => {
@@ -942,6 +984,11 @@ app.post("/api/deleteScene", (req, res) => {
     } catch {
         res.status(200).send("Fail: failure when deleting scene")
     }
+})
+
+//Handle 404
+app.use((req, res, next) => {
+    res.status(404).send("Route not found");
 })
 
 

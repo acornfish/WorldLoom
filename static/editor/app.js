@@ -1,6 +1,7 @@
 import "../libs/quill.js"
 import "../libs/jquery.min.js"
 import "/global.js"
+import {articleSaveRequest, retrieveArticle} from "./articleManagement.js"
 
 var sectionNames = ["MainText", "SideSections", "Settings"]
 
@@ -163,39 +164,6 @@ function saveArticle() {
     }
 }
 
-function articleSaveRequest(project, name, mainText, sideText, image, description, replaceArticle) {
-    const apiCall = new XMLHttpRequest();
-    apiCall.open('POST', '/api/saveArticle');
-    apiCall.setRequestHeader('Content-Type', 'application/json');
-    return new Promise((resolve,reject) => {
-        let timeout = setTimeout(reject, 5000); 
-        apiCall.onload = function () {
-            if (!apiCall.responseText.startsWith("Fail")) {
-                console.log(apiCall.responseText);
-                clearTimeout(timeout);
-                resolve(apiCall.responseText ?? "");
-            } else {
-                console.error('Article save failed. Returned status of ' + apiCall.status);
-                reject(apiCall.responseText)
-            }
-        };
-        
-        
-        const data = {
-            Project: project,
-            Name: name,
-            MainText: mainText,
-            SideText: sideText,
-            Image: image,
-            Description: description
-        };
-    
-        if (typeof replaceArticle !== "undefined") {
-            data.ReplaceArticle = replaceArticle
-        }
-        apiCall.send(JSON.stringify(data))
-    })
-}
 
 
 const changeTab = (x) => {
@@ -217,34 +185,6 @@ const changeTab = (x) => {
     }
 }
 
-function retrieveArticle(project, name) {
-    return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', `/api/retrieveArticle?Project=${project}&Name=${name}`, true);
-
-        xhr.onload = () => {
-            if (xhr.status === 200) {
-                if (xhr.responseText.startsWith("Fail")) {
-                    reject
-                }
-                const response = (xhr.responseText);
-                if (typeof response === 'string' && response.startsWith('Fail:')) {
-                    reject(new Error(response));
-                } else {
-                    resolve(JSON.parse(response));
-                }
-            } else {
-                reject(new Error(`Fail: Returned status of ${xhr.status}`));
-            }
-        };
-
-        xhr.onerror = () => {
-            reject(new Error('Fail: '));
-        };
-
-        xhr.send();
-    });
-}
 
 
 function setCurrentArticle() {
@@ -301,7 +241,6 @@ if (articleTitle.scrollWidth > articleTitle.clientWidth) {
                 </div>
     `
 }
-
 
 window.saveArticle = saveArticle;
 window.c = () => {

@@ -4917,10 +4917,15 @@
 						var inst = $.jstree.reference(data.reference),
 							obj = inst.get_node(data.reference);
 						if(inst.is_selected(obj)) {
-							inst.delete_node(inst.get_selected());
+							if(!inst.get_selected().includes("1")){ // rejects root node
+								inst.delete_node(inst.get_selected());
+							}
 						}
 						else {
-							inst.delete_node(obj);
+							alert(obj.parent)
+							if(obj.parent != "#"){ // rejects root node
+								inst.delete_node(obj);
+							}
 						}
 					}
 				},
@@ -4973,7 +4978,16 @@
 							"action"			: function (data) {
 								var inst = $.jstree.reference(data.reference),
 									obj = inst.get_node(data.reference);
+
+								let beforePasteChildList = (inst.get_node(obj).children)
 								inst.paste(obj);
+								let afterPasteChildList = (inst.get_node(obj).children)
+
+
+								const set1 = new Set(beforePasteChildList);
+								const set2 = new Set(afterPasteChildList);
+							  
+								inst.edit(Array.from(set2).filter(x => !set1.has(x)))
 							}
 						}
 					}
