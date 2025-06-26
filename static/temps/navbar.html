@@ -1,0 +1,41 @@
+
+<div class="Navbar" collapsed>
+    <div id="NavbarButtons">
+        <div>
+            <button onclick="window.location = '/dashboard'"><i class="fa-solid fa-table-columns fa-lg"></i></button>
+        </div>
+        <div>
+            <button onclick="window.location = '/maps'"><i class="fa-solid fa-map fa-lg"></i></button>
+        </div>
+        <div>
+            <button onclick="window.location = '/manuscripts'"><i class="fa-solid fa-book fa-lg"></i></button>
+        </div> 
+        <div>
+            <button onclick="window.location = '/timelines'"><i class="fa-solid fa-timeline fa-lg"></i></button>
+        </div>
+        <div>
+            <button onclick="window.location = '/settings'"><i class="fa-solid fa-gear fa-lg"></i></button>
+        </div>
+        <div>
+            <button onclick="ChangeProject()"><i class="fa-solid fa-arrows-spin fa-lg"></i></button>
+        </div> 
+ 
+    </div>
+
+    <div class="collapse-switch"></div>
+</div>
+
+<div class="change-project-popup hidden">
+    <div class="popup-window">
+        <h2 class="popup-header">Select project</h2>
+        <div class="select-container">
+            <div class="select">
+                <input type="text" id="project-select-input" placeholder="" onfocus="this.blur();">
+            </div>
+            <div class="option-container">
+
+            </div>
+        </div>
+        <input type="button" class="create-new-project" id="create-new-project" value="Create new" onclick="window.location = '/createProject'">
+    </div>
+</div>

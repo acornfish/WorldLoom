@@ -1,0 +1,5 @@
+exports.FgRed = "\x1b[31m"
+exports.FgGreen = "\x1b[32m"
+exports.FgBlue = "\x1b[34m"
+exports.Underscore = "\x1b[4m"
+exports.Reset = "\x1b[0m"

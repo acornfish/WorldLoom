@@ -1,0 +1,95 @@
+:root {
+    --background-color: wheat;
+    --menu-color: #929292;
+    --text-color: #ffffff !important;
+}
+
+
+html {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--background-color);
+    margin: inherit;
+
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow-y: scroll;
+    margin: inherit;
+    color: var(--text-color);
+    font-family: 'Roboto',Arial, Helvetica, sans-serif;
+}
+
+.main-container {
+    background-color: var(--menu-color);
+    width: 59%;
+    min-height: 90%;
+    position: relative;
+    left: 4%;
+    display: inline-block;
+    margin-bottom: 5%;
+    padding-left: 1%;
+    top: 2%;
+}
+
+.side-container {
+    background-color: var(--menu-color);
+    width: 25%;
+    min-height: 90%;
+    position: relative;
+    float: right;
+    right: 4%;
+    top: 2%;
+    padding: 1%;
+    padding-bottom: 0;
+    font-size: 0.8rem;
+}
+
+.title {
+    width: 60vw;
+    left: -1vw;
+    height: 10vh;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    filter: brightness(80%);
+    position: relative;
+    background-color: var(--menu-color);
+}
+
+.title h2 {
+    margin: 0;
+    display: block;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 2%;
+    width: 98%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.side-container .image-container{
+    width: 100%;
+    height: 20%;
+    object-fit: contain;
+    margin-top: 5%;
+    position: relative;
+    user-select: none;
+    -moz-user-select: none;
+}
+
+.side-container .image-container img{
+    object-fit: cover;
+    position: relative;
+    width: 80%;
+    transform: translateX(-50%);
+    left: 50%;
+}

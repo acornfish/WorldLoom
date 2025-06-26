@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${projectName}</title>
+    <link rel="stylesheet" href="/index.css">
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const ref = urlParams.get('ref');
+        const type = urlParams.get('type');
+
+        if (ref && type) {
+            if (type === 'manuscript') {
+                window.location = "/manuscripts/" + ref + ".html"
+            } else if (type === 'map') {
+                window.location = "/maps/" + ref + ".html"
+            } else {
+                window.location = "/articles/" + ref + ".html"
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div>
+        <h3>Articles</h3>
+        <ul>
+            ${articleList}
+        </ul>
+    </div>
+    <div>
+        <h3>Manuscripts</h3>
+        <ul>
+            ${ManuscriptList}
+        </ul>
+    </div>
+    <div>
+        <h3>Maps</h3>
+        <ul>
+            ${mapList}
+        </ul>
+    </div>
+    <div>
+        <h3>Timeline</h3>
+        <ul>
+            <li><a href="/timeline.html">Timeline</a></li>
+        </ul>
+    </div>
+</body>
+
+</html>

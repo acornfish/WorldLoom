@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Playground</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+        crossorigin="anonymous">
+    <link href="https://cdn.quilljs.com/1.2.3/quill.snow.css" rel="stylesheet"></link>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/default.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js"></script>
+    <style>
+       .ql-viewer p,
+         .ql-viewer ol,
+         .ql-viewer ul,
+         .ql-viewer pre,
+         .ql-viewer blockquote,
+         .ql-viewer h1,
+         .ql-viewer h2,
+         .ql-viewer h3,
+         .ql-viewer h4,
+         .ql-viewer h5,
+         .ql-viewer h6 {
+         margin: 0;
+         padding: 0;
+         }
+        .ql-viewer {
+            padding: 12px 15px;border: 1px solid #c1c1c1;
+        }
+        .ql-viewer .ql-font-serif {
+            font-family: Georgia, Times New Roman, serif;
+        }
+        .ql-viewer .ql-font-monospace {
+            font-family: Monaco, Courier New, monospace;
+        }
+        .ql-viewer .ql-size-small {
+            font-size: 0.75em;
+        }
+        .ql-viewer .ql-size-large {
+            font-size: 1.5em;
+        }
+        .ql-viewer .ql-size-huge {
+            font-size: 2.5em;
+        }
+        .ql-viewer .ql-direction-rtl {
+            direction: rtl;
+            text-align: inherit;
+        }
+        .ql-viewer .ql-align-center {
+            text-align: center;
+        }
+        .ql-viewer .ql-align-justify {
+            text-align: justify;
+        }
+        .ql-viewer .ql-align-right {
+            text-align: right;
+        }
+        .ql-viewer blockquote {
+            border-left: 4px solid #ccc;
+            padding-left: 16px;
+        }
+
+        .ql-viewer code,
+        .ql-viewer pre {
+            background-color: #f0f0f0;
+            border-radius: 3px;
+            padding: 6px 10px;
+        }
+        
+        .ql-viewer ul > li[data-checked=true]::before {
+         content: '\2611';
+         }
+         .ql-viewer ul > li[data-checked=false]::before {
+         content: '\2610';
+         }
+
+        .ql-viewer ol > li, 
+        .ql-viewer ul > li {
+        list-style-type: none ;
+        }
+        
+        
+        .ql-viewer ol  {
+           counter-reset: mylist
+        }
+        
+        .ql-viewer ol > li:before {
+           counter-increment: mylist;
+           content: counter(mylist, decimal) '. ';
+        }
+        .ql-viewer ol ol > li:before {
+           content: counter(mylist, lower-alpha) '. ';
+        }
+        .ql-viewer ol ol ol > li:before {
+           content: counter(mylist, lower-roman) '. ';
+        }
+        .ql-viewer ol ol ol ol > li:before {
+           content: counter(mylist, decimal) '. ';
+        }
+        .ql-viewer ol ol ol ol ol > li:before {
+           content: counter(mylist, lower-alpha) '. ';
+        }
+        .ql-viewer ol ol ol ol ol ol > li:before {
+           content: counter(mylist, lower-roman) '. ';
+        }
+        .ql-viewer ol ol ol ol ol ol ol > li:before {
+           content: counter(mylist, decimal) '. ';
+        }
+        .ql-viewer ol ol ol ol ol ol ol ol > li:before {
+           content: counter(mylist, lower-alpha) '. ';
+        }
+        .ql-viewer ol ol ol ol ol ol ol ol ol > li:before {
+           content: counter(mylist, lower-roman) '. ';
+        }
+        
+        
+        /* ql indent */
+        .ql-viewer .ql-indent-1:not(.ql-direction-rtl) {
+        padding-left: 3em;
+        }
+        
+        .ql-viewer .ql-indent-1.ql-direction-rtl.ql-align-right {
+        padding-right: 3em;
+        }
+        
+        .ql-viewer .ql-indent-2:not(.ql-direction-rtl) {
+        padding-left: 6em;
+        }
+        
+        .ql-viewer .ql-indent-2.ql-direction-rtl.ql-align-right {
+        padding-right: 6em;
+        }
+        
+        .ql-viewer .ql-indent-3:not(.ql-direction-rtl) {
+        padding-left: 9em;
+        }
+        
+        .ql-viewer .ql-indent-3.ql-direction-rtl.ql-align-right {
+        padding-right: 9em;
+        }
+        
+        .ql-viewer .ql-indent-4:not(.ql-direction-rtl) {
+        padding-left: 12em;
+        }
+        
+        .ql-viewer .ql-indent-4.ql-direction-rtl.ql-align-right {
+        padding-right: 12em;
+        }
+        
+        .ql-viewer .ql-indent-5:not(.ql-direction-rtl) {
+        padding-left: 15em;
+        }
+        
+        .ql-viewer .ql-indent-5.ql-direction-rtl.ql-align-right {
+        padding-right: 15em;
+        }
+        
+        .ql-viewer .ql-indent-6:not(.ql-direction-rtl) {
+        padding-left: 18em;
+        }
+        
+        .ql-viewer .ql-indent-6.ql-direction-rtl.ql-align-right {
+        padding-right: 18em;
+        }
+        
+        .ql-viewer .ql-indent-7:not(.ql-direction-rtl) {
+        padding-left: 21em;
+        }
+        
+        .ql-viewer .ql-indent-7.ql-direction-rtl.ql-align-right {
+        padding-right: 21em;
+        }
+        
+        .ql-viewer .ql-indent-8:not(.ql-direction-rtl) {
+        padding-left: 24em;
+        }
+        
+        .ql-viewer .ql-indent-8.ql-direction-rtl.ql-align-right {
+        padding-right: 24em;
+        }
+        
+        .ql-viewer .ql-indent-9:not(.ql-direction-rtl) {
+        padding-left: 27em;
+        }
+        
+        .ql-viewer .ql-indent-9.ql-direction-rtl.ql-align-right {
+        padding-right: 27em;
+        }
+
+        /* video */
+        .ql-viewer .ql-video {
+        display: block;
+        max-width: 100%;
+        }
+        .ql-viewer .ql-video.ql-align-center {
+        margin: 0 auto;
+        }
+        .ql-viewer .ql-video.ql-align-right {
+        margin: 0 0 0 auto;
+        }
+
+         
+        
+        
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col">
+                <div id="quill-toolbar"></div>
+                <div id="quill-editor"></div>
+            </div>
+            <div class="col  ">
+                <div class="ql-container aql-snow">
+                    <div id="converted-view" class="ql-viewer"
+                        style="margin-top:69px;border-top:1px solid #cecece;"></div>
+                 </div>
+            </div>
+        </div>
+        
+        <div class="row pt-3">
+            <div class="col"></div>
+            <div class="col">
+                Open developer <code>console</code> to see deltas and generated html. 
+                <br />
+                You can pass config options for <code>QuillDeltaToHtmlConverter</code> 
+                used here by setting <code>window.opts_ = { /* config object */}</code> to a 
+                configuration object
+            </div>
+        </div>
+    </div>
+    <script src="dist/browser/QuillDeltaToHtmlConverter.bundle.js"></script>
+    <script src="https://cdn.quilljs.com/1.2.3/quill.js"></script>
+    <script>
+        var toolbarOptions = [
+            ['bold', 'italic', 'underline', 'strike',
+                {
+                    'script': 'sub'
+                }, {
+                    'script': 'super'
+                },
+                {
+                    'color': []
+                }, {
+                    'background': []
+                }, 'code'
+            ],
+            [{
+                'font': []
+            }, {
+                'size': ['small', false, 'large', 'huge']
+            }],
+
+            ['link', 'image', 'video', 'formula'],
+            ['blockquote', 'code-block', {
+                    'header': 1
+                },
+                {
+                    'list': 'ordered'
+                }, {
+                    'list': 'bullet'
+                }, {
+                    'list': 'check'
+                }
+            ],
+            [{
+                'indent': '-1'
+            }, {
+                'indent': '+1'
+            }, {
+                'direction': 'rtl'
+            }, {
+                'align': []
+            }],
+            ['clean']
+        ];
+        var quill = new Quill('#quill-editor', {
+            theme: 'snow',
+            placeholder: 'type here...',
+            formula: true,
+            syntax: true,
+            modules: {
+                toolbar: toolbarOptions
+            }
+        });
+
+        quill.on('text-change', function (v) {
+            var delta = quill.getContents();
+            console.log(delta.ops);
+            var qdc = new window.QuillDeltaToHtmlConverter(delta.ops, window.opts_ || {});
+            var html = qdc.convert();
+            console.log(html);
+            document.getElementById('converted-view').innerHTML = html;
+            
+        });
+
+    </script>
+   
+</body>
+
+</html>

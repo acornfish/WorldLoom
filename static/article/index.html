@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>World Loom</title>
+    <link href="/libs/quill.snow.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="/global.css" />
+    <link href="/libs/select2.min.css" rel="stylesheet" />
+    <link href="/libs/filepond.css" rel="stylesheet" />
+    <link href="/libs/filepond-plugin-image-preview.css" rel="stylesheet" />
+
+    <script type="module" src="/global-head.js"></script>
+    <script>
+      if (
+        sessionStorage.getItem("Article") == null &&
+        new URLSearchParams(window.location.search).get("new") === null
+      )
+        window.location = "/articles";
+    </script>
+    <script src="app.js" type="module" defer></script>
+  </head>
+  <body>
+    <div class="navbar"></div>
+    <div class="topbar">
+      <div class="topbar-section clickable" index="0">Content</div>
+      <div class="topbar-section clickable" index="1">Design</div>
+      <div class="topbar-section clickable" index="2">Settings</div>
+    </div>
+    <div class="editor-panel">
+      <div class="tab content-tab" index="0"></div>
+      <div class="tab design-tab" index="1">
+        <form action="" class="filepond-form"> 
+          <div class="prompt-container">
+            <h2 class="thumbnail-prompt-title prompt-label">Thumbnail (4:1)</h2>
+            <input type="file" class="thumbnail-prompt">  
+          </div>
+          <div class="prompt-container">
+            <h2 class="banner-prompt-title prompt-label">Banner (16:9)</h2>
+            <input type="file" class="banner-prompt">
+          </div>
+        </form>
+      </div>
+      <div class="tab settings-tab" index="2">
+        <form>
+          <h2>Template</h2>
+          <div id="type-selector-container">
+            <select name="type" id="type-selector" style="width: 100%;"> 
+            </select>
+          </div>
+        </form>
+      </div> 
+    </div>
+    <input type="button" class="save-button" value="Save"></input>
+  </body>
+</html>
+

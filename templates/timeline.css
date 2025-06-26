@@ -1,0 +1,82 @@
+:root {
+    --background-color: wheat;
+    --menu-color: #929292;
+    --text-color: #ffffff !important;
+}
+
+html {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: var(--background-color);
+    overflow-x: hidden;
+    object-fit: fill;
+    font-family: 'rubik', Arial, Helvetica, sans-serif;
+}
+
+#timeline-container {
+    width: 80%;
+    height: 80%;
+    position: absolute;
+    left: 12vw;
+    top: 52%;
+    transform: translate(0%, -50%);
+    background-color: var(--menu-color);
+    display: flex;
+    justify-content: center;
+}
+
+#timeline {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+
+.reverse-triangle {
+    width: 0;
+    height: 0;
+    border-left: 2vh solid transparent;
+    border-right: 2vh solid transparent;
+    border-top: 4vh solid var(--menu-color);
+    z-index: 9;
+}
+
+.vertical-line {
+    position: relative;
+    width: 2px;
+    height: 100%;
+    background-color: var(--text-color);
+    z-index: 3;
+}
+
+.century-marker {
+    position: absolute;
+    height: 116%;
+    width: 8vh;
+    top: -16%;
+    left: 50%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-direction: column;
+    z-index: 9;
+}
+
+.century-text {
+    min-width: 100%;
+    text-align: center;
+    color: var(--menu-color);
+    user-select: none;
+}
