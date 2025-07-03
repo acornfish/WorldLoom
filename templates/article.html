@@ -11,13 +11,13 @@
 <body style="background-image: url(${image});">
     <div class="container">
         <div class="main-container">
+            <img onerror="this.remove()" src="${banner}" alt="" class="banner">
             <div class="title">
                 <h2>${title}</h2>
+            </div> 
+            <div class="main-text">
+                ${maintext}
             </div>
-            <div class="main-text">${maintext}</div>
-        </div>
-        <div class="side-container">
-            <div class="image-container"><img src="${image}" alt="${image}"></div>${sidetext}
         </div>
     </div>
 </body>

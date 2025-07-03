@@ -1,20 +1,39 @@
+const { cwd } = require("process");
 const {
     FileManager,
-    DirectoryManager
+    DirectoryManager,
 } = require("./FileManager")
+const Path = require("path")
 
-exports.createMainPage = function (articleNames) {
-        FileManager.deleteFSNode("./files/output")
+exports.createMainPage = function (project, articles, manuscriptNames, mapNames) {
+        if(DirectoryManager.directoryExists(FileManager.outputDir)){
+            FileManager.deleteFSNode(FileManager.outputDir)
+        }
         DirectoryManager.createDirectory(
-            "./files/output",
+            FileManager.outputDir,
             "Output directory");
 
-        let articleList = []
-        articleNames.forEach(article => {
+        let articleList = ""
+        let manuscriptList = ""
+        let mapList = ""
+
+        let tree = buildTree(articles)
+        
+        for (const child of tree[0]["children"]){
+            console.log(child)
+            if(child["type"] != "default"){
+                articleList += `<li><a href="articles/${
+                    encodeURIComponent(encodeURIComponent(child["text"])) //this is necessary for filesystem compatiblity
+                }.html">${child["text"]}</a></li>`
+            }else{
+                articleList += `<li><a href="articles/${
+                    encodeURIComponent(encodeURIComponent(child["text"]))
+                }/index.html">${child["text"]}</a></li>`
             
-        });
+            }
+        }
 
-
+        console.log(articleList)
         let outputIndex = fetchTemplate("index");
         outputIndex = outputIndex
             .replaceAll("${projectName}", project)
@@ -22,12 +41,150 @@ exports.createMainPage = function (articleNames) {
             .replaceAll("${ManuscriptList}", manuscriptList)
             .replaceAll("${mapList}", mapList)
 
+        FileManager.writeFileToOutput("index.html", outputIndex);
 }
 
-exports.exportArticles = function () {
+exports.copyStyleFiles = function () {
+    FileManager.copyResourcesToOutput()
+}
+
+exports.exportArticles = function (project, articles, templates, resources) {
+    let articleOutputDir = Path.join(FileManager.outputDir, "articles")
+
+    let traverseArticleTree = (currentNode, currentPath) => {
+        let newPath;
+        //process this one
+        if(currentNode.type == "default"){
+            //its a folder
+            if(!(currentNode.id == "root")){
+                newPath = Path.join(currentPath, encodeURIComponent(currentNode["text"]))
+                DirectoryManager.createDirectory(newPath)    
+
+                let template = fetchTemplate("subdirIndex")
+                let children = ""
+
+                currentNode["children"].forEach(child => {
+                    children += `
+                        <li class="${child.type}"><a href="${
+                            child.type === "default"
+                            ? encodeURIComponent(child["text"]) + "/index.html"
+                            : encodeURIComponent(child["text"]) + ".html"}">${child["text"]}</a></li>
+                    `
+                })
+
+                let content = template.replace("${name}", currentNode["text"]).replace("${files}", children)
+
+                FileManager.writeFile(Path.join(newPath, "index.html"), content)
+            }
+
+            //traverse children
+            currentNode["children"].forEach((child) => traverseArticleTree(child, 
+                (currentNode.id == "root") ? currentPath : newPath
+            ));
+        }else{
+            //its a file, yuppy
+            newPath = Path.join(currentPath, encodeURIComponent(currentNode["text"]) + ".html")
+            let content = ""
+            let template = fetchTemplate("article")
+            let data = JSON.parse(
+                FileManager.readFromDataDirectory("articles", project, currentNode["data"]["uid"])
+            )
+
+            if(!data){
+                return
+            }
+
+            let articleDataTemplate = templates.find(t=> {
+                return t["name"] == data["data"]["settings"]["templateName"]
+            });
+
+            if(articleDataTemplate == undefined){
+                console.log(`Article named ${currentNode["text"]} doesn't have a template`)
+                return
+            }
+
+            let banner;
+            if(data["data"]["design"]["banner"]){
+                banner = resources.findResourceOutput(data["data"]["design"]["banner"], project)
+            }
+            content = buildArticle(template, data["name"], data["data"], articleDataTemplate, banner)
+
+            FileManager.writeFile(newPath, content)
+        }
+        
+    }
+
     DirectoryManager.createDirectory(
-        "./files/articles",
+        articleOutputDir,
         "Output article directory");
+
+    let tree = buildTree(articles)
+    traverseArticleTree(tree[0], articleOutputDir)
+  
+}
+
+function buildTree(flatList) {
+    const idToNode = {};
+    const rootNodes = [];
+
+    flatList.forEach(node => {
+        idToNode[node.id] = { ...node, children: [] };
+    });
+
+    flatList.forEach(node => {
+        if (node.parent === "#" || node.parent === null) {
+            rootNodes.push(idToNode[node.id]);
+        } else {
+            const parent = idToNode[node.parent];
+            if (parent) {
+                parent.children.push(idToNode[node.id]);
+            } else {
+                console.warn(`Parent not found: ${node.parent}`);
+            }
+        }
+    });
+
+    return rootNodes;
+}
+
+function buildArticle(htmlTemplate, name, data, template, banner){
+    let shortText = "<div><h3>${Name}: </h3><p>${content}</p></div>"
+    let reference = "<div><h3>${Name}: </h3><a href='${link}'>${content}</a></div>"
+    let number = "<div><h3>${Name}: </h3><p>${content}</p></div>"
+    let richText = "<div><h3>${Name}: </h3><div class='rich-text'>${content}</div></div>"
+    
+    if(!(data["content"])){
+        return htmlTemplate.replaceAll("\$\{[^}]*\}", "")
+    }
+
+    //TODO: replace by stored indexes
+    let articleDocument = htmlTemplate
+    .replace(/\$\{banner\}/g, banner|| "")
+    .replace(/\$\{title\}/g, name || "");
+
+    let dataDocument = ""
+    for (const prompt of template["template"]){
+        switch (prompt["type"]){
+            case "Short Text":
+                dataDocument += shortText.replace("${Name}", prompt["promptName"])
+                .replace("${content}", data["content"][prompt["promptName"]]);
+                break;
+            case "Rich Text":
+                dataDocument += richText.replace("${Name}", prompt["promptName"])
+                .replace("${content}", data["content"][prompt["promptName"]]);
+                break;
+            case "Number": 
+                dataDocument += number.replace("${Name}", prompt["promptName"])
+                                .replace("${content}", data["content"][prompt["promptName"]]);
+                break;
+            case "Reference": 
+                dataDocument += reference.replace("${Name}", prompt["promptName"])
+                                .replace("${content}", data["content"][prompt["promptName"]]);
+
+        }
+    }
+
+    return articleDocument.replace("${maintext}", dataDocument)
 }
 
 let templates = {}
@@ -36,7 +193,7 @@ function fetchTemplate(tempName) {
     if (templates[tempName]) return templates[tempName];
     let decoder = new TextDecoder("utf8");
     try {
-        let res = decoder.decode(FileManager.readFile(Path.join(".", "templates", tempName) + ".html"));
+        let res = decoder.decode(FileManager.readFile(Path.join(cwd(), "templates", tempName) + ".html"));
         templates[tempName] = res;
         return res;
     } catch {

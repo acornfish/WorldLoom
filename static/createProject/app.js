@@ -21,8 +21,6 @@ $(".submit-button").on("click", () => {
         } else {
             window.showToast("Failed to create project","danger", 3000)
         }
-
-
     }
 
 })

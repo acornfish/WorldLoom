@@ -478,10 +478,10 @@ $(() => {
     fetchArticle(
         (data) => {
             //sucess
-            if(data["data"]["settings"]["type"]){
-                localStorage.setItem("TemplateName", data["data"]["settings"]["type"])
+            debugger
+            if(data["data"]["settings"]["templateName"]){
+                localStorage.setItem("TemplateName", data["data"]["settings"]["templateName"])
             }
-
 
             tabs[1].setContent(data["data"]["design"]["thumbnail"], data["data"]["design"]["banner"])
 

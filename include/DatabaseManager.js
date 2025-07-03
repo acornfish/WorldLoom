@@ -158,6 +158,17 @@ class ResourceManager {
       return this.#db.getSubdir(project,"resources")[index]["path"]
     }    
   }
+  
+  findResourceOutput(hash, project) {
+    let index = this.findResource(hash, project)
+    if(index == -1){
+      return false
+    }else{
+      const Path = require("path")
+      return Path.join("/resources", encodeURIComponent(encodeURIComponent(project)),
+            Path.basename(this.#db.getSubdir(project,"resources")[index]["path"]))
+    }    
+  }
 
   removeResource(hash, project){
     let index = this.findResource(hash, project)

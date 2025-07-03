@@ -4,6 +4,7 @@ const Path = require("node:path");
 const { FgBlue, FgGreen, FgRed, Reset, Underscore } = require("./Colors");
 const {LogManager} = require("./LogManager");
 const { existsSync } = require("node:fs");
+const { cwd } = require("node:process");
 
 class DirectoryManager {
   static createDirectory(path, onFailMessage, onSuccessAction = null) {
@@ -19,28 +20,18 @@ class DirectoryManager {
     }
   }
 
-  static fetchAllfiles(fullPath) {
-    let files = [];
-    FS.readdirSync(fullPath).forEach((file) => {
-      const absolutePath = Path.join(fullPath, file);
-      if (FS.statSync(absolutePath).isDirectory()) {
-        const filesFromNestedFolder = fetchAllfiles(absolutePath);
-        filesFromNestedFolder.forEach((file) => {
-          files.push(file);
-        });
-      } else return files.push(absolutePath);
-    });
-    return files;
+  static  directoryExists(path){
+      return FS.existsSync(path)
   }
 }
 
 class FileManager {
   static templates = {};
-  static outputDir = Path.join(__dirname, "..", "files", "output");
+  static outputDir = Path.join(cwd(), "files", "output");
 
   static writeFileToOutput(filename, content) {
     try {
-      FS.writeFileSync(Path.join(outputDir, filename), content, {
+      FS.writeFileSync(Path.join(FileManager.outputDir, filename), content, {
         encoding: "utf8",
       });
     } catch (e) {
@@ -50,12 +41,12 @@ class FileManager {
   }
 
   static copyResourcesToOutput() {
-    let files = fetchAllfiles("./templates");
+    let files = this.fetchAllfiles(Path.join(cwd(), "templates"));
     for (let file of files) {
       if (file.endsWith(".css")) {
         FS.cpSync(
-          Path.join(__dirname, file),
-          Path.join(outputDir, Path.basename(file)),
+          file,
+          Path.join(FileManager.outputDir, Path.basename(file)),
           {
             force: true,
           }
@@ -65,13 +56,28 @@ class FileManager {
 
     FS.cpSync(
       Path.join(".", "files", "resources"),
-      Path.join(outputDir, "resources"),
+      Path.join(FileManager.outputDir, "resources"),
       {
         force: true,
         recursive: true,
       }
     );
   }
+
+  static fetchAllfiles (fullPath) {
+    let files = [];
+    FS.readdirSync(fullPath).forEach(file => {
+        const absolutePath = Path.join(fullPath, file);
+        if (FS.statSync(absolutePath).isDirectory()) {
+            const filesFromNestedFolder = this.fetchAllfiles(absolutePath);
+            filesFromNestedFolder.forEach(file => {
+                files.push(file);
+            })
+        } else return files.push(absolutePath);
+    });
+    return files
+}
+
 
   static fetchTemplate(tempName) {
     if (templates[tempName]) return templates[tempName];
@@ -110,6 +116,10 @@ class FileManager {
       return false
     }
     try{
+      if (FS.lstatSync(path).isDirectory()) {
+        FS.rmdirSync(path, {recursive: true})
+        return true
+      }
       FS.rmSync(path)
     }catch(err){
       LogManager.error(`${FgRed}Failed to delete ${path}: ${err} ${Reset}`);

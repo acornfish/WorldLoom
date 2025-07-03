@@ -11,7 +11,7 @@ $(".export-button").on("click", () => {
 
 $(".export-html-button").on("click", () => {
     window.saveData();
-    window.open("/api/exportProject?Project=" + localStorage.getItem("CurrentProject"))
+    window.open("/api/exportProject?project=" + localStorage.getItem("CurrentProject"))
     window.showToast("Exporting...", "info", 1000)
 })
 

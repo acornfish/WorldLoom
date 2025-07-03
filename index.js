@@ -37,6 +37,7 @@ const {
 const {
     LogManager
 } = require("./include/LogManager");
+const ExportManager = require("./include/ExportManager")
 const { json } = require("stream/consumers");
 
 process.chdir(__dirname);
@@ -441,6 +442,28 @@ app.get("/api/getTemplateList", (req,res) => {
     let templates = db.getSubdir(project, "templates")
 
     res.status(200).send(templates.map(x => x.name))
+})
+
+app.get("/api/exportProject", (req,res) => {
+    let project = req.query["project"]
+
+    if(!db.checkProjectExists(project))
+    {
+        res.status(404).send("Fail: project does not exist")
+        return
+    }
+
+    let articles = db.getSubdir(project, "articles")
+
+    
+    ExportManager.createMainPage(project, articles, [], [])
+    ExportManager.copyStyleFiles()
+    ExportManager.exportArticles(project, 
+        articles, 
+        db.getSubdir(project,"templates"),
+        resources)
+
+    res.status(200).send("templates.map(x => x.name)")
 })
 
 
