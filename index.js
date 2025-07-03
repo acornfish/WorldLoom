@@ -454,7 +454,6 @@ app.get("/api/exportProject", (req,res) => {
     }
 
     let articles = db.getSubdir(project, "articles")
-
     
     ExportManager.createMainPage(project, articles, [], [])
     ExportManager.copyStyleFiles()
@@ -463,7 +462,7 @@ app.get("/api/exportProject", (req,res) => {
         db.getSubdir(project,"templates"),
         resources)
 
-    res.status(200).send("templates.map(x => x.name)")
+    ExportManager.extract(project, res);
 })
 
 

@@ -4,6 +4,7 @@ const {
     DirectoryManager,
 } = require("./FileManager")
 const Path = require("path")
+const Archiver = require("archiver")
 
 exports.createMainPage = function (project, articles, manuscriptNames, mapNames) {
         if(DirectoryManager.directoryExists(FileManager.outputDir)){
@@ -20,7 +21,6 @@ exports.createMainPage = function (project, articles, manuscriptNames, mapNames)
         let tree = buildTree(articles)
         
         for (const child of tree[0]["children"]){
-            console.log(child)
             if(child["type"] != "default"){
                 articleList += `<li><a href="articles/${
                     encodeURIComponent(encodeURIComponent(child["text"])) //this is necessary for filesystem compatiblity
@@ -199,4 +199,31 @@ function fetchTemplate(tempName) {
     } catch {
         throw new Error("Template " + tempName + " not found")
     }
+}
+
+exports.extract = function (project, res){
+    let outputDir = Path.join(cwd(), "files", "output")
+
+    const archive = Archiver('zip', {
+        zlib: {
+            level: 9
+        }
+    });
+
+    res.writeHead(200, {
+        'Content-Type': 'application/zip',
+        'Content-Disposition': 'attachment; filename="' + project + '.zip"'
+    });
+
+    archive.on('data', (chunk) => {
+        res.write(chunk);
+    });
+
+    archive.on('finish', () => {
+        res.end()
+    });
+
+    archive.directory(outputDir, false)
+
+    archive.finalize()
 }
