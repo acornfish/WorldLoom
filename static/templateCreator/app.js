@@ -159,6 +159,15 @@ $(() => {
             container.append(promptTemplate)
             let promptContainer = container.children().last()
     
+
+            templates.forEach(name => {
+                $(".prompt-data-container .reference-type").last().append(
+                    `
+                        <option value="${name}">${name}</option>
+                    `
+                )
+            })
+
             promptContainer.children("input[type=text]").val(promptC["promptName"])
             promptContainer.children(".prompt-type").val(promptC["type"])
             promptContainer.children(".reference-type").val(promptC["rtype"])

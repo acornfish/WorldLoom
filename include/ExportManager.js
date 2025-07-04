@@ -23,7 +23,7 @@ exports.createMainPage = function (project, articles, manuscriptNames, mapNames)
         for (const child of tree[0]["children"]){
             if(child["type"] != "default"){
                 articleList += `<li><a href="articles/${
-                    encodeURIComponent(encodeURIComponent(child["text"])) //this is necessary for filesystem compatiblity
+                    encodeURIComponent(encodeURIComponent(child["text"]))
                 }.html">${child["text"]}</a></li>`
             }else{
                 articleList += `<li><a href="articles/${

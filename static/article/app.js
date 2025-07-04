@@ -13,53 +13,50 @@ var imageIDS = {}
 
 const filePondConfig = (proj, type) => {
     return {
-        instantUpload: false, 
+        instantUpload: false,
         acceptedFileTypes: ['image/*'],
         server: {
-          process: {
-            url: '/api/filepond/upload',
-            method: 'POST',
-            headers: {
-                //form data is not available when processing with multer so I have to pack 
-                //these here
-                'x-file-data': encodeURIComponent(btoa(JSON.stringify(
-                {
-                    projectName: encodeURIComponent(proj),
-                    type: type
-                })))
+            process: {
+                url: '/api/filepond/upload',
+                method: 'POST',
+                headers: {
+                    //form data is not available when processing with multer so I have to pack 
+                    //these here
+                    'x-file-data': encodeURIComponent(btoa(JSON.stringify({
+                        projectName: encodeURIComponent(proj),
+                        type: type
+                    })))
+                },
+                onload: (response) => {
+                    imageIDS[type] = response
+                }
             },
-            onload: (response) => {
-               imageIDS[type] = response
-            }
-          },
-          load: {
-            url: '/api/filepond/load',
-            method: 'POST',
-            headers: {
-                //form data is not available when processing with multer so I have to pack 
-                //these here
-                'x-file-data': encodeURIComponent(btoa(JSON.stringify(
-                {
-                    projectName: encodeURIComponent(proj),
-                    type: type
-                })))
-            }
-          },
-          revert: {
-            url: '/api/filepond/remove',
-            headers: {
-                //form data is not available when processing with multer so I have to pack 
-                //these here
-                'x-file-data': encodeURIComponent(btoa(JSON.stringify(
-                {
-                    projectName: encodeURIComponent(proj),
-                    type: type
-                })))
+            load: {
+                url: '/api/filepond/load',
+                method: 'POST',
+                headers: {
+                    //form data is not available when processing with multer so I have to pack 
+                    //these here
+                    'x-file-data': encodeURIComponent(btoa(JSON.stringify({
+                        projectName: encodeURIComponent(proj),
+                        type: type
+                    })))
+                }
             },
-            onload: (response) => {
-                imageIDS[type] = null
-             }
-          }
+            revert: {
+                url: '/api/filepond/remove',
+                headers: {
+                    //form data is not available when processing with multer so I have to pack 
+                    //these here
+                    'x-file-data': encodeURIComponent(btoa(JSON.stringify({
+                        projectName: encodeURIComponent(proj),
+                        type: type
+                    })))
+                },
+                onload: (response) => {
+                    imageIDS[type] = null
+                }
+            }
 
         }
     }
@@ -70,7 +67,7 @@ let richtexts = []
 var globTemplate = []
 
 
-function quillFactory(parent){
+function quillFactory(parent) {
     let quillTopbar = [
         [{
             'header': [1, 2, false]
@@ -81,26 +78,30 @@ function quillFactory(parent){
             'list': 'ordered'
         }, {
             'list': 'bullet'
-        },{ 'color': [] }]
+        }, {
+            'color': []
+        }]
     ]
 
     //TODO: rewrite this
     const handleQuillLinks = (value) => {
         if (value) {
             var href = prompt('Name:')
-            if (href.startsWith("manuscript:")){
-                this.quill.format('link', `/index.html?ref=${encodeURIComponent(href.split(':')[1])}&type=manuscript`)
-            } else if (href.startsWith("map:")){
+            if (href.startsWith("manuscript:")) {
+                this.quill.format('link',
+                    `/index.html?ref=${encodeURIComponent(href.split(':')[1])}&type=manuscript`)
+            } else if (href.startsWith("map:")) {
                 this.quill.format('link', `/index.html?ref=${encodeURIComponent((href.split(':')[1]))}&type=map`)
             } else {
-                this.quill.format('link', `/index.html?ref=${encodeURIComponent((href.split(':')[1]))}&type=article`)
-            } 
+                this.quill.format('link',
+                    `/index.html?ref=${encodeURIComponent((href.split(':')[1]))}&type=article`)
+            }
         } else {
             this.quill.format('link', false)
-        }       
+        }
     }
 
-    let quillContainer = document.createElement("div") 
+    let quillContainer = document.createElement("div")
     let quillTextarea = document.createElement("div")
     quillContainer.appendChild(quillTextarea)
 
@@ -121,7 +122,7 @@ function quillFactory(parent){
                     link: handleQuillLinks,
                 }
             }
-        }, 
+        },
 
     })
 
@@ -135,7 +136,7 @@ function modifyArticle(dataObj) {
     xhr.open("POST", "/api/modifyArticle", true);
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 window.showToast(`Save Successful`, "success", 2000);
@@ -159,7 +160,7 @@ function modifyArticle(dataObj) {
 
 
 async function getTemplateList(callback) {
-    await window.waitForVariable("CurrentProject")   
+    await window.waitForVariable("CurrentProject")
 
     const xhr = new XMLHttpRequest();
     xhr.open("GET", `/api/getTemplateList?project=${localStorage.getItem("CurrentProject")}`, true);
@@ -167,7 +168,7 @@ async function getTemplateList(callback) {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             let data = null;
-            
+
             try {
                 data = JSON.parse(xhr.responseText);
             } catch (e) {
@@ -186,30 +187,31 @@ function fetchArticle(onSuccess, onError) {
     const url = new URL("/api/fetchArticle", window.location.origin);
     url.searchParams.set("project", (localStorage.getItem("CurrentProject")));
     url.searchParams.set("uid", sessionStorage.getItem("Article"));
-  
+
     const xhr = new XMLHttpRequest();
     xhr.open("GET", url.toString(), true);
     xhr.responseType = "json";
-  
+
     xhr.onload = () => {
-      if (xhr.status === 200) {
-        onSuccess(xhr.response);
-      } else {
-        onError(`Error ${xhr.status}: ${xhr.statusText}`);
-      }
+        if (xhr.status === 200) {
+            onSuccess(xhr.response);
+        } else {
+            onError(`Error ${xhr.status}: ${xhr.statusText}`);
+        }
     };
-  
+
     xhr.onerror = () => {
-      onError("Network Error or CORS issue");
+        onError("Network Error or CORS issue");
     };
-  
+
     xhr.send(); // no body allowed for GET
 }
 
 function fetchReferenceables(type, callback) {
     const xhr = new XMLHttpRequest();
-    const url = `/api/fetchReferenceables?project=${encodeURIComponent(localStorage.getItem("CurrentProject"))}&type=${encodeURIComponent(type)}`;
-    
+    const url =
+        `/api/fetchReferenceables?project=${encodeURIComponent(localStorage.getItem("CurrentProject"))}&type=${encodeURIComponent(type)}`;
+
     xhr.open("GET", url, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
@@ -227,10 +229,13 @@ function fetchReferenceables(type, callback) {
     };
     xhr.send();
 }
+
 function getTemplate(callback) {
     const xhr = new XMLHttpRequest();
-    
-    xhr.open("GET", `/api/getTemplate?project=${localStorage.getItem("CurrentProject")}&name=${localStorage.getItem("TemplateName")}`, true);
+
+    xhr.open("GET",
+        `/api/getTemplate?project=${localStorage.getItem("CurrentProject")}&name=${localStorage.getItem("TemplateName")}`,
+        true);
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -248,14 +253,14 @@ function getTemplate(callback) {
 }
 
 
-class ContentTab{
-    constructor(){
+class ContentTab {
+    constructor() {
         //create the form and fill it
         this.form = $(document.createElement("form"))
         $(".content-tab").append(this.form)
     }
 
-    addPrompts(template ,content){
+    addPrompts(template, content) {
         template.forEach(p => {
             //Create a container 
             let containerElement = $(`<div class="prompt-container"></div>`)
@@ -265,39 +270,41 @@ class ContentTab{
             let titleElement = $(`<h3 class="prompt-label">${p.promptName}</h3>`)
             containerElement.append(titleElement)
 
-            if(p.type === "Number"){
+            if (p.type === "Number") {
                 let element = $(`<input type="number" class="number-prompt prompt" name=${p.promptName}>`)
                 element.on("keydown", (event) => {
                     //prevent writing if text is something else than Ctrl, backspace, delete or a number
-                    if(!(event.key == "Backspace" || event.key == "Delete" || 
-                         (event.ctrlKey && event.key != "v"))
-                         && isNaN(parseInt(event.key))){
+                    if (!(event.key == "Backspace" || event.key == "Delete" ||
+                            (event.ctrlKey && event.key != "v")) &&
+                        isNaN(parseInt(event.key))) {
                         event.preventDefault()
                     }
                 })
                 containerElement.append(element)
-                if (content){
+                if (content) {
                     element.val(content[p.promptName])
                 }
-            }else if (p.type === "Rich Text"){
-                quillFactory(containerElement)           
-                if (content){
-                    richtexts[richtexts.length-1].setContents(content[p.promptName])    
+            } else if (p.type === "Rich Text") {
+                quillFactory(containerElement)
+                if (content) {
+                    richtexts[richtexts.length - 1].setContents(content[p.promptName])
                 }
-            }else if (p.type === "Short Text"){
+            } else if (p.type === "Short Text") {
                 let element = $(`<input type="text" class="text-prompt prompt" name=${p.promptName}>`)
                 containerElement.append(element)
-                if (content){
+                if (content) {
                     element.val(content[p.promptName])
                 }
-            }else if (p.type == "Reference"){
+            } else if (p.type == "Reference") {
                 let element = $(`<select name="${p.promptName}"  class="reference-prompt prompt"></select>`)
                 containerElement.append(element)
-                if (p.rtype){
+                if (p.rtype) {
                     fetchReferenceables(p.rtype, (status, data) => {
-                        if(status == 200){
-                            data.forEach(element => {
-                                console.log(element)
+                        if (status == 200) {
+                            data.forEach(opt => {
+                                element.append(`
+                                    <option value="${opt.uid}">${opt.text}</option>
+                                `)
                             });
                         }
                     })
@@ -308,40 +315,40 @@ class ContentTab{
         })
     }
 
-    async fetchContent(){
+    async fetchContent() {
         //Fetch references to input elements
         //richtexts are tracked seperately
         let textPrompts = this.form.find(".text-prompt")
         let numberPrompts = this.form.find(".number-prompt")
         let referencePrompts = this.form.find(".reference-prompt")
-        
+
         //Track the last fetched input in category
         let textPromptCounter = 0,
             numberPromptCounter = 0,
             referencePromptCounter = 0,
             richtextPromptCounter = 0
-       
+
         //Initalize the object to store article
         let articleData = {}
 
         //loop over the definitions in template and fetch all content
         globTemplate.forEach(promptDefinition => {
-            if(promptDefinition.type === "Number"){
+            if (promptDefinition.type === "Number") {
                 let current = (numberPrompts.eq(numberPromptCounter))
                 articleData[promptDefinition.promptName] = (current.val())
                 numberPromptCounter++
 
-            }else if(promptDefinition.type === "Short Text"){
+            } else if (promptDefinition.type === "Short Text") {
                 let current = (textPrompts.eq(textPromptCounter))
                 articleData[promptDefinition.promptName] = (current.val())
                 textPromptCounter++
 
-            }else if(promptDefinition.type === "Reference"){
+            } else if (promptDefinition.type === "Reference") {
                 let current = (referencePrompts.eq(referencePromptCounter))
                 articleData[promptDefinition.promptName] = ":@" + (current.val())
                 referencePromptCounter++
 
-            }else if(promptDefinition.type === "Rich Text"){
+            } else if (promptDefinition.type === "Rich Text") {
                 let current = (richtexts.at(referencePromptCounter))
                 articleData[promptDefinition.promptName] = (current.getContents())
                 richtextPromptCounter++
@@ -352,33 +359,37 @@ class ContentTab{
         return articleData
     }
 
-    activate(){}
-    deactivate(){}
+    activate() {}
+    deactivate() {}
 }
 
-class DesignTab{
-    constructor(){
+class DesignTab {
+    constructor() {
         //turn normal inputs into filepond inputs
         $(".thumbnail-prompt").filepond(filePondConfig(
             localStorage.getItem("CurrentProject"),
             "thumbnail"
         ))
-        
+
         $(".banner-prompt").filepond(filePondConfig(
             localStorage.getItem("CurrentProject"),
             "banner"
         ));
 
         $(".thumbnail-prompt").on('FilePond:removefile', (e) => {
-            $('.thumbnail-prompt').filepond("removeFile", imageIDS["thumbnail"], { revert: true })
+            $('.thumbnail-prompt').filepond("removeFile", imageIDS["thumbnail"], {
+                revert: true
+            })
             imageIDS["thumbnail"] = null
         });
 
         $(".banner-prompt").on('FilePond:removefile', (e) => {
-            $('.banner-prompt').filepond("removeFile", imageIDS["banner"], { revert: true })
+            $('.banner-prompt').filepond("removeFile", imageIDS["banner"], {
+                revert: true
+            })
             imageIDS["banner"] = null
-    
-        });          
+
+        });
 
         //listen for upload event
         $('.thumbnail-prompt').on('FilePond:processfiles', function (e) {
@@ -392,44 +403,48 @@ class DesignTab{
     }
 
 
-    async fetchContent(){
+    async fetchContent() {
         await $('.thumbnail-prompt').filepond("processFiles")
         await $('.banner-prompt').filepond("processFiles")
 
         return imageIDS
     }
 
-    setContent(thumbnail, banner){
+    setContent(thumbnail, banner) {
         imageIDS["thumbnail"] = thumbnail
         imageIDS["banner"] = banner
 
-        if(thumbnail){
-            $(".thumbnail-prompt").filepond("addFile", thumbnail, { type: 'local' })
+        if (thumbnail) {
+            $(".thumbnail-prompt").filepond("addFile", thumbnail, {
+                type: 'local'
+            })
         }
-        if(banner){
-            $(".banner-prompt").filepond("addFile", banner, { type: 'local' })
+        if (banner) {
+            $(".banner-prompt").filepond("addFile", banner, {
+                type: 'local'
+            })
         }
     }
 
-    activate(){}
-    deactivate(){}
+    activate() {}
+    deactivate() {}
 }
 
-class SettingsTab{
-    constructor(){}
-    async fetchContent(){
+class SettingsTab {
+    constructor() {}
+    async fetchContent() {
         return {
             templateName: localStorage.getItem("TemplateName")
         }
     }
-    activate(){}
-    deactivate(){}
+    activate() {}
+    deactivate() {}
 }
 
 var activeTab = 0 // Content Design Settings
-const tabs = [new ContentTab(), new DesignTab(),new SettingsTab()]
+const tabs = [new ContentTab(), new DesignTab(), new SettingsTab()]
 
-function setTab(index){
+function setTab(index) {
     tabs[activeTab].deactivate()
     $(".topbar-section").removeClass("selected-section")
     $(".tab").removeClass("active-tab")
@@ -453,22 +468,22 @@ $.fn.filepond.registerPlugin(FilePondPluginFileValidateType);
 
 $(() => {
     getTemplateList((status, data) => {
-        if(status == 200){
+        if (status == 200) {
             data.forEach(x => {
                 $("#type-selector").append(`
                         <option value="${x}">${x}</option>
-                    `)        
+                    `)
             })
 
             $("#type-selector").select2({
                 width: "resolve"
             })
-            
+
             $('#type-selector').on('select2:select', function (e) {
                 localStorage.setItem("TemplateName", e.params.data.text)
                 window.location.reload()
             });
-            
+
         }
     })
 
@@ -478,20 +493,18 @@ $(() => {
     fetchArticle(
         (data) => {
             //sucess
-            debugger
-            if(data["data"]["settings"]["templateName"]){
+            if (data["data"]["settings"]["templateName"]) {
                 localStorage.setItem("TemplateName", data["data"]["settings"]["templateName"])
             }
 
             tabs[1].setContent(data["data"]["design"]["thumbnail"], data["data"]["design"]["banner"])
 
             getTemplate((status, temp) => {
-                if(status == 200){
-                    tabs[0].addPrompts( temp, data["data"]["content"])
+                if (status == 200) {
+                    tabs[0].addPrompts(temp, data["data"]["content"])
                     $("#type-selector").val(localStorage.getItem("TemplateName"))
                     $("#type-selector").trigger("change")
-                }else
-                {
+                } else {
                     window.showToast(`Couldn't fetch template`, "danger", 2000);
                 }
             })
@@ -500,12 +513,11 @@ $(() => {
         () => {
             //failure 
             getTemplate((status, temp) => {
-                if(status == 200){
+                if (status == 200) {
                     tabs[0].addPrompts(temp, null)
                     $("#type-selector").val(localStorage.getItem("TemplateName"))
                     $("#type-selector").trigger("change")
-                }else
-                {
+                } else {
                     window.showToast(`Couldn't fetch template`, "danger", 2000);
                 }
             })
@@ -533,8 +545,8 @@ $(() => {
             settings
         });
     })
-    
+
     //Switch to content tab as initial state
     setTab(0)
-    
+
 })

@@ -261,7 +261,7 @@ app.get("/api/fetchReferenceables", (req, res) => {
     for(let i=0;i<template["inheritors"]?.length; i++){
         let article = articles.find(x => x["data"]["uid"] == template["inheritors"][i])
         if(!article) continue;
-        referenceables.push({ text: article["text"], uid: article["data"]["uid"]});
+        referencebles.push({ text: article["text"], uid: article["data"]["uid"]});
     }
     res.status(200).send(referencebles)
 })
