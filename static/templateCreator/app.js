@@ -19,13 +19,8 @@ const promptTemplate = `
         </div>
 `
 
-var templates = null;
+var templates = getTemplateList();
 
-getTemplateList((status, data) => {
-    if(status == 200){
-        templates = data
-    }
-})
 
 function modifyTemplate(name, template, callback) {
     const xhr = new XMLHttpRequest();
@@ -48,26 +43,30 @@ function modifyTemplate(name, template, callback) {
 }
 
 
-async function getTemplateList(callback) {
-    await window.waitForVariable("CurrentProject")   
+function getTemplateList() {
+    return new Promise(async (resolve, reject) => {
+        await window.waitForVariable("CurrentProject")
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", `/api/getTemplateList?project=${localStorage.getItem("CurrentProject")}`, true);
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", `/api/getTemplateList?project=${localStorage.getItem("CurrentProject")}`, true);
 
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            let data = null;
-            
-            try {
-                data = JSON.parse(xhr.responseText);
-            } catch (e) {
-                return callback(xhr.status, null);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    try {
+                        const data = JSON.parse(xhr.responseText);
+                        resolve(data);
+                    } catch (e) {
+                        reject(e);
+                    }
+                } else {
+                    reject(xhr.status);
+                }
             }
-            callback(xhr.status, data);
-        }
-    };
+        };
 
-    xhr.send();
+        xhr.send();
+    });
 }
 
 
@@ -103,13 +102,13 @@ window.addNewPromptTemplate = function (){
     container.append(promptTemplate)
     container.append(newButtonContent)
 
-    templates.forEach(name => {
+    templates.then(x => x.forEach(name => {
         $(".prompt-data-container .reference-type").last().append(
             `
                 <option value="${name}">${name}</option>
             `
         )
-    })
+    }))
 
     $(".prompt-data-container .remove-button").last().on("click", (e) => {
         e.currentTarget.parentElement.parentElement.remove()
@@ -160,17 +159,16 @@ $(() => {
             let promptContainer = container.children().last()
     
 
-            templates.forEach(name => {
+            templates.then(x => x.forEach(name => {
                 $(".prompt-data-container .reference-type").last().append(
                     `
                         <option value="${name}">${name}</option>
                     `
                 )
-            })
-
-            promptContainer.children("input[type=text]").val(promptC["promptName"])
-            promptContainer.children(".prompt-type").val(promptC["type"])
-            promptContainer.children(".reference-type").val(promptC["rtype"])
+                promptContainer.children("input[type=text]").val(promptC["promptName"])
+                promptContainer.children(".prompt-type").val(promptC["type"])
+                promptContainer.children(".reference-type").val(promptC["rtype"])
+            }))
         })
         
         container.append(newButtonContent)
