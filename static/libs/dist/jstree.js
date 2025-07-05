@@ -4879,8 +4879,8 @@
 							});
 							}
 						},
-						scene: {
-							label: "Scene",
+						article: {
+							label: "Article",
 							action: function (data) {
 								var inst = $.jstree.reference(data.reference),
 								obj = inst.get_node(data.reference);
