@@ -6,6 +6,9 @@ const {
 const Path = require("path")
 const Archiver = require("archiver")
 
+var uidToPathTable = {}
+var uidToNameTable = {}
+
 exports.createMainPage = function (project, articles, manuscriptNames, mapNames) {
         if(DirectoryManager.directoryExists(FileManager.outputDir)){
             FileManager.deleteFSNode(FileManager.outputDir)
@@ -33,7 +36,6 @@ exports.createMainPage = function (project, articles, manuscriptNames, mapNames)
             }
         }
 
-        console.log(articleList)
         let outputIndex = fetchTemplate("index");
         outputIndex = outputIndex
             .replaceAll("${projectName}", project)
@@ -50,7 +52,7 @@ exports.copyStyleFiles = function () {
 
 exports.exportArticles = function (project, articles, templates, resources) {
     let articleOutputDir = Path.join(FileManager.outputDir, "articles")
-
+    
     let traverseArticleTree = (currentNode, currentPath) => {
         let newPath;
         //process this one
@@ -90,7 +92,10 @@ exports.exportArticles = function (project, articles, templates, resources) {
                 FileManager.readFromDataDirectory("articles", project, currentNode["data"]["uid"])
             )
 
-            if(!data){
+            if(!(data?.data)){
+                //This means article is created but not initalized. 
+                //Its intended behaviour if article is created in dashboard but not saved in 
+                //the article editor
                 return
             }
 
@@ -119,6 +124,7 @@ exports.exportArticles = function (project, articles, templates, resources) {
         "Output article directory");
 
     let tree = buildTree(articles)
+    createUidToPathTable(tree)
     traverseArticleTree(tree[0], articleOutputDir)
   
 }
@@ -178,11 +184,24 @@ function buildArticle(htmlTemplate, name, data, template, banner){
                                 .replace("${content}", data["content"][prompt["promptName"]]);
                 break;
             case "Reference": 
+                let ref = (data["content"][prompt["promptName"]])
+                if (ref == ":@null"){
+                    continue
+                }
+                let link = "/"
+                let name = ""
+                if(ref.startsWith(":@")){
+                    link = uidToPathTable[ref.slice(2, ref.length)]
+                    name = uidToNameTable[ref.slice(2, ref.length)]
+                }
+                
                 dataDocument += reference.replace("${Name}", prompt["promptName"])
-                                .replace("${content}", data["content"][prompt["promptName"]]);
-
+                                .replace("${content}", name)
+                                .replace("${link}", link);
+                break;
         }
     }
+    
 
     return articleDocument.replace("${maintext}", dataDocument)
 }
@@ -199,6 +218,28 @@ function fetchTemplate(tempName) {
     } catch {
         throw new Error("Template " + tempName + " not found")
     }
+}
+
+
+function createUidToPathTable (tree){
+    uidToPathTable = {}
+    uidToNameTable = {}
+
+    const recurse = (node, currentPath) => {
+        if(node.type == "default"){
+            node.children.forEach(child => {
+                recurse(child, Path.join(currentPath, encodeURIComponent(node["text"])))
+            });
+        }else{
+            uidToPathTable[node.data.uid] = Path.join(currentPath, encodeURIComponent(node["text"]) + ".html")
+            uidToNameTable[node.data.uid] = node["text"]
+        }
+
+    }
+
+    tree[0].children.forEach(x => {
+        recurse(x, "/articles")
+    })
 }
 
 exports.extract = function (project, res){
