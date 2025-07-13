@@ -104,7 +104,7 @@ input[type="text"] {
     display: inline;
 }
 
-.prompt-data-container .remove-button{
+.prompt-data-container .control-button{
     background-color: var(--accent);
     width: 1.5vw;
     height: 1.5vw;
@@ -143,15 +143,15 @@ input[type="text"] {
     filter: brightness(140%);
 }
 
-.prompt-data-container .remove-button:hover{
+.prompt-data-container .control-button:hover{
     filter: brightness(120%);
 }
 
-.prompt-data-container .remove-button:active{
+.prompt-data-container .control-button:active{
     filter: brightness(140%);
 }
 
 .prompt-type:not(:has(option[value="Reference"]:checked)) ~ .reference-type,
 .prompt-type:not(:has(option[value="Reference"]:checked)) ~ .reference-type-label {
   display: none;
-}
+} 

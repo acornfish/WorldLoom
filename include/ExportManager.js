@@ -5,6 +5,9 @@ const {
 } = require("./FileManager")
 const Path = require("path")
 const Archiver = require("archiver")
+const {
+    QuillDeltaToHtmlConverter
+} = require("quill-delta-to-html")
 
 var uidToPathTable = {}
 var uidToNameTable = {}
@@ -129,6 +132,33 @@ exports.exportArticles = function (project, articles, templates, resources) {
   
 }
 
+exports.extract = function (project, res){
+    let outputDir = Path.join(cwd(), "files", "output")
+
+    const archive = Archiver('zip', {
+        zlib: {
+            level: 9
+        }
+    });
+
+    res.writeHead(200, {
+        'Content-Type': 'application/zip',
+        'Content-Disposition': 'attachment; filename="' + project + '.zip"'
+    });
+
+    archive.on('data', (chunk) => {
+        res.write(chunk);
+    });
+
+    archive.on('finish', () => {
+        res.end()
+    });
+
+    archive.directory(outputDir, false)
+
+    archive.finalize()
+}
+
 function buildTree(flatList) {
     const idToNode = {};
     const rootNodes = [];
@@ -151,6 +181,11 @@ function buildTree(flatList) {
     });
 
     return rootNodes;
+}
+
+function convertDeltaToHTML(delta) {
+    if (!delta) return ""
+    return (new QuillDeltaToHtmlConverter(delta["ops"], {})).convert()
 }
 
 function buildArticle(htmlTemplate, name, data, template, banner){
@@ -177,7 +212,7 @@ function buildArticle(htmlTemplate, name, data, template, banner){
                 break;
             case "Rich Text":
                 dataDocument += richText.replace("${Name}", prompt["promptName"])
-                .replace("${content}", data["content"][prompt["promptName"]]);
+                .replace("${content}", convertDeltaToHTML(data["content"][prompt["promptName"]]));
                 break;
             case "Number": 
                 dataDocument += number.replace("${Name}", prompt["promptName"])
@@ -220,7 +255,6 @@ function fetchTemplate(tempName) {
     }
 }
 
-
 function createUidToPathTable (tree){
     uidToPathTable = {}
     uidToNameTable = {}
@@ -240,31 +274,4 @@ function createUidToPathTable (tree){
     tree[0].children.forEach(x => {
         recurse(x, "/articles")
     })
-}
-
-exports.extract = function (project, res){
-    let outputDir = Path.join(cwd(), "files", "output")
-
-    const archive = Archiver('zip', {
-        zlib: {
-            level: 9
-        }
-    });
-
-    res.writeHead(200, {
-        'Content-Type': 'application/zip',
-        'Content-Disposition': 'attachment; filename="' + project + '.zip"'
-    });
-
-    archive.on('data', (chunk) => {
-        res.write(chunk);
-    });
-
-    archive.on('finish', () => {
-        res.end()
-    });
-
-    archive.directory(outputDir, false)
-
-    archive.finalize()
 }

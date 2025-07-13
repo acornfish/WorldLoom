@@ -528,15 +528,10 @@ $(() => {
     //Set the event listeners for save button
     let saveButton = $(".save-button")
     saveButton.on("click", async () => {
+        saveButton.attr("disabled", "1")
         let content = await tabs[0].fetchContent()
         let design = await tabs[1].fetchContent()
         let settings = await tabs[2].fetchContent()
-
-        console.log({
-            content,
-            design,
-            settings
-        })
 
         //Modify the article on backend 
         modifyArticle({
@@ -544,6 +539,7 @@ $(() => {
             design,
             settings
         });
+        saveButton.removeAttr("disabled")
     })
 
     //Switch to content tab as initial state

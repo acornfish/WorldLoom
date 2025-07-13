@@ -162,6 +162,23 @@ const app = Express();
 var upload = Multer({
     storage: storage
 })
+
+
+//Don't cache. its not worth it to make exceptions
+app.disable('etag');
+app.use((req, res, next) => {
+    delete req.headers['if-modified-since'];
+    delete req.headers['if-none-match'];
+    res.setHeader('Surrogate-Control', 'no-store');
+    res.setHeader(
+        'Cache-Control',
+        'no-store, no-cache, must-revalidate, proxy-revalidate'
+    );
+    res.setHeader('Expires', '0');
+    next();
+})
+
+
 app.use(Express.static("./static"));
 app.use(Express.static("./files"));
 app.use(Express.json({
@@ -184,6 +201,8 @@ app.use((req, res, next) => {
 
     LogManager.log(`[${date}] - ${endpoint} - ${statusCode}`);
 
+
+    
     next();
 })
 

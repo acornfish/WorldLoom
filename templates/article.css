@@ -40,6 +40,7 @@ body {
     display: inline-block;
     margin-bottom: 5%;
     top: 2%;
+    overflow-y: scroll;
 }
 
 .title {
@@ -78,7 +79,7 @@ p {
 }
 
 .main-text > div {
-    margin-top: 1vh;
+    margin-top: 1.5vh;
     margin-left: 2%;
 }
 

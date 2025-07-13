@@ -69,6 +69,8 @@ body{
     min-height: 60%;
     top: 15%;
     left: 7%;
+    overflow: scroll;
+    padding-bottom: 2%;
 }
 
 
@@ -110,7 +112,7 @@ body{
 }
 
 .save-button {
-    position: fixed;
+    position: absolute;
     right: 7%;
     top: 15%;
     transform: translateY(-50%);
@@ -123,12 +125,16 @@ body{
     font-size: 1rem;
 }
 
-.save-button:hover{
+.save-button:not([disabled]):hover{
     filter: brightness(120%);
 }
 
-.save-button:active{
+.save-button:not([disabled]):active{
     filter: brightness(140%);
+}
+
+.save-button[disabled]{
+    background-color: gray !important;
 }
 
 

@@ -4,7 +4,9 @@ const promptTemplate = `
         <div class="prompt-data-container">
             <div class="prompt-first-container">
                 <h2>Name</h2>   
-                <button class="remove-button"><i class="fa-solid fa-xmark"></i></button>
+                <button class="control-button remove-button"><i class="fa-solid fa-xmark"></i></button>
+                <button class="control-button up-button"><i class="fa-solid fa-arrow-up"></i></button>
+                <button class="control-button down-button"><i class="fa-solid fa-arrow-down"></i></button>
             </div>
             <input type="text" name="prompt-name" class="prompt-name" placeholder="Name">
             <h2>Type</h2>
@@ -13,7 +15,7 @@ const promptTemplate = `
                 <option value="Rich Text">Rich Text</option>
                 <option value="Number">Number</option>
                 <option value="Reference">Reference</option>
-            </select>
+            </select> 
             <h2 class="reference-type-label">Reference Type</h2>
             <select name="reference-type" class="reference-type"></select>
         </div>
@@ -91,86 +93,135 @@ function getTemplate(callback) {
 }
 
 
+function findPromptIndex(element){
+    var parent = element.parentNode;
+    var index = Array.prototype.indexOf.call(parent.children, element);
+    return index
+}
+  
 
 window.addNewPromptTemplate = function (){
-    let container = $(".container")
-    let newp = $("#new-prompt")
+    templates.then(x => {
+        let container = $(".container")
+        let newp = $("#new-prompt")        
 
-    let newButtonContent = newp.get(0).outerHTML
-    newp.remove()
+        let newButtonContent = newp.get(0).outerHTML
 
-    container.append(promptTemplate)
-    container.append(newButtonContent)
+        newp.remove()
 
-    templates.then(x => x.forEach(name => {
-        $(".prompt-data-container .reference-type").last().append(
-            `
-                <option value="${name}">${name}</option>
-            `
-        )
-    }))
+        container.append(promptTemplate)
+        
+        x.forEach(name => {
+            let rt = $(".prompt-data-container .reference-type").last()
+            rt.append(
+                `
+                    <option value="${name}">${name}</option>
+                `
+            )  
+        })
 
-    $(".prompt-data-container .remove-button").last().on("click", (e) => {
-        e.currentTarget.parentElement.parentElement.remove()
+        $(".prompt-data-container .remove-button").last().on("click", (e) => {
+            e.currentTarget.parentElement.parentElement.remove()
+        })  
+
+        $(".prompt-data-container .up-button").last().on("click", (e) => {
+            let el = e.currentTarget.parentElement.parentElement
+            if(findPromptIndex(el) > 0){
+                $(el).insertBefore($(el).prev())
+            }
+        })    
+    
+        $(".prompt-data-container .down-button").last().on("click", (e) => {
+            let el = e.currentTarget.parentElement.parentElement
+            if(findPromptIndex(el) < el.parentNode.children.length-2){
+                $(el).insertAfter($(el).next())
+            }
+        })
+
+        container.append(newButtonContent)  
     })
 }
 
-$(".template-save-button").on("click", (e) => {
-    let contents = []
-    let templateName = $(".template-name-prompt").val()
-
-    $(".prompt-data-container").toArray().forEach(el => {
-        let promptName = $(el).children("input[type=text]").val()
-        let type = $(el).children(".prompt-type").val()
-        let rtype = $(el).children(".reference-type").val()
-
-        contents.push({promptName,type,rtype})
-    })
-
-    modifyTemplate(templateName, contents, (status) => {
-        if(status == 200){
-            window.showToast(`Save Successful`, "success", 1500);
-        }else{
-            window.showToast(`Save failed`, "danger", 1500);
-        }
-    })
-})
 
 $(() => {
     //initalization
     getTemplate((status, template) => {
-        
-        let container = $(".container")
-        let newp = $("#new-prompt")
-
         if(status != 200) {
             return
         }
 
-        let name = localStorage.getItem("TemplateName")
-        $(".template-name-prompt").val(name)
-
-        let newButtonContent = newp.get(0).outerHTML
-    
-        newp.remove()
-
         template.forEach(promptC => {
-            container.append(promptTemplate)
-            let promptContainer = container.children().last()
-    
+            templates.then(x => {
+                let container = $(".container")
+                let newp = $("#new-prompt")        
 
-            templates.then(x => x.forEach(name => {
-                $(".prompt-data-container .reference-type").last().append(
-                    `
-                        <option value="${name}">${name}</option>
-                    `
-                )
-                promptContainer.children("input[type=text]").val(promptC["promptName"])
-                promptContainer.children(".prompt-type").val(promptC["type"])
-                promptContainer.children(".reference-type").val(promptC["rtype"])
-            }))
+                let name = localStorage.getItem("TemplateName")
+                $(".template-name-prompt").val(name)
+
+                let newButtonContent = newp.get(0).outerHTML
+
+                newp.remove()
+
+                container.append(promptTemplate)
+                let promptContainer = container.children().last()
+                
+                x.forEach(name => {
+                    let rt = $(".prompt-data-container .reference-type").last()
+                    rt.append(
+                        `
+                            <option value="${name}">${name}</option>
+                        `
+                    )
+
+                    promptContainer.children("input[type=text]").val(promptC["promptName"])
+                    promptContainer.children(".prompt-type").val(promptC["type"])
+                    promptContainer.children(".reference-type").val(promptC["rtype"])
+                })
+
+                $(".prompt-data-container .remove-button").last().on("click", (e) => {
+                    e.currentTarget.parentElement.parentElement.remove()
+                })  
+
+                $(".prompt-data-container .up-button").last().on("click", (e) => {
+                    let el = e.currentTarget.parentElement.parentElement
+                    if(findPromptIndex(el) > 0){
+                        $(el).insertBefore($(el).prev())
+                    }
+                })    
+            
+                $(".prompt-data-container .down-button").last().on("click", (e) => {
+                    let el = e.currentTarget.parentElement.parentElement
+                    if(findPromptIndex(el) < el.parentNode.children.length-2){
+                        $(el).insertAfter($(el).next())
+                    }
+                })
+
+                container.append(newButtonContent)
+            })
+            
         })
         
-        container.append(newButtonContent)
     })
+
+    $(".template-save-button").on("click", (e) => {
+        let contents = []
+        let templateName = $(".template-name-prompt").val()
+    
+        $(".prompt-data-container").toArray().forEach(el => {
+            let promptName = $(el).children("input[type=text]").val()
+            let type = $(el).children(".prompt-type").val()
+            let rtype = $(el).children(".reference-type").val()
+    
+            contents.push({promptName,type,rtype})
+        })
+    
+        modifyTemplate(templateName, contents, (status) => {
+            if(status == 200){
+                window.showToast(`Save Successful`, "success", 1500);
+            }else{
+                window.showToast(`Save failed`, "danger", 1500);
+            }
+        })
+    })
+    
 })
