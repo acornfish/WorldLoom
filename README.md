@@ -1,6 +1,7 @@
 # Note
 I am doing a rewrite and currently only articles are available
-Previous and buggy version is available in releases as version 1.0.0
+
+Previous and buggy version is available in releases as version 1.0.0 and also in the old branch
 
 # Prerequisites
 -NodeJS (https://nodejs.org/en/download/package-manager) 
