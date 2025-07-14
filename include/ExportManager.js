@@ -72,8 +72,8 @@ exports.exportArticles = function (project, articles, templates, resources) {
                     children += `
                         <li class="${child.type}"><a href="${
                             child.type === "default"
-                            ? encodeURIComponent(child["text"]) + "/index.html"
-                            : encodeURIComponent(child["text"]) + ".html"}">${child["text"]}</a></li>
+                            ? encodeURIComponent(encodeURIComponent(child["text"])) + "/index.html"
+                            : encodeURIComponent(encodeURIComponent(child["text"])) + ".html"}">${child["text"]}</a></li>
                     `
                 })
 
@@ -262,10 +262,10 @@ function createUidToPathTable (tree){
     const recurse = (node, currentPath) => {
         if(node.type == "default"){
             node.children.forEach(child => {
-                recurse(child, Path.join(currentPath, encodeURIComponent(node["text"])))
+                recurse(child, Path.join(currentPath, encodeURIComponent(encodeURIComponent(node["text"]))))
             });
         }else{
-            uidToPathTable[node.data.uid] = Path.join(currentPath, encodeURIComponent(node["text"]) + ".html")
+            uidToPathTable[node.data.uid] = Path.join(currentPath, encodeURIComponent(encodeURIComponent(node["text"]) + ".html"))
             uidToNameTable[node.data.uid] = node["text"]
         }
 
@@ -274,4 +274,6 @@ function createUidToPathTable (tree){
     tree[0].children.forEach(x => {
         recurse(x, "/articles")
     })
+
+    console.log(uidToPathTable)
 }

@@ -66,6 +66,53 @@ const filePondConfig = (proj, type) => {
 let richtexts = []
 var globTemplate = []
 
+const Inline = Quill.import('blots/inline');
+const customIcons = Quill.import('ui/icons');
+
+customIcons['articleReference'] = '<i class="fa-solid fa-link" style="color: var(--text-color);"></i>';
+class ArticleReferenceBlot extends Inline {
+  static create(value) {
+    let node = super.create();
+    node.setAttribute('href', value.href || '#');
+    node.setAttribute('data-js-action', value.action || '');
+    node.classList.add('quill-button-link');
+    node.innerText = value.text ?? 'Reference';
+    return node;
+  }
+
+  static formats(node) {
+    return {
+      href: node.getAttribute('href'),
+      action: node.getAttribute('data-js-action'),
+      text: node.innerText
+    };
+  }
+
+  format(name, value) {
+    if (name === 'href' || name === 'action' || name === 'text') {
+      if (value) {
+        if (name === 'text') {
+          this.domNode.innerText = value;
+        } else {
+          this.domNode.setAttribute(
+            name === 'action' ? 'data-js-action' : name,
+            value
+          );
+        }
+      } else {
+        this.domNode.removeAttribute(
+          name === 'action' ? 'data-js-action' : name
+        );
+      }
+    } else {
+      super.format(name, value);
+    }
+  }
+}
+
+ArticleReferenceBlot.blotName = 'articleReference';
+ArticleReferenceBlot.tagName = 'button'; 
+ArticleReferenceBlot.className = 'quill-article-reference';
 
 function quillFactory(parent) {
     let quillTopbar = [
@@ -80,24 +127,26 @@ function quillFactory(parent) {
             'list': 'bullet'
         }, {
             'color': []
-        }]
+        }],
+        [
+            'articleReference'
+        ]
     ]
 
     //TODO: rewrite this
-    const handleQuillLinks = (value) => {
-        if (value) {
-            var href = prompt('Name:')
-            if (href.startsWith("manuscript:")) {
-                this.quill.format('link',
-                    `/index.html?ref=${encodeURIComponent(href.split(':')[1])}&type=manuscript`)
-            } else if (href.startsWith("map:")) {
-                this.quill.format('link', `/index.html?ref=${encodeURIComponent((href.split(':')[1]))}&type=map`)
-            } else {
-                this.quill.format('link',
-                    `/index.html?ref=${encodeURIComponent((href.split(':')[1]))}&type=article`)
-            }
-        } else {
-            this.quill.format('link', false)
+    const handleArticleReferences = (value) => {
+        const href = prompt('Enter URL');
+        const action = prompt('Enter JS action (optional)');
+        const text = prompt('Button text');
+        if (href && text) {
+          let range = quill.getSelection();
+          if (range) {
+            quill.formatText(range.index, range.length, 'articleReference', {
+              href,
+              action,
+              text
+            });
+          }
         }
     }
 
@@ -119,7 +168,7 @@ function quillFactory(parent) {
             toolbar: {
                 container: quillTopbar,
                 handlers: {
-                    link: handleQuillLinks,
+                    articleReference: handleArticleReferences,
                 }
             }
         },
@@ -465,6 +514,9 @@ $(".topbar-section").on("click", (e) => {
 //Setup libraries
 $.fn.filepond.registerPlugin(FilePondPluginImagePreview);
 $.fn.filepond.registerPlugin(FilePondPluginFileValidateType);
+Quill.register(ArticleReferenceBlot)
+
+
 
 $(() => {
     getTemplateList((status, data) => {

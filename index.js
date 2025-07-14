@@ -282,7 +282,7 @@ app.get("/api/fetchReferenceables", (req, res) => {
         if(!article) continue;
         referencebles.push({ text: article["text"], uid: article["data"]["uid"]});
     }
-    res.status(200).send(referencebles)
+    res.status(200).send([{text:"", uid:null}].concat(referencebles))
 })
 
 app.get("/api/fetchArticle", (req, res) => {
