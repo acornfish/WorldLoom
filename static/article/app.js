@@ -230,8 +230,6 @@ async function getTemplateList(callback) {
     xhr.send();
 }
 
-
-
 function fetchArticle(onSuccess, onError) {
     const url = new URL("/api/fetchArticle", window.location.origin);
     url.searchParams.set("project", (localStorage.getItem("CurrentProject")));
@@ -535,7 +533,7 @@ $(() => {
             })
 
             $('#type-selector').on('select2:select', function (e) {
-                localStorage.setItem("TemplateName", e.params.data.text)
+                localStorage.setItem("TemplateName", "@:@:@:" + e.params.data.text)          
                 window.location.reload()
             });
 
@@ -549,7 +547,12 @@ $(() => {
         (data) => {
             //sucess
             if (data["data"]["settings"]["templateName"]) {
-                localStorage.setItem("TemplateName", data["data"]["settings"]["templateName"])
+                let cachedTempName = localStorage.getItem("TemplateName")
+                if((cachedTempName.startsWith("@:@:@:"))){
+                    localStorage.setItem("TemplateName", cachedTempName.slice("@:@:@:".length))
+                }else{
+                    localStorage.setItem("TemplateName", data["data"]["settings"]["templateName"])
+                }
             }
 
             tabs[1].setContent(data["data"]["design"]["thumbnail"], data["data"]["design"]["banner"])
