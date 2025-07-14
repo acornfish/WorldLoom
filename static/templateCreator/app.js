@@ -75,7 +75,7 @@ function getTemplateList() {
 function getTemplate(callback) {
     const xhr = new XMLHttpRequest();
     
-    xhr.open("GET", `/api/getTemplate?project=${localStorage.getItem("CurrentProject")}&name=${localStorage.getItem("TemplateName")}`, true);
+    xhr.open("GET", `/api/getTemplate?project=${localStorage.getItem("CurrentProject")}&name=${sessionStorage.getItem("TemplateName")}`, true);
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -155,7 +155,7 @@ $(() => {
                 let container = $(".container")
                 let newp = $("#new-prompt")        
 
-                let name = localStorage.getItem("TemplateName")
+                let name = sessionStorage.getItem("TemplateName")
                 $(".template-name-prompt").val(name)
 
                 let newButtonContent = newp.get(0).outerHTML

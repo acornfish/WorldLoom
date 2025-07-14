@@ -13,7 +13,7 @@ const template_selector_template = `
 `
 
 $(() => {
-    localStorage.removeItem("TemplateName")
+    sessionStorage.removeItem("TemplateName")
 
     getArticleTree().then((articleTree) => {
         $(ARTICLE_JSTREE).jstree({
@@ -77,11 +77,11 @@ $(() => {
         container.html(elements + container.html())
 
         container.find("input[type='radio']").eq(0).attr("checked", "1")
-        localStorage.setItem("TemplateName", templates[0])
+        sessionStorage.setItem("TemplateName", templates[0])
 
         $(".template-selector").on("click", (e) => {
             let name = ($(e.currentTarget).children("span").text())
-            localStorage.setItem("TemplateName", name)
+            sessionStorage.setItem("TemplateName", name)
         })
 
         $(".template-selector").on("dblclick", (e) => {

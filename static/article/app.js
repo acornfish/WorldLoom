@@ -8,6 +8,7 @@ import "../libs/filepond-plugin-image-preview.js"
 import "../libs/filepond-plugin-file-validate-type.js"
 import "/global.js"
 
+const indicator = `!"#$WXYZ%&'(^_abcdef)*+,-./0123456ABlmnopq[\]ghijkrstuvwxyz{|}~CDEFGHIJKLMNOPQ789:;<=>?RSTUV`
 
 var imageIDS = {}
 
@@ -281,7 +282,7 @@ function getTemplate(callback) {
     const xhr = new XMLHttpRequest();
 
     xhr.open("GET",
-        `/api/getTemplate?project=${localStorage.getItem("CurrentProject")}&name=${localStorage.getItem("TemplateName")}`,
+        `/api/getTemplate?project=${localStorage.getItem("CurrentProject")}&name=${sessionStorage.getItem("TemplateName")}`,
         true);
 
     xhr.onreadystatechange = function () {
@@ -484,7 +485,7 @@ class SettingsTab {
     constructor() {}
     async fetchContent() {
         return {
-            templateName: localStorage.getItem("TemplateName")
+            templateName: sessionStorage.getItem("TemplateName")
         }
     }
     activate() {}
@@ -533,7 +534,7 @@ $(() => {
             })
 
             $('#type-selector').on('select2:select', function (e) {
-                localStorage.setItem("TemplateName", "@:@:@:" + e.params.data.text)          
+                sessionStorage.setItem("TemplateName", indicator + e.params.data.text)          
                 window.location.reload()
             });
 
@@ -547,11 +548,15 @@ $(() => {
         (data) => {
             //sucess
             if (data["data"]["settings"]["templateName"]) {
-                let cachedTempName = localStorage.getItem("TemplateName")
-                if((cachedTempName.startsWith("@:@:@:"))){
-                    localStorage.setItem("TemplateName", cachedTempName.slice("@:@:@:".length))
+                let cachedTempName = sessionStorage.getItem("TemplateName")
+                if(!cachedTempName) {
+                    sessionStorage.setItem("TemplateName", data["data"]["settings"]["templateName"])
+                    return 
+                }
+                if((cachedTempName.startsWith(indicator))){
+                    sessionStorage.setItem("TemplateName", cachedTempName.slice(indicator.length))
                 }else{
-                    localStorage.setItem("TemplateName", data["data"]["settings"]["templateName"])
+                    sessionStorage.setItem("TemplateName", data["data"]["settings"]["templateName"])
                 }
             }
 
@@ -560,7 +565,7 @@ $(() => {
             getTemplate((status, temp) => {
                 if (status == 200) {
                     tabs[0].addPrompts(temp, data["data"]["content"])
-                    $("#type-selector").val(localStorage.getItem("TemplateName"))
+                    $("#type-selector").val(sessionStorage.getItem("TemplateName"))
                     $("#type-selector").trigger("change")
                 } else {
                     window.showToast(`Couldn't fetch template`, "danger", 2000);
@@ -573,7 +578,7 @@ $(() => {
             getTemplate((status, temp) => {
                 if (status == 200) {
                     tabs[0].addPrompts(temp, null)
-                    $("#type-selector").val(localStorage.getItem("TemplateName"))
+                    $("#type-selector").val(sessionStorage.getItem("TemplateName"))
                     $("#type-selector").trigger("change")
                 } else {
                     window.showToast(`Couldn't fetch template`, "danger", 2000);
