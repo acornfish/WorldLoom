@@ -355,6 +355,9 @@ class ContentTab {
                                     <option value="${opt.uid}">${opt.text}</option>
                                 `)
                             });
+
+                            element.val(content[p.promptName].slice(2))
+                            element.trigger("change")
                         }
                     })
                 }
