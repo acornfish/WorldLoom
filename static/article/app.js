@@ -420,10 +420,9 @@ class ContentTab {
                 referencePromptCounter++
 
             } else if (promptDefinition.type === "Rich Text") {
-                let current = (richtexts.at(referencePromptCounter))
+                let current = (richtexts.at(richtextPromptCounter))
                 articleData[promptDefinition.promptName] = (current.getContents())
                 richtextPromptCounter++
-
             }
         })
 
