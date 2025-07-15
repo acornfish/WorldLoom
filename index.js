@@ -264,12 +264,24 @@ app.get("/api/fetchReferenceables", (req, res) => {
     
     let articles = db.getSubdir(projectName, "articles")
     let templates = db.getSubdir(projectName, "templates")
+    let referencebles = []
+    if(!type){
+        for(let template of templates){
+            for(let i=0;i<template["inheritors"]?.length; i++){
+                let article = articles.find(x => x["data"]["uid"] == template["inheritors"][i])
+                if(!article) continue;
+                referencebles.push({ text: article["text"], uid: article["data"]["uid"]});
+            }
+        }
+        res.status(200).send([{text:"", uid:null}].concat(referencebles))
+        return
+    }
 
     let template = templates.find(x => x["name"] == type)
-    let referencebles = []
 
     if(!template) {
         res.status(406).send("Fail: template doesn't exist")
+        return
     }
 
     if(!template["inheritors"]){

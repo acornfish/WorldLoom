@@ -63,57 +63,46 @@ const filePondConfig = (proj, type) => {
     }
 }
 
-
 let richtexts = []
 var globTemplate = []
 
-const Inline = Quill.import('blots/inline');
+const QuillTextFormat = Quill.import('formats/bold');
 const customIcons = Quill.import('ui/icons');
-
 customIcons['articleReference'] = '<i class="fa-solid fa-link" style="color: var(--text-color);"></i>';
-class ArticleReferenceBlot extends Inline {
-  static create(value) {
-    let node = super.create();
-    node.setAttribute('href', value.href || '#');
-    node.setAttribute('data-js-action', value.action || '');
-    node.classList.add('quill-button-link');
-    node.innerText = value.text ?? 'Reference';
-    return node;
-  }
+class ArticleReferenceBlot extends QuillTextFormat {
+    static blotName = 'articleReference';
+    static tagName = 'a';
+    static className = 'quill-article-reference';
 
-  static formats(node) {
-    return {
-      href: node.getAttribute('href'),
-      action: node.getAttribute('data-js-action'),
-      text: node.innerText
-    };
-  }
-
-  format(name, value) {
-    if (name === 'href' || name === 'action' || name === 'text') {
-      if (value) {
-        if (name === 'text') {
-          this.domNode.innerText = value;
-        } else {
-          this.domNode.setAttribute(
-            name === 'action' ? 'data-js-action' : name,
-            value
-          );
-        }
-      } else {
-        this.domNode.removeAttribute(
-          name === 'action' ? 'data-js-action' : name
+    static create(value) {
+        let node = super.create();
+        node.classList.add('quill-button-link');
+        node.value = value.text
+        node.setAttribute(
+            'onclick',
+            `openArticleReference("${value.id}");return false`
+        ); 
+        node.setAttribute(
+            'id',
+            `${value.id}`
+        ); 
+        node.setAttribute(
+            'type',
+            `button`
         );
-      }
-    } else {
-      super.format(name, value);
+        return node;
     }
-  }
-}
 
-ArticleReferenceBlot.blotName = 'articleReference';
-ArticleReferenceBlot.tagName = 'button'; 
-ArticleReferenceBlot.className = 'quill-article-reference';
+    static formats(node) {
+        let content = {
+            id: node.getAttribute('id'),
+            text: node.innerText
+        };
+
+        return content
+    }
+
+}
 
 function quillFactory(parent) {
     let quillTopbar = [
@@ -135,20 +124,32 @@ function quillFactory(parent) {
     ]
 
     //TODO: rewrite this
-    const handleArticleReferences = (value) => {
-        const href = prompt('Enter URL');
-        const action = prompt('Enter JS action (optional)');
-        const text = prompt('Button text');
-        if (href && text) {
-          let range = quill.getSelection();
-          if (range) {
-            quill.formatText(range.index, range.length, 'articleReference', {
-              href,
-              action,
-              text
-            });
-          }
+    const handleArticleReferences = async (value) => {
+        let selectorPopup = $(".reference-inline-popup")
+        let range = quill.getSelection();
+        if (!range.length) {
+            return
         }
+        selectorPopup.show()
+        let val = await new Promise((resolve, reject) => {
+            $(".reference-inline-popup button").one("click", (e) => {
+                let element = $("#inline-reference")
+                resolve({
+                    id: element.val(),
+                    text: element.select2('data')[0].text
+                })
+                $(".reference-inline-popup").hide()
+                $(".reference-inline-popup button").off("click")
+            })
+        })
+
+        if (val) {
+            quill.formatText(range.index, range.length, 'articleReference', val);
+            quill.setSelection(range.index + range.length);
+            quill.format('articleReference', false);
+            selectorPopup.hide()    
+        }
+
     }
 
     let quillContainer = document.createElement("div")
@@ -207,7 +208,6 @@ function modifyArticle(dataObj) {
 
     xhr.send(JSON.stringify(payload));
 }
-
 
 async function getTemplateList(callback) {
     await window.waitForVariable("CurrentProject")
@@ -300,6 +300,12 @@ function getTemplate(callback) {
     xhr.send();
 }
 
+window.openArticleReference = function (id){
+    if(confirm("Are you sure you want to leave this article? Unsaved Changes will be lost!")){
+        sessionStorage.setItem("Article", id);
+        window.location.reload()
+    }
+}
 
 class ContentTab {
     constructor() {
@@ -309,6 +315,20 @@ class ContentTab {
     }
 
     addPrompts(template, content) {
+        //Initalize article references in inline editor
+        fetchReferenceables("", (status, data) => {
+            if (status == 200) {
+                let element = $("#inline-reference")
+                data.forEach(opt => {
+                    element.append(`
+                        <option value="${opt.uid}">${opt.text}</option>
+                        `)
+                });
+                element.select2()
+            }
+
+        })
+
         template.forEach(p => {
             //Create a container 
             let containerElement = $(`<div class="prompt-container"></div>`)
@@ -516,8 +536,7 @@ $(".topbar-section").on("click", (e) => {
 //Setup libraries
 $.fn.filepond.registerPlugin(FilePondPluginImagePreview);
 $.fn.filepond.registerPlugin(FilePondPluginFileValidateType);
-Quill.register(ArticleReferenceBlot)
-
+Quill.register('formats/articleReference', ArticleReferenceBlot)
 
 
 $(() => {
@@ -534,7 +553,7 @@ $(() => {
             })
 
             $('#type-selector').on('select2:select', function (e) {
-                sessionStorage.setItem("TemplateName", indicator + e.params.data.text)          
+                sessionStorage.setItem("TemplateName", indicator + e.params.data.text)
                 window.location.reload()
             });
 
@@ -549,13 +568,13 @@ $(() => {
             //sucess
             if (data["data"]["settings"]["templateName"]) {
                 let cachedTempName = sessionStorage.getItem("TemplateName")
-                if(!cachedTempName) {
+                if (!cachedTempName) {
                     sessionStorage.setItem("TemplateName", data["data"]["settings"]["templateName"])
-                    return 
+                    return
                 }
-                if((cachedTempName.startsWith(indicator))){
+                if ((cachedTempName.startsWith(indicator))) {
                     sessionStorage.setItem("TemplateName", cachedTempName.slice(indicator.length))
-                }else{
+                } else {
                     sessionStorage.setItem("TemplateName", data["data"]["settings"]["templateName"])
                 }
             }
@@ -609,3 +628,4 @@ $(() => {
     setTab(0)
 
 })
+

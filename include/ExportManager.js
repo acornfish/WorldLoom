@@ -6,7 +6,8 @@ const {
 const Path = require("path")
 const Archiver = require("archiver")
 const {
-    QuillDeltaToHtmlConverter
+    QuillDeltaToHtmlConverter,
+    InsertDataQuill
 } = require("quill-delta-to-html")
 
 var uidToPathTable = {}
@@ -129,7 +130,6 @@ exports.exportArticles = function (project, articles, templates, resources) {
     let tree = buildTree(articles)
     createUidToPathTable(tree)
     traverseArticleTree(tree[0], articleOutputDir)
-  
 }
 
 exports.extract = function (project, res){
@@ -185,7 +185,21 @@ function buildTree(flatList) {
 
 function convertDeltaToHTML(delta) {
     if (!delta) return ""
-    return (new QuillDeltaToHtmlConverter(delta["ops"], {})).convert()
+
+    for(let i=0;i<delta.ops.length;i++){
+        if(!delta.ops[i].attributes) continue;
+        let ref = delta.ops[i].attributes["articleReference"]
+        if(ref){
+            let id = ref["id"]
+            let text = ref["text"]
+            delete delta.ops[i].attributes.articleReference;
+            delta.ops[i].attributes.link = uidToPathTable[id];
+            delta.ops[i].insert = text;
+        }
+    }
+    console.log(delta.ops)
+    let converter = new QuillDeltaToHtmlConverter(delta["ops"], {})
+    return converter.convert()
 }
 
 function buildArticle(htmlTemplate, name, data, template, banner){
@@ -275,5 +289,4 @@ function createUidToPathTable (tree){
         recurse(x, "/articles")
     })
 
-    console.log(uidToPathTable)
 }
