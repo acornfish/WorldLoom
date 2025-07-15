@@ -85,6 +85,8 @@ $(() => {
         })
 
         $(".template-selector").on("dblclick", (e) => {
+            let name = ($(e.currentTarget).children("span").text())
+            sessionStorage.setItem("TemplateName", name)
             window.location = '/templateCreator'
         })
     })

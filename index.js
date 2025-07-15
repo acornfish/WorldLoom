@@ -433,6 +433,7 @@ app.get("/api/getProjectList", (req, res) => {
 app.post("/api/modifyTemplate", (req, res) => {
     let project = req.body["project"]
     let name = req.body["name"]
+    let oldname = req.body["oldName"]
     let template = req.body["template"]
 
     if(!db.checkProjectExists(project))
@@ -442,21 +443,32 @@ app.post("/api/modifyTemplate", (req, res) => {
     }
 
     let templates = db.getSubdir(project, "templates")
-    let index = templates.findIndex((x) => x["name"] == name)
     
-    if(index == -1){
-        db.appendToSubdir(project, "templates", {
-            name, 
-            template,
-            inheritors: []
-        })
-    }else{
-        let prev = db.getWithIndex(project, "templates", index)
-        prev.name = name
-        prev.template = template
-        db.setWithIndex(project, "templates", index, prev)
+    if(oldname){
+        let index = templates.findIndex((x) => x["name"] == oldname)
+    
+        if(index == -1){
+            db.appendToSubdir(project, "templates", {
+                name, 
+                template,
+                inheritors: []
+            })
+        }else{
+            let prev = db.getWithIndex(project, "templates", index)
+            prev.name = name
+            prev.template = template
+            db.setWithIndex(project, "templates", index, prev)
+        }
+        
+        res.status(200).send("Accepted")
+        return
     }
 
+    db.appendToSubdir(project, "templates", {
+        name, 
+        template,
+        inheritors: []
+    })
 
     res.status(200).send("Accepted")
 })

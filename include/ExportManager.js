@@ -197,7 +197,6 @@ function convertDeltaToHTML(delta) {
             delta.ops[i].insert = text;
         }
     }
-    console.log(delta.ops)
     let converter = new QuillDeltaToHtmlConverter(delta["ops"], {})
     return converter.convert()
 }

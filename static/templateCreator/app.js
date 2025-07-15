@@ -24,7 +24,7 @@ const promptTemplate = `
 var templates = getTemplateList();
 
 
-function modifyTemplate(name, template, callback) {
+function modifyTemplate(name, template, callback, oldname) {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "/api/modifyTemplate", true);
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -38,7 +38,8 @@ function modifyTemplate(name, template, callback) {
     const body = JSON.stringify({
         project: localStorage.getItem("CurrentProject"),
         name: name,
-        template: template
+        template: template,
+        oldName: oldname
     });
 
     xhr.send(body);
@@ -218,10 +219,11 @@ $(() => {
         modifyTemplate(templateName, contents, (status) => {
             if(status == 200){
                 window.showToast(`Save Successful`, "success", 1500);
+                sessionStorage.setItem("TemplateName", templateName)
             }else{
                 window.showToast(`Save failed`, "danger", 1500);
             }
-        })
+        }, sessionStorage.getItem("TemplateName"))
     })
     
 })
