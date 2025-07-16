@@ -51,9 +51,6 @@ input{
     float: right;
     right: 2.5%;
     top: 5%;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
     overflow-y: scroll;
     overflow-x: hidden;
 }
@@ -66,6 +63,7 @@ input{
     column-gap: 1vw;
     row-gap: 1vw;
     padding: 1%;
+    border-right: 1px solid var(--text-color);
 }
 
 .template-selector{
@@ -116,6 +114,91 @@ input{
 .template-selector:has(input:hover) {
     filter: brightness(120%);
 
-}.template-selector:has(input:active) {
+}
+
+.template-selector:has(input:active) {
     filter: brightness(140%);
+}
+
+.template-mass-import, .template-mass-export{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 80%;
+    width: 80%;
+    background-color: var(--menu-color);
+    border: 1px solid var(--text-color);
+    display: none;
+}
+
+.active-popup{
+    display: block;
+}
+
+.template-mass-import-button, .template-mass-export-button {
+    background-color: var(--accent);
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    border: none;
+    color: var(--text-color);
+    width: 10%;
+    height: 10%;
+}
+
+.template-mass-import-button:hover,
+.template-mass-export-button:hover,
+.template-mass-import-open:hover, 
+.template-mass-export-open:hover
+{
+    filter: brightness(120%);
+}
+
+.template-mass-import-button:active,
+.template-mass-export-button:active 
+.template-mass-import-open:active, 
+.template-mass-export-open:active
+{
+    filter: brightness(140%);
+}
+
+#template-mass-import-textarea, #template-mass-export-textarea{
+    resize: none;
+    overflow: auto;
+    width: 94%;
+    margin: 3%;
+    outline: none;
+    background-color: var(--menu-color-darkened);
+    border: 1px solid var(--accent);
+    height: 70%;
+    color: var(--text-color);
+    font-size: smaller;
+}
+
+.template-mass-exchange-close-button{
+    background-color: var(--accent);
+    border: none;
+    padding: .5%;
+    color: var(--text-color);
+    position: relative;
+    float: right;
+}
+
+.template-mass-exchange-close-button:hover{
+    filter: brightness(120%);
+}
+
+.template-mass-exchange-close-button:active{
+    filter: brightness(140%);
+}
+
+.template-mass-import-open, .template-mass-export-open{
+    border: none;
+    padding: .5%;
+    margin: .2%;
+    position: relative;
+    float: right;
+    background-color: var(--accent);
+    color: var(--text-color);
 }

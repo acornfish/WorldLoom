@@ -19,6 +19,8 @@
     </div>
 
     <div class="templates-container">
+        <button class="template-mass-import-open"><i class="fa-solid fa-download"></i></button>
+        <button class="template-mass-export-open"><i class="fa-solid fa-upload"></i></button>
         <div class="templates-list">
             <label class="template-selector new-template">
                 <input type="button" value="1" onclick="window.location = '/templateCreator'"><span><i class="fa-solid fa-plus fa-2xl"></i></span>
@@ -26,5 +28,15 @@
         </div>
     </div>
 
+    <div class="template-mass-import">
+        <button class="template-mass-exchange-close-button">X</button>
+        <textarea name="templates" id="template-mass-import-textarea"></textarea>
+        <button class="template-mass-import-button">Import</button>
+    </div>
+    <div class="template-mass-export">
+        <button class="template-mass-exchange-close-button">X</button>
+        <textarea name="templates" id="template-mass-export-textarea"></textarea>
+        <button class="template-mass-export-button">Export</button>
+    </div>
 </body>
 </html>

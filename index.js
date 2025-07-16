@@ -508,6 +508,35 @@ app.get("/api/exportProject", (req,res) => {
     ExportManager.extract(project, res);
 })
 
+app.get("/api/exportTemplates", (req,res) => {
+    let project = req.query["project"]
+
+    if(!db.checkProjectExists(project))
+    {
+        res.status(404).send("Fail: project does not exist")
+        return
+    }
+
+    let templates = db.getSubdir(project, "templates")
+
+    res.status(200).send(templates)
+})
+
+app.post("/api/importTemplates", (req,res) => {
+    let project = req.body["project"]
+    let templates = req.body["templates"]
+
+    if(!db.checkProjectExists(project))
+    {
+        res.status(404).send("Fail: project does not exist")
+        return
+    }
+
+    db.setSubdir(project, "templates", JSON.parse(templates))
+
+    res.status(200).send(templates)
+})
+
 
 app.get("/api/getTemplate", (req,res) => {
     let project = req.query["project"]

@@ -286,3 +286,90 @@ async function getTemplateList(callback) {
     xhr.send();
 }
 
+function exportTemplates(callback) {
+    const xhr = new XMLHttpRequest();
+    const url = `/api/exportTemplates?project=${encodeURIComponent(localStorage.getItem("CurrentProject"))}`;
+
+    xhr.open('GET', url, true);
+    xhr.setRequestHeader('Accept', 'application/json');
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    callback(JSON.stringify(response));
+                } catch (err) {
+                }
+            } else {
+            }
+        }
+    };
+
+    xhr.onerror = function () {
+    };
+
+    xhr.send();
+}
+
+
+function importTemplates(templates, callback) {
+    const xhr = new XMLHttpRequest();
+    const url = `/api/importTemplates`;
+
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json');
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    callback(response);
+                } catch (err) {
+                }
+            } else {
+            }
+        }
+    };
+
+    xhr.onerror = function () {
+    };
+
+    const payload = JSON.stringify({
+        project: localStorage.getItem("CurrentProject"),
+        templates: templates 
+    });
+
+    xhr.send(payload);
+}
+
+
+$(".template-mass-export-button").on("click", (e) => {
+    let textarea = $(".template-mass-export textarea")
+    exportTemplates((data) => {
+        textarea.val(data)
+    })
+})
+
+$(".template-mass-import-button").on("click", (e) => {
+    let textarea = $(".template-mass-import textarea")
+    importTemplates(textarea.val(),(data) => {    
+        window.location.reload()
+    })
+})
+
+$(".template-mass-exchange-close-button").on("click", (e) => {
+    $(e.currentTarget.parentElement).hide()
+})
+
+$(".template-mass-export-open").on("click", (e) => {
+    $(".template-mass-export").show()
+    $(".template-mass-import").hide()
+})
+
+$(".template-mass-import-open").on("click", (e) => {
+    $(".template-mass-import").show()
+    $(".template-mass-export").hide()
+})
