@@ -264,12 +264,14 @@ function fetchReferenceables(type, callback) {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
+                let data
                 try {
-                    const data = JSON.parse(xhr.responseText);
-                    callback(xhr.status, data);
+                    data = JSON.parse(xhr.responseText);
                 } catch (parseErr) {
                     callback(xhr.status, null);
+                    return
                 }
+                callback(xhr.status, data);
             } else {
                 callback(xhr.status, null);
             }

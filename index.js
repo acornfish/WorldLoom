@@ -25,7 +25,8 @@ const {
     DatabaseManager,
     Project,
     ResourceManager,
-    hash
+    hash,
+    updateArticleRefWeb
 } = require("./include/DatabaseManager")
 const {
     FgBlue,
@@ -332,9 +333,12 @@ app.post("/api/modifyArticle", (req, res) => {
             FileManager.writeToDataDirectory("articles", projectName, uid, JSON.stringify(data))
             break;
         case "modify":
-            let prior = JSON.parse(FileManager.readFromDataDirectory("articles", projectName, uid))
-            prior.data = data
+            let fileContent = (FileManager.readFromDataDirectory("articles", projectName, uid))
+            let prior = JSON.parse(fileContent)
+            let posterior = structuredClone(prior)
+            posterior.data = data
 
+            // Update inheritor caches for templates
             let templates = db.getSubdir(projectName, "templates")
             let templateIndex = templates.findIndex((x) => x["name"] == data["settings"]["templateName"])
             if(templateIndex == -1){
@@ -350,8 +354,11 @@ app.post("/api/modifyArticle", (req, res) => {
                 templates[templateIndex]["inheritors"].push(uid)
             }
             db.setWithIndex(projectName, "templates", templateIndex, templates[templateIndex])
+            
+            FileManager.writeToDataDirectory("articles", projectName, uid, JSON.stringify(posterior))
 
-            FileManager.writeToDataDirectory("articles", projectName, uid, JSON.stringify(prior))
+            // Update the cross reference on the other articles
+            updateArticleRefWeb(projectName, uid, posterior, templates[templateIndex], prior)
             break;
         case "delete":
             FileManager.deleteInDataDirectory("articles", projectName, uid)
@@ -444,6 +451,16 @@ app.post("/api/modifyTemplate", (req, res) => {
 
     let templates = db.getSubdir(project, "templates")
     
+    if(!name && oldname){
+        let index = templates.findIndex((x) => x["name"] == oldname)
+        if(index != -1){
+            templates.splice(index, 1);
+        }
+        db.setSubdir(project, "templates", templates)
+        res.status(200).send("Accepted")
+        return
+    }
+
     if(oldname){
         let index = templates.findIndex((x) => x["name"] == oldname)
     

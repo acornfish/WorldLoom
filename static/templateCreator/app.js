@@ -18,6 +18,8 @@ const promptTemplate = `
             </select> 
             <h2 class="reference-type-label">Reference Type</h2>
             <select name="reference-type" class="reference-type"></select>
+            <h2 class="cross-reference-label">Cross Reference (Optional)</h2>
+            <select name="cross-reference" class="cross-reference"></select>
         </div>
 `
 
@@ -73,10 +75,10 @@ function getTemplateList() {
 }
 
 
-function getTemplate(callback) {
+function getTemplate(callback, name) {
     const xhr = new XMLHttpRequest();
     
-    xhr.open("GET", `/api/getTemplate?project=${localStorage.getItem("CurrentProject")}&name=${sessionStorage.getItem("TemplateName")}`, true);
+    xhr.open("GET", `/api/getTemplate?project=${localStorage.getItem("CurrentProject")}&name=${name ?? sessionStorage.getItem("TemplateName")}`, true);
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -120,10 +122,58 @@ window.addNewPromptTemplate = function (){
                 `
             )  
         })
+                
+        let refPrompt = $(".prompt-data-container .reference-type").last()
+        getTemplate((status, template) => {
+            if(status == 200){
+                let crossRef = ($(refPrompt).siblings(".cross-reference"))
+                crossRef.append(
+                    `
+                        <option value=""> </option>
+                    `
+                )  
+                template.forEach(pr => {
+                    if(pr.type == "Reference"){
+                        crossRef.append(
+                            `
+                                <option value="${pr.promptName}">${pr.promptName}</option>
+                            `
+                        )  
+                    }
+                })
+            }
+        }, refPrompt.val())
+
+        
+        $(".prompt-data-container .reference-type").last().on("change", (e) => {
+            let crossRef = ($(e.currentTarget).siblings(".cross-reference"))
+            crossRef.html("")
+            
+            getTemplate((status, template) => {
+                if(status == 200){
+                    let crossRef = ($(refPrompt).siblings(".cross-reference"))
+                    debugger
+                    crossRef.append(
+                        `
+                            <option value=""> </option>
+                        `
+                    )  
+                    template.forEach(pr => {
+                        if(pr.type == "Reference"){
+                            crossRef.append(
+                                `
+                                    <option value="${pr.promptName}">${pr.promptName}</option>
+                                `
+                            )  
+                        }
+                    })
+                }
+            }, $(e.currentTarget).val())
+        })  
 
         $(".prompt-data-container .remove-button").last().on("click", (e) => {
             e.currentTarget.parentElement.parentElement.remove()
-        })  
+        })     
 
         $(".prompt-data-container .up-button").last().on("click", (e) => {
             let el = e.currentTarget.parentElement.parentElement
@@ -179,6 +229,55 @@ $(() => {
                     promptContainer.children(".reference-type").val(promptC["rtype"])
                 })
 
+                                
+                let refPrompt = $(".prompt-data-container .reference-type").last()
+                getTemplate((status, template) => {
+                    if(status == 200){
+                        let crossRef = ($(refPrompt).siblings(".cross-reference"))
+                        crossRef.append(
+                            `
+                                <option value=""> </option>
+                            `
+                        )  
+                        template.forEach(pr => {
+                            if(pr.type == "Reference"){
+                                crossRef.append(
+                                    `
+                                        <option value="${pr.promptName}">${pr.promptName}</option>
+                                    `
+                                )  
+                            }
+                        })
+                        promptContainer.children(".cross-reference").val(promptC["crossRefT"])
+                    }
+                }, refPrompt.val())
+            
+
+                $(".prompt-data-container .reference-type").last().on("change", (e) => {
+                    let crossRef = ($(e.currentTarget).siblings(".cross-reference"))
+                    crossRef.html("")
+
+                    getTemplate((status, template) => {
+                        if(status == 200){
+                            crossRef.append(
+                                `
+                                    <option value=""> </option>
+                                `
+                            )  
+                            template.forEach(pr => {
+                                if(pr.type == "Reference"){
+                                    crossRef.append(
+                                        `
+                                            <option value="${pr.promptName}">${pr.promptName}</option>
+                                        `
+                                    )  
+                                }
+                            })
+                        }
+                    }, $(e.currentTarget).val())
+                })  
+
+
                 $(".prompt-data-container .remove-button").last().on("click", (e) => {
                     e.currentTarget.parentElement.parentElement.remove()
                 })  
@@ -207,13 +306,20 @@ $(() => {
     $(".template-save-button").on("click", (e) => {
         let contents = []
         let templateName = $(".template-name-prompt").val()
+
+        if(templateName == ""){
+            if(!confirm("Template name is empty. Continuing will delete the article")){
+                return
+            }
+        }
     
         $(".prompt-data-container").toArray().forEach(el => {
             let promptName = $(el).children("input[type=text]").val()
             let type = $(el).children(".prompt-type").val()
             let rtype = $(el).children(".reference-type").val()
+            let crossRefT = $(el).children(".cross-reference").val()
     
-            contents.push({promptName,type,rtype})
+            contents.push({promptName,type,rtype,crossRefT})
         })
     
         modifyTemplate(templateName, contents, (status) => {
@@ -225,5 +331,18 @@ $(() => {
             }
         }, sessionStorage.getItem("TemplateName"))
     })
-    
+  
+    $(".template-delete-button").on("click", (e) => {
+        if(confirm("Are you sure you want to delete this template? This can't be reversed and articles using this template will cause issues")){
+            modifyTemplate("", "", (status) => {
+                if(status == 200){
+                    window.location = '/dashboard'
+                    sessionStorage.setItem("TemplateName", "")
+                }else{
+                    window.showToast(`Deleting failed`, "danger", 1500);
+                }
+            }, sessionStorage.getItem("TemplateName"))
+        }
+    })
+
 })
