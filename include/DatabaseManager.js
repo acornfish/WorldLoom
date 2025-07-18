@@ -210,28 +210,52 @@ exports.hash = (data) => {
     return crypto.createHash("md5").update(data).digest("hex")
 }
 
-exports.updateArticleRefWeb = (project, uid, article, template, articleOld) => {
+exports.updateArticleRefWeb = (project, uid, article, templates, articleOld) => {
     let content =  article?.data?.content
     let contentOld = articleOld?.data?.content
+    let template = templates.find((x) => x["name"] == article["data"]["settings"]["templateName"])
 
     for (let prompt of (template.template)) {
         if (prompt.type == "Reference") {
-            if(contentOld){
-                let idOfOldReference = (contentOld[prompt.promptName]).slice(2)
-                let data = FileManager.readFromDataDirectory("articles", project, idOfOldReference);
-                let parsed = JSON.parse(data)
-                parsed.data.content[prompt.crossRefT] = ":@null"
-                FileManager.writeToDataDirectory("articles", project, idOfOldReference, JSON.stringify(parsed));
-            }
+            try{
 
-            if (content[prompt.promptName] != "@null" && prompt.crossRefT) {
-              let idOfReference = (content[prompt.promptName]).slice(2)
-              let data = FileManager.readFromDataDirectory("articles", project, idOfReference);
-              let parsed = JSON.parse(data)
+                if (content[prompt.promptName] != ":@null" && prompt.crossRefT) {
+                    let idOfReference = (content[prompt.promptName]).slice(2)
+                    let data = FileManager.readFromDataDirectory("articles", project, idOfReference);
+                    let parsed = JSON.parse(data)
 
-              parsed.data.content[prompt.crossRefT] = ":@" + uid
+                    if(parsed.data.content[prompt.crossRefT] != ":@" + uid){
+                        if(parsed.data.content[prompt.crossRefT] != ":@null"){
+                            let idOfOtReference = (parsed.data.content[prompt.crossRefT]).slice(2)
+                            let dataOt = FileManager.readFromDataDirectory("articles", project, idOfOtReference);
+                            let parsedOt = JSON.parse(dataOt)
 
-              FileManager.writeToDataDirectory("articles", project, idOfReference, JSON.stringify(parsed));
+                            let templateOt = templates.find((x) => x["name"] == parsed["data"]["settings"]["templateName"])
+                            let pr = templateOt.template.find(x => x.promptName == prompt.crossRefT)
+
+                            if(pr.crossRefT){
+                                parsedOt.data.content[pr.crossRefT] = ":@null"
+                            }
+                            FileManager.writeToDataDirectory("articles", project, idOfOtReference, JSON.stringify(parsedOt));
+                        }
+
+                        parsed.data.content[prompt.crossRefT] = ":@" + uid
+                        FileManager.writeToDataDirectory("articles", project, idOfReference, JSON.stringify(parsed));
+                        //    this.updateArticleRefWeb(project, idOfReference, parsed, templates, prior)
+                    }
+                }    
+
+                if(contentOld){
+                    let idOfOldReference = (contentOld[prompt.promptName]).slice(2)
+                    let data = FileManager.readFromDataDirectory("articles", project, idOfOldReference);
+                    
+                    let parsed = JSON.parse(data)
+                    parsed.data.content[prompt.crossRefT] = ":@null"
+                    FileManager.writeToDataDirectory("articles", project, idOfOldReference, JSON.stringify(parsed));
+                }
+    
+
+            }catch (err){
             }
         }
     }

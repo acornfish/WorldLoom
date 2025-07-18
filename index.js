@@ -358,7 +358,7 @@ app.post("/api/modifyArticle", (req, res) => {
             FileManager.writeToDataDirectory("articles", projectName, uid, JSON.stringify(posterior))
 
             // Update the cross reference on the other articles
-            updateArticleRefWeb(projectName, uid, posterior, templates[templateIndex], prior)
+            updateArticleRefWeb(projectName, uid, posterior, templates, prior)
             break;
         case "delete":
             FileManager.deleteInDataDirectory("articles", projectName, uid)
