@@ -114,8 +114,13 @@ window.addNewPromptTemplate = function (){
 
         container.append(promptTemplate)
         
+        let rt = $(".prompt-data-container .reference-type").last()
+        rt.append(
+            `
+                <option value=""></option>
+            `
+        )  
         x.forEach(name => {
-            let rt = $(".prompt-data-container .reference-type").last()
             rt.append(
                 `
                     <option value="${name}">${name}</option>
@@ -152,7 +157,6 @@ window.addNewPromptTemplate = function (){
             getTemplate((status, template) => {
                 if(status == 200){
                     let crossRef = ($(refPrompt).siblings(".cross-reference"))
-                    debugger
                     crossRef.append(
                         `
                             <option value=""> </option>
@@ -216,8 +220,13 @@ $(() => {
                 container.append(promptTemplate)
                 let promptContainer = container.children().last()
                 
+                let rt = $(".prompt-data-container .reference-type").last()
+                rt.append(
+                    `
+                        <option value=""></option>
+                    `
+                )  
                 x.forEach(name => {
-                    let rt = $(".prompt-data-container .reference-type").last()
                     rt.append(
                         `
                             <option value="${name}">${name}</option>
@@ -326,6 +335,7 @@ $(() => {
             if(status == 200){
                 window.showToast(`Save Successful`, "success", 1500);
                 sessionStorage.setItem("TemplateName", templateName)
+                window.location.reload()
             }else{
                 window.showToast(`Save failed`, "danger", 1500);
             }

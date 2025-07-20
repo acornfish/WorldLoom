@@ -366,7 +366,7 @@ class ContentTab {
                     element.val(content[p.promptName])
                 }
             } else if (p.type == "Reference") {
-                let element = $(`<select name="${p.promptName}"  class="reference-prompt prompt"></select>`)
+                let element = $(`<select name="${p.promptName}"  class="reference-prompt prompt" multiple="multiple"></select>`)
                 containerElement.append(element)
                 if (p.rtype) {
                     fetchReferenceables(p.rtype, (status, data) => {
@@ -376,8 +376,10 @@ class ContentTab {
                                     <option value="${opt.uid}">${opt.text}</option>
                                 `)
                             });
-
-                            element.val(content[p.promptName].slice(2))
+                            if(content[p.promptName].length > 0){
+                                content[p.promptName].filter(x => x != ":@null")   
+                            }
+                            element.val(content[p.promptName].map(x => x.slice(2)))
                             element.trigger("change")
                         }
                     })
@@ -418,7 +420,7 @@ class ContentTab {
 
             } else if (promptDefinition.type === "Reference") {
                 let current = (referencePrompts.eq(referencePromptCounter))
-                articleData[promptDefinition.promptName] = ":@" + (current.val())
+                articleData[promptDefinition.promptName] = (current.val()?.map(x => ":@" + x)) ?? [":@null"]
                 referencePromptCounter++
 
             } else if (promptDefinition.type === "Rich Text") {

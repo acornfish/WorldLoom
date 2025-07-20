@@ -5,7 +5,7 @@ try {
     var Express = require("express");
 } catch {
     //console.log is used because LogManager is not yet initalized at this point
-    
+
     console.log(`${FgRed}Required node modules are not installed.\n${Reset}Please run the start script `)
     process.exit(-1);
 }
@@ -39,7 +39,9 @@ const {
     LogManager
 } = require("./include/LogManager");
 const ExportManager = require("./include/ExportManager")
-const { json } = require("stream/consumers");
+const {
+    json
+} = require("stream/consumers");
 
 process.chdir(__dirname);
 
@@ -109,50 +111,50 @@ var resources = new ResourceManager(db);
      * 
      */
     storage._handleFile = async function _handleFile(req, file, cb) {
-            var that = this
+        var that = this
 
-            let buffer = []
+        let buffer = []
 
-            //consume the stream into buffer
-            file.stream.on("data", (chunk) => {
-                buffer.push(chunk)
+        //consume the stream into buffer
+        file.stream.on("data", (chunk) => {
+            buffer.push(chunk)
+        })
+
+        //wait until entire stream is consumed
+        await new Promise((resolve => {
+            file.stream.on("end", () => {
+                resolve()
             })
+        }))
 
-            //wait until entire stream is consumed
-            await new Promise((resolve => {
-                file.stream.on("end", () => {
-                    resolve()
-                })
-            }))
+        //concat all buffers into a singular one
+        let resBuffer = Buffer.concat(buffer)
 
-            //concat all buffers into a singular one
-            let resBuffer = Buffer.concat(buffer)
+        //hash the content and put it into file descriptor
+        file.hash = hash(resBuffer)
 
-            //hash the content and put it into file descriptor
-            file.hash = hash(resBuffer)
+        that.getDestination(req, file, function (err, destination) {
+            if (err) return cb(err)
 
-            that.getDestination(req, file, function (err, destination) {
+            that.getFilename(req, file, function (err, filename) {
                 if (err) return cb(err)
 
-                that.getFilename(req, file, function (err, filename) {
-                    if (err) return cb(err)
+                var finalPath = Path.join(destination, filename)
+                var outStream = FS.createWriteStream(finalPath)
 
-                    var finalPath = Path.join(destination, filename)
-                    var outStream = FS.createWriteStream(finalPath)
-
-                    outStream.on('error', cb)
-                    outStream.on('finish', function () {
-                        cb(null, {
-                            destination: destination,
-                            filename: filename,
-                            path: finalPath,
-                            size: outStream.bytesWritten
-                        })
+                outStream.on('error', cb)
+                outStream.on('finish', function () {
+                    cb(null, {
+                        destination: destination,
+                        filename: filename,
+                        path: finalPath,
+                        size: outStream.bytesWritten
                     })
-                    outStream.end(resBuffer)
                 })
+                outStream.end(resBuffer)
             })
-        }
+        })
+    }
 }
 
 const PORT = 1930
@@ -185,7 +187,9 @@ app.use(Express.static("./files"));
 app.use(Express.json({
     limit: '10mb'
 }));
-app.use(Express.text({ type: 'text/plain' }));
+app.use(Express.text({
+    type: 'text/plain'
+}));
 
 app.listen(PORT, HOST, function () {
     LogManager.log(
@@ -203,7 +207,7 @@ app.use((req, res, next) => {
     LogManager.log(`[${date}] - ${endpoint} - ${statusCode}`);
 
 
-    
+
     next();
 })
 
@@ -262,40 +266,52 @@ app.post("/api/save", (req, res) => {
 app.get("/api/fetchReferenceables", (req, res) => {
     let projectName = (req.query["project"])
     let type = req.query["type"]
-    
+
     let articles = db.getSubdir(projectName, "articles")
     let templates = db.getSubdir(projectName, "templates")
     let referencebles = []
-    if(!type){
-        for(let template of templates){
-            for(let i=0;i<template["inheritors"]?.length; i++){
+    if (!type) {
+        for (let template of templates) {
+            for (let i = 0; i < template["inheritors"]?.length; i++) {
                 let article = articles.find(x => x["data"]["uid"] == template["inheritors"][i])
-                if(!article) continue;
-                referencebles.push({ text: article["text"], uid: article["data"]["uid"]});
+                if (!article) continue;
+                referencebles.push({
+                    text: article["text"],
+                    uid: article["data"]["uid"]
+                });
             }
         }
-        res.status(200).send([{text:"", uid:null}].concat(referencebles))
+        res.status(200).send([{
+            text: "",
+            uid: null
+        }].concat(referencebles))
         return
     }
 
     let template = templates.find(x => x["name"] == type)
 
-    if(!template) {
+    if (!template) {
         res.status(406).send("Fail: template doesn't exist")
         return
     }
 
-    if(!template["inheritors"]){
+    if (!template["inheritors"]) {
         res.status(200).send(referencebles)
         return
     }
 
-    for(let i=0;i<template["inheritors"]?.length; i++){
+    for (let i = 0; i < template["inheritors"]?.length; i++) {
         let article = articles.find(x => x["data"]["uid"] == template["inheritors"][i])
-        if(!article) continue;
-        referencebles.push({ text: article["text"], uid: article["data"]["uid"]});
+        if (!article) continue;
+        referencebles.push({
+            text: article["text"],
+            uid: article["data"]["uid"]
+        });
     }
-    res.status(200).send([{text:"", uid:null}].concat(referencebles))
+    res.status(200).send([{
+        text: "",
+        uid: null
+    }].concat(referencebles))
 })
 
 app.get("/api/fetchArticle", (req, res) => {
@@ -309,9 +325,9 @@ app.get("/api/fetchArticle", (req, res) => {
 
     let content = FileManager.readFromDataDirectory("articles", projectName, uid)
 
-    if(JSON.parse(content)["data"]){
+    if (JSON.parse(content)["data"]) {
         res.send(content)
-    }else {
+    } else {
         res.status(406).send("Fail: Not initalized yet")
     }
 
@@ -341,20 +357,20 @@ app.post("/api/modifyArticle", (req, res) => {
             // Update inheritor caches for templates
             let templates = db.getSubdir(projectName, "templates")
             let templateIndex = templates.findIndex((x) => x["name"] == data["settings"]["templateName"])
-            if(templateIndex == -1){
+            if (templateIndex == -1) {
                 res.status(406).send("Fail: template doesn't exist")
                 return
             }
 
-            if(!templates[templateIndex]["inheritors"]){
+            if (!templates[templateIndex]["inheritors"]) {
                 templates[templateIndex]["inheritors"] = [uid]
             }
 
-            if(templates[templateIndex]["inheritors"].findIndex(x => x == uid) == -1){
+            if (templates[templateIndex]["inheritors"].findIndex(x => x == uid) == -1) {
                 templates[templateIndex]["inheritors"].push(uid)
             }
             db.setWithIndex(projectName, "templates", templateIndex, templates[templateIndex])
-            
+
             FileManager.writeToDataDirectory("articles", projectName, uid, JSON.stringify(posterior))
 
             // Update the cross reference on the other articles
@@ -393,7 +409,7 @@ app.post('/api/filepond/upload', upload.single("filepond"), function (req, res, 
     let fileData = JSON.parse(atob(decodeURIComponent(req.headers["x-file-data"])))
     let projectName = decodeURIComponent(fileData["projectName"]);
 
-    if(!db.checkProjectExists(projectName)){
+    if (!db.checkProjectExists(projectName)) {
         res.status(404).send("Fail: Project doesn't exist")
         return
     }
@@ -408,15 +424,15 @@ app.delete('/api/filepond/remove', (req, res) => {
     let projectName = fileData["projectName"];
 
     let path = resources.removeResource(id, projectName)
-    if (path){
+    if (path) {
         //actually exists. can remove the path
         let success = FileManager.deleteFSNode(path)
-        if(success){
+        if (success) {
             res.status(200).send(path);
-        }else {
-        res.status(503).send("Can't delete " + path);
+        } else {
+            res.status(503).send("Can't delete " + path);
         }
-    }else{
+    } else {
         res.status(503).send("Doesn't exist");
     }
 })
@@ -428,7 +444,7 @@ app.post('/api/filepond/load', (req, res) => {
 
     let path = resources.findResourcePath(id, projectName);
     let content = FileManager.readFile(path)
-    
+
     res.setHeader('Content-Disposition', 'inline');
     res.status(200).send(content);
 });
@@ -443,58 +459,96 @@ app.post("/api/modifyTemplate", (req, res) => {
     let oldname = req.body["oldName"]
     let template = req.body["template"]
 
-    if(!db.checkProjectExists(project))
-    {
+    if (!db.checkProjectExists(project)) {
         res.status(404).send("Fail: project does not exist")
         return
     }
 
+    const deleteBranch = () => {
+        let index = templates.findIndex((x) => x["name"] == oldname)
+        let oldTemp = templates[index].template
+        for (let i = 0; i < oldTemp.length; i++) {
+            let prompt = oldTemp[i]
+            if (prompt.type === 'Reference' && prompt.crossRefT) {
+                let referenceTempIndexOld = templates?.findIndex(x => x.name == prompt.rtype)
+                referenceTempIndexOld = referenceTempIndexOld === undefined ? -1 : referenceTempIndexOld
+                if (referenceTempIndexOld !== -1) {
+                    let referencePromptIndexOld = templates[referenceTempIndexOld]?.template.findIndex(x =>
+                        x.promptName == prompt.crossRefT) ?? -1
+                    templates[referenceTempIndexOld].template[referencePromptIndexOld].rtype = ""
+                    templates[referenceTempIndexOld].template[referencePromptIndexOld].crossRefT = ""
+                }
+            }
+        }
+    }
+
+    const appendBranch = () => {
+        for (let i = 0; i < template.length; i++) {
+            let prompt = template[i]
+            if (prompt.type === 'Reference' && prompt.crossRefT) {
+                //add new references
+                let referenceTempIndex = templates.findIndex(x => x.name == prompt.rtype)
+                let referencePromptIndex = templates[referenceTempIndex]?.template.findIndex(x => x
+                    .promptName == prompt.crossRefT) ?? -1
+                //if the referenced thing doesn't exist then dont reference it
+                if (referenceTempIndex === -1 || referencePromptIndex === -1) {
+                    template[i].rtype = ""
+                    template[i].crossRefT = ""
+                    continue
+                }
+                templates[referenceTempIndex].template[referencePromptIndex].rtype = name
+                templates[referenceTempIndex].template[referencePromptIndex].crossRefT = prompt.promptName
+            }
+        }
+    }
+
     let templates = db.getSubdir(project, "templates")
-    
-    if(!name && oldname){
-        let index = templates.findIndex((x) => x["name"] == oldname)
-        if(index != -1){
-            templates.splice(index, 1);
-        }
-        db.setSubdir(project, "templates", templates)
-        res.status(200).send("Accepted")
-        return
-    }
 
-    if(oldname){
-        let index = templates.findIndex((x) => x["name"] == oldname)
-    
-        if(index == -1){
-            db.appendToSubdir(project, "templates", {
-                name, 
-                template,
-                inheritors: []
-            })
-        }else{
-            let prev = db.getWithIndex(project, "templates", index)
-            prev.name = name
-            prev.template = template
-            db.setWithIndex(project, "templates", index, prev)
+    let index = templates.findIndex((x) => x["name"] == oldname)
+    if (oldname && index !== -1) {
+        if (name) {
+            // Overwrite
+            deleteBranch()
+            templates[index].name = name
+            templates[index].template = template
+            appendBranch()
+        } else {
+            // Delete
+            let index = templates.findIndex((x) => x["name"] == oldname)
+            deleteBranch()
+            if (index != -1) {
+                templates.splice(index, 1);
+            }
         }
-        
-        res.status(200).send("Accepted")
-        return
+    } else {
+        if (name) {
+            // Append
+            appendBranch()
+            if (!templates.find(t => t.name === name)) {
+                templates.push({
+                    name,
+                    template,
+                    inheritors: []
+                })
+            } else {
+                res.status(406).send("Fail: name already exists but oldname does not")
+                return
+            }
+        } else {
+            // Fail
+            res.status(406).send("Fail: neither name nor oldname exists")
+            return
+        }
     }
-
-    db.appendToSubdir(project, "templates", {
-        name, 
-        template,
-        inheritors: []
-    })
+    db.setSubdir(project, "templates", templates)
 
     res.status(200).send("Accepted")
 })
 
-app.get("/api/getTemplateList", (req,res) => {
+app.get("/api/getTemplateList", (req, res) => {
     let project = req.query["project"]
 
-    if(!db.checkProjectExists(project))
-    {
+    if (!db.checkProjectExists(project)) {
         res.status(404).send("Fail: project does not exist")
         return
     }
@@ -504,32 +558,30 @@ app.get("/api/getTemplateList", (req,res) => {
     res.status(200).send(templates.map(x => x.name))
 })
 
-app.get("/api/exportProject", (req,res) => {
+app.get("/api/exportProject", (req, res) => {
     let project = req.query["project"]
 
-    if(!db.checkProjectExists(project))
-    {
+    if (!db.checkProjectExists(project)) {
         res.status(404).send("Fail: project does not exist")
         return
     }
 
     let articles = db.getSubdir(project, "articles")
-    
+
     ExportManager.createMainPage(project, articles, [], [])
     ExportManager.copyStyleFiles()
-    ExportManager.exportArticles(project, 
-        articles, 
-        db.getSubdir(project,"templates"),
+    ExportManager.exportArticles(project,
+        articles,
+        db.getSubdir(project, "templates"),
         resources)
 
     ExportManager.extract(project, res);
 })
 
-app.get("/api/exportTemplates", (req,res) => {
+app.get("/api/exportTemplates", (req, res) => {
     let project = req.query["project"]
 
-    if(!db.checkProjectExists(project))
-    {
+    if (!db.checkProjectExists(project)) {
         res.status(404).send("Fail: project does not exist")
         return
     }
@@ -539,12 +591,11 @@ app.get("/api/exportTemplates", (req,res) => {
     res.status(200).send(templates)
 })
 
-app.post("/api/importTemplates", (req,res) => {
+app.post("/api/importTemplates", (req, res) => {
     let project = req.body["project"]
     let templates = req.body["templates"]
 
-    if(!db.checkProjectExists(project))
-    {
+    if (!db.checkProjectExists(project)) {
         res.status(404).send("Fail: project does not exist")
         return
     }
@@ -555,12 +606,11 @@ app.post("/api/importTemplates", (req,res) => {
 })
 
 
-app.get("/api/getTemplate", (req,res) => {
+app.get("/api/getTemplate", (req, res) => {
     let project = req.query["project"]
     let name = req.query["name"]
 
-    if(!db.checkProjectExists(project))
-    {
+    if (!db.checkProjectExists(project)) {
         res.status(404).send("Fail: project does not exist")
         return
     }
@@ -568,7 +618,7 @@ app.get("/api/getTemplate", (req,res) => {
     let templates = db.getSubdir(project, "templates")
     let template = templates.find((x) => x["name"] == name)
 
-    if(!template){
+    if (!template) {
         res.status(404).send("Fail: template does not exist")
         return
     }
