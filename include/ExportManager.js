@@ -152,6 +152,7 @@ exports.extract = function (project, res){
 
     archive.on('finish', () => {
         res.end()
+        FileManager.deleteFSNode(outputDir)
     });
 
     archive.directory(outputDir, false)
@@ -203,7 +204,8 @@ function convertDeltaToHTML(delta) {
 
 function buildArticle(htmlTemplate, name, data, template, banner){
     let shortText = "<div><h3>${Name}: </h3><p>${content}</p></div>"
-    let reference = "<div><h3>${Name}: </h3><a href='${link}'>${content}</a></div>"
+    let reference = "<div><h3>${Name}: </h3><ul>${list}</ul></div>"
+    let referenceInner = "<div><a href='${link}'>${content}</a><ul></div>"
     let number = "<div><h3>${Name}: </h3><p>${content}</p></div>"
     let richText = "<div><h3>${Name}: </h3><div class='rich-text'>${content}</div></div>"
     
@@ -233,19 +235,24 @@ function buildArticle(htmlTemplate, name, data, template, banner){
                 break;
             case "Reference": 
                 let ref = (data["content"][prompt["promptName"]])
-                if (ref == ":@null"){
-                    continue
-                }
-                let link = "/"
-                let name = ""
-                if(ref.startsWith(":@")){
-                    link = uidToPathTable[ref.slice(2, ref.length)]
-                    name = uidToNameTable[ref.slice(2, ref.length)]
+                let res = "";
+
+                for(let re of ref){
+                    if(re == ":@null"){
+                        continue
+                    }
+                    let link = "/"
+                    let name = ""
+                    if(re.startsWith(":@")){
+                        link = uidToPathTable[re.slice(2, re.length)]
+                        name = uidToNameTable[re.slice(2, re.length)]
+                    }    
+                    res += referenceInner
+                    .replace("${content}", name)
+                    .replace("${link}", link);
                 }
                 
-                dataDocument += reference.replace("${Name}", prompt["promptName"])
-                                .replace("${content}", name)
-                                .replace("${link}", link);
+                dataDocument += reference.replace("${list}", res).replace("${Name}", prompt["promptName"]);
                 break;
         }
     }

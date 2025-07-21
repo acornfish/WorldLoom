@@ -228,6 +228,9 @@ exports.updateArticleRefWeb = (project, uid, article, templates, articleOld) => 
                 // Handle new references
                 if (JSON.stringify(content[prompt.promptName]) !== JSON.stringify([":@null"])) {
                     for (let refId of content[prompt.promptName]) {
+                        if(refId == ":@null"){
+                            continue
+                        }
                         let idOfReference = refId.slice(2); // remove ":@"
                         let data = FileManager.readFromDataDirectory("articles", project, idOfReference);
                         let parsed = JSON.parse(data);

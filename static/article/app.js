@@ -421,6 +421,9 @@ class ContentTab {
             } else if (promptDefinition.type === "Reference") {
                 let current = (referencePrompts.eq(referencePromptCounter))
                 articleData[promptDefinition.promptName] = (current.val()?.map(x => ":@" + x)) ?? [":@null"]
+                if(articleData[promptDefinition.promptName].length > 1){
+                    articleData[promptDefinition.promptName].filter(x => x != ":@null")   
+                }
                 referencePromptCounter++
 
             } else if (promptDefinition.type === "Rich Text") {

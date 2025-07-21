@@ -3,7 +3,7 @@
     --menu-color: #929292;
     --menu-color-darker: #828282;
     --text-color: #ffffff !important;
-    --accent: #ffffff; 
+    --accent: #531818; 
 }
 
 
@@ -70,6 +70,16 @@ h3 {
     display: inline;
 }
 
+div:has(ul)>h3 {
+	color: var(--text-color);
+	position: relative;
+	display: inline;
+	margin: 0;
+	top: 0;
+	vertical-align: top;
+}
+
+
 p {
     color: var(--text-color);
     position: relative;
@@ -93,10 +103,28 @@ p {
 
 a {
     padding: .5%;
-    background-color: var(--menu-color-darker);    
-    text-decoration: none;
-    border: 1px solid var(--accent);
+    text-decoration: underline;
     color: var(--accent) !important; 
+}
+
+a:hover {
+    filter: brightness(140%);
+}
+a:active {
+    filter: brightness(160%);
+}
+
+ul:has(a){
+    background-color: var(--menu-color-darker);    
+    list-style: none;
+	margin: 0;
+    margin-top: .2%;
+	padding: .2%;
+	display: inline-block;
+	position: relative;
+	border: 1px solid var(--text-color);
+    width: 90%;
+    overflow-x: scroll;
 }
 
 .banner{
