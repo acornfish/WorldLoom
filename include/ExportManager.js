@@ -195,11 +195,12 @@ function convertDeltaToHTML(delta) {
             let text = ref["text"]
             delete delta.ops[i].attributes.articleReference;
             delta.ops[i].attributes.link = uidToPathTable[id];
-            delta.ops[i].attributes.linkTarget = "";
             delta.ops[i].insert = text;
         }
     }
-    let converter = new QuillDeltaToHtmlConverter(delta["ops"], {})
+    let converter = new QuillDeltaToHtmlConverter(delta["ops"], {
+        linkTarget: ""
+    })
     return converter.convert()
 }
 
