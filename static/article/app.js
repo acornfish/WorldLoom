@@ -15,6 +15,9 @@ var imageIDS = {}
 const filePondConfig = (proj, type) => {
     return {
         instantUpload: false,
+        allowReplace: false,
+        allowProcess: false,
+        allowFileTypeValidation: true,
         acceptedFileTypes: ['image/*'],
         server: {
             process: {
@@ -182,6 +185,34 @@ function quillFactory(parent) {
     return quill
 }
 
+function modifyArticleImages(dataObj) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/modifyArticle", true);
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                window.showToast(`Save Successful`, "success", 2000);
+                return true
+            } else {
+                window.showToast(`Error while saving`, "danger", 2000);
+                console.error("Error:", xhr.status, xhr.responseText);
+            }
+        }
+    };
+
+    const payload = {
+        project: (localStorage.getItem("CurrentProject")),
+        operation: "imageUpdate",
+        data: dataObj,
+        uid: sessionStorage.getItem("Article")
+    };
+
+    xhr.send(JSON.stringify(payload));
+}
+
+
 function modifyArticle(dataObj) {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "/api/modifyArticle", true);
@@ -279,6 +310,34 @@ function fetchReferenceables(type, callback) {
     };
     xhr.send();
 }
+
+function deleteFileFromFilePond(fileId) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("DELETE", "/api/filepond/remove", true);
+
+        xhr.setRequestHeader("Content-Type", "text/plain");
+        xhr.setRequestHeader(
+            "x-file-data",
+            encodeURIComponent(btoa(JSON.stringify({ projectName: localStorage.getItem("CurrentProject") })))
+        );
+
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                resolve(xhr.responseText);
+            } else {
+                reject(new Error(`Error ${xhr.status}: ${xhr.responseText}`));
+            }
+        };
+
+        xhr.onerror = function () {
+            reject(new Error("Network error"));
+        };
+
+        xhr.send((fileId));
+    });
+}
+
 
 function getTemplate(callback) {
     const xhr = new XMLHttpRequest();
@@ -454,19 +513,25 @@ class DesignTab {
         ));
 
         $(".thumbnail-prompt").on('FilePond:removefile', (e) => {
-            $('.thumbnail-prompt').filepond("removeFile", imageIDS["thumbnail"], {
-                revert: true
-            })
-            imageIDS["thumbnail"] = null
-        });
-
+            if(e.type = "FilePond:removefile"){
+                if(imageIDS["thumbnail"]){
+                    deleteFileFromFilePond(imageIDS["thumbnail"])
+                    imageIDS["thumbnail"] = ""
+                    modifyArticleImages(imageIDS)
+                }
+            }
+        })
+        
         $(".banner-prompt").on('FilePond:removefile', (e) => {
-            $('.banner-prompt').filepond("removeFile", imageIDS["banner"], {
-                revert: true
-            })
-            imageIDS["banner"] = null
+            if(e.type = "FilePond:removefile"){
+                if(imageIDS["banner"]){
+                    deleteFileFromFilePond(imageIDS["banner"])
+                    imageIDS["banner"] = ""
+                    modifyArticleImages(imageIDS)
 
-        });
+                }
+            }
+        })
 
         //listen for upload event
         $('.thumbnail-prompt').on('FilePond:processfiles', function (e) {

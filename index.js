@@ -379,6 +379,15 @@ app.post("/api/modifyArticle", (req, res) => {
         case "delete":
             FileManager.deleteInDataDirectory("articles", projectName, uid)
             break;
+        case "imageUpdate":
+            if(db.indexOf(projectName, "articles", (el => el?.data?.uid === uid)) != -1){
+                let fileContent = (FileManager.readFromDataDirectory("articles", projectName, uid))
+                let prior = JSON.parse(fileContent)
+                let posterior = structuredClone(prior)
+                posterior.data.design = data; 
+                FileManager.writeToDataDirectory("articles", projectName, uid, JSON.stringify(posterior))
+            }
+            break;
         default:
             res.status(406).send("Invalid operation");
             return;
@@ -443,10 +452,14 @@ app.post('/api/filepond/load', (req, res) => {
     let projectName = decodeURIComponent(fileData["projectName"]);
 
     let path = resources.findResourcePath(id, projectName);
-    let content = FileManager.readFile(path)
+    if(path){
+        let content = FileManager.readFile(path)
+        res.setHeader('Content-Disposition', 'inline');
+        res.status(200).send(content);
+    }else{
+        res.status(406).send("Fail: File doesn't exist");
+    }
 
-    res.setHeader('Content-Disposition', 'inline');
-    res.status(200).send(content);
 });
 
 app.get("/api/getProjectList", (req, res) => {

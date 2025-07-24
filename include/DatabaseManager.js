@@ -77,26 +77,10 @@ class DatabaseManager {
         );
     }
 
-    getWithID(projectName, subDir, id) {
+    indexOf(projectName, subDir, callback) {
         let ret;
         this.#projects[this.findProjectIndex(projectName)][subDir].forEach(
-            (element, index, array) => {
-                if (element.id == id) {
-                    ret = array[index];
-                }
-            }
-        );
-        return ret;
-    }
-
-    indexOf(projectName, subDir, id) {
-        let ret;
-        this.#projects[this.findProjectIndex(projectName)][subDir].forEach(
-            (element, index, array) => {
-                if (element.id == id) {
-                    ret = index;
-                }
-            }
+            callback
         );
         return ret;
     }
@@ -194,8 +178,9 @@ class ResourceManager {
         if (index == -1) {
             return false
         } else {
+            let path = this.#db.getSubdir(project, "resources")[index]["path"]
             this.#db.removeWithIndex(project, "resources", index)
-            return this.#db.getSubdir(project, "resources")[index]["path"]
+            return path
         }
     }
 }
