@@ -42,6 +42,7 @@ const ExportManager = require("./include/ExportManager")
 const {
     json
 } = require("stream/consumers");
+const { truncateSync } = require("fs");
 
 process.chdir(__dirname);
 
@@ -333,6 +334,97 @@ app.get("/api/fetchArticle", (req, res) => {
 
 })
 
+app.get("/api/fetchScene", (req, res) => {
+    let projectName = (req.query["project"])
+    let uid = req.query["uid"]
+
+    if (projectName == null || !db.checkProjectExists(projectName)) {
+        res.status(406).send("Fail: project name is null or project is non-existent")
+        return
+    }
+
+    let content = FileManager.readFromDataDirectory("manuscripts", projectName, uid)
+
+    if (JSON.parse(content)["data"]) {
+        res.send(content)
+    } else {
+        res.status(406).send("Fail: Not initalized yet")
+    }
+
+})
+
+app.get("/api/deleteScene", (req, res) => {
+    let projectName = (req.query["project"])
+    let uid = req.query["uid"]
+
+    if (projectName == null || !db.checkProjectExists(projectName)) {
+        res.status(406).send("Fail: project name is null or project is non-existent")
+        return
+    }
+
+    let content = FileManager.deleteFSNode(
+        Path.join("manuscripts", projectName, uid)
+    )
+
+    res.send(content)
+
+})
+
+app.post("/api/setScene", (req, res) => {
+    let projectName = (req.body["project"])
+    let uid = req.body["uid"]
+    let scene = req.body["scene"]
+    let synopsis = req.body["synopsis"]
+    let notes = req.body["notes"]
+    
+    if (projectName == null || !db.checkProjectExists(projectName)) {
+        res.status(406).send("Fail: project name is null or project is non-existent")
+        return
+    }
+    
+    try{
+        FileManager.writeToDataDirectory(
+            "manuscripts", projectName, uid, JSON.stringify({
+                scene, 
+                synopsis, 
+                notes
+                })
+        )    
+    }catch{
+        res.status(406).send("Fail: Something went wrong along the way")
+        return
+    }
+
+    res.status(200).send("Sucess")
+})
+
+app.get("/api/getScene", (req, res) => {
+    let projectName = (req.query["project"])
+    let uid = req.query["uid"]
+
+    if (projectName == null || !db.checkProjectExists(projectName)) {
+        res.status(406).send("Fail: project name is null or project is non-existent")
+        return
+    }
+
+    let content = "";
+    try{
+        content = FileManager.readFromDataDirectory(
+            "manuscripts", projectName, uid
+        )
+
+        if(!content){
+            res.status(406).send("Fail: couldn't read " + uid)
+            return
+        }
+    } catch {
+        res.status(406).send("Fail: couldn't read " + uid)
+        return
+    }
+
+    res.status(200).send(content)
+})
+
 app.post("/api/modifyArticle", (req, res) => {
     let projectName = req.body["project"]
     let operation = req.body["operation"]
@@ -404,6 +496,24 @@ app.post("/api/setArticleTree", (req, res) => {
     res.status(200).send("Success")
 })
 
+app.post("/api/setManuscriptTree", (req, res) => {
+    let projectName = req.body["project"]
+    let tree = req.body["tree"]
+
+    db.setSubdir(projectName, "manuscripts", tree)
+
+    res.status(200).send("Success")
+})
+
+app.post("/api/retrieveScene", (req, res) => {
+    let projectName = req.body["project"]
+    let name = req.body["name"]
+
+    db.setSubdir(projectName, "manuscripts", tree)
+
+    res.status(200).send("Success")
+})
+
 app.get("/api/getArticleTree", (req, res) => {
     let projectName = req.query["project"]
 
@@ -412,6 +522,16 @@ app.get("/api/getArticleTree", (req, res) => {
         return
     }
     res.status(200).send(db.getSubdir(projectName, "articles"))
+})
+
+app.get("/api/getManuscriptTree", (req, res) => {
+    let projectName = req.query["project"]
+
+    if (projectName == undefined) {
+        res.status(406).send("Fail")
+        return
+    }
+    res.status(200).send(db.getSubdir(projectName, "manuscripts"))
 })
 
 app.post('/api/filepond/upload', upload.single("filepond"), function (req, res, next) {

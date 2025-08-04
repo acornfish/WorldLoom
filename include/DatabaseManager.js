@@ -10,9 +10,10 @@ class Project {
     constructor(name, description = "") {
         this.name = name;
         this.description = description;
-        this.articles = [{
+
+        const jstreeBase = (type) => [{
             "id": "root",
-            "text": "Articles",
+            "text": type,
             "icon": true,
             "li_attr": {
                 "id": "root"
@@ -23,8 +24,10 @@ class Project {
             "data": {},
             "parent": "#",
             "type": "default"
-        }];
-        this.manuscripts = [];
+        }]
+
+        this.articles = jstreeBase("Articles");
+        this.manuscripts = jstreeBase("Manuscripts");
         this.resources = [];
         this.timeline = [];
         this.templates = [];
