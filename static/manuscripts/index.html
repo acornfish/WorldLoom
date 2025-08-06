@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Loom</title>
+    <link href="/libs/quill.snow.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/global.css">
+    <link rel="stylesheet" href="/libs/dist/themes/proton/style.css" />
+    <script src="app.js" type="module" defer></script>
+    <script src="/libs/dist/jstree.min.js" type="module" defer></script>
+    <script src="/global.js" type="module"></script>
+    <script type="module" src="/global-head.js"></script>
+
+</head>
+
+<body>
+    <div id="loading-screen" style="width: 100%;height: 140%;background-color: gray;z-index: 999;position: absolute;">
+    </div>
+    <div class="navbar"></div>
+    <div class="explorer-container">
+        <ul id="tree"></ul>
+    </div>  
+    <div class="text-editor-container">
+        <div id="text-editor"></div>
+    </div>
+    <div class="sidebar-container">
+        <div class="resize-button"><i class="fa-solid fa-grip-lines-vertical"></i></div>
+        <div class="synopsis-container">
+            <h2 for="synopsis-editor">Synopsis</h2>
+            <textarea name="synopsis-editor" id="synopsis-editor"></textarea>
+        </div>
+
+        <div class="notes-container">
+            <h2 for="notes-editor">Notes</h2>
+            <textarea name="notes-editor" id="notes-editor"></textarea>
+            <button id="save-scene" onclick="window.saveScene()">Save</button>
+        </div>
+    </div>
+
+</body>
+
+</html>
