@@ -66,10 +66,6 @@ process.chdir(__dirname);
     DirectoryManager.createDirectory(
         "./files/articles",
         "Article storage directory");
-
-    DirectoryManager.createDirectory(
-        "./files/timelines",
-        "Timeline storage directory");
 }
 
 var db = new DatabaseManager()
@@ -239,7 +235,7 @@ app.post("/api/createProject", (req, res) => {
         DirectoryManager.createDirectory("files/articles/" + encodeURIComponent(projectName))
         DirectoryManager.createDirectory("files/manuscripts/" + encodeURIComponent(projectName))
         DirectoryManager.createDirectory("files/resources/" + encodeURIComponent(projectName))
-        DirectoryManager.createDirectory("files/timelines/" + encodeURIComponent(projectName))
+        DirectoryManager.createDirectory("files/timeline/" + encodeURIComponent(projectName))
     } catch (err) {
         LogManager.error(`${FgRed} failed to create project directories: ${err}`)
         res.status(503).send("Fail: " + err)
@@ -332,6 +328,41 @@ app.get("/api/fetchArticle", (req, res) => {
         res.status(406).send("Fail: Not initalized yet")
     }
 
+})
+
+app.get("/api/retrieveTimeline", (req, res) => {
+    let projectName = (req.query["project"])
+
+    if (projectName == null || !db.checkProjectExists(projectName)) {
+        res.status(406).send("Fail: project name is null or project is non-existent")
+        return
+    }
+
+    let content = db.getSubdir(projectName, "timeline")
+    if(content.length == 0){
+        res.send({
+            events: [],
+            settings: {
+                scrollSpeed: 6,
+                defaultStartTime: 0,
+                numberOfRows: 12
+            }
+        })
+    }
+    res.send(content[0])
+})
+
+app.post("/api/saveTimeline", (req, res) => {
+    let projectName = (req.body["project"])
+    let data = (req.body["data"])
+
+    if (projectName == null || !db.checkProjectExists(projectName)) {
+        res.status(406).send("Fail: project name is null or project is non-existent")
+        return
+    }
+
+    db.setSubdir(projectName, "timeline", [data])
+    res.send("Success")
 })
 
 app.get("/api/fetchScene", (req, res) => {
