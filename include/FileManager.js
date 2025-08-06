@@ -40,7 +40,7 @@ class FileManager {
     }
   }
 
-  static copyResourcesToOutput() {
+  static copyResourcesToOutput(project) {
     let files = this.fetchAllfiles(Path.join(cwd(), "templates"));
     for (let file of files) {
       if (file.endsWith(".css")) {
@@ -55,7 +55,7 @@ class FileManager {
     }
 
     FS.cpSync(
-      Path.join(".", "files", "resources"),
+      Path.join(".", "files", "resources", project),
       Path.join(FileManager.outputDir, "resources"),
       {
         force: true,

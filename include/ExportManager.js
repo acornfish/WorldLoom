@@ -50,8 +50,8 @@ exports.createMainPage = function (project, articles, manuscriptNames, mapNames)
         FileManager.writeFileToOutput("index.html", outputIndex);
 }
 
-exports.copyStyleFiles = function () {
-    FileManager.copyResourcesToOutput()
+exports.copyStyleFiles = function (project) {
+    FileManager.copyResourcesToOutput(project)
 }
 
 exports.exportArticles = function (project, articles, templates, resources) {
@@ -130,6 +130,14 @@ exports.exportArticles = function (project, articles, templates, resources) {
     let tree = buildTree(articles)
     createUidToPathTable(tree)
     traverseArticleTree(tree[0], articleOutputDir)
+}
+
+exports.exportTimeline  = function (project, timeline){
+    let template = fetchTemplate("timeline")
+
+    let output = template.replace("${timelineData}", JSON.stringify(timeline[0]))
+
+    FileManager.writeFile(Path.join(FileManager.outputDir, "timeline.html"), output)
 }
 
 exports.extract = function (project, res){

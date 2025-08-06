@@ -29,7 +29,14 @@ class Project {
         this.articles = jstreeBase("Articles");
         this.manuscripts = jstreeBase("Manuscripts");
         this.resources = [];
-        this.timeline = [];
+        this.timeline = [{
+            "events": [],
+            "settings": {
+                "scrollSpeed": 6,
+                "defaultStartTime": 0,
+                "numberOfRows": 12
+            }
+        }];
         this.templates = [];
     }
 }
