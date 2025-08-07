@@ -1,5 +1,5 @@
 # Note
-I am doing a rewrite and currently only articles are available
+I am doing a rewrite and currently maps feature isn't available. And honestly I feel kind of lazy to do it and making a good scene editing system feels better right now so I might delay making the maps feature a bit more
 
 Previous and buggy version is available in releases as version 1.0.0 and also in the old branch
 

@@ -731,14 +731,16 @@ app.get("/api/exportProject", (req, res) => {
     }
 
     let articles = db.getSubdir(project, "articles")
+    let manuscripts = db.getSubdir(project, "manuscripts")
 
-    ExportManager.createMainPage(project, articles, [], [])
+    ExportManager.createMainPage(project, articles, manuscripts, [])
     ExportManager.copyStyleFiles(project)
     ExportManager.exportArticles(project,
         articles,
         db.getSubdir(project, "templates"),
         resources)
     ExportManager.exportTimeline(project, db.getSubdir(project, "timeline"))
+    ExportManager.exportManuscripts(project, db.getSubdir(project, "manuscripts"))
     ExportManager.extract(project, res);
 })
 

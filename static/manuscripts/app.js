@@ -65,7 +65,7 @@ function saveManuscriptTree() {
 
     const data = {
         project: localStorage.getItem("CurrentProject"),
-        tree: $('#tree').jstree(true).get_json()
+        tree: $('#tree').jstree(true).get_json("#", {flat: true})
     };
 
     const jsonData = JSON.stringify(data);

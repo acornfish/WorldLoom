@@ -13,7 +13,7 @@ const {
 var uidToPathTable = {}
 var uidToNameTable = {}
 
-exports.createMainPage = function (project, articles, manuscriptNames, mapNames) {
+exports.createMainPage = function (project, articles, manuscripts, mapNames) {
         if(DirectoryManager.directoryExists(FileManager.outputDir)){
             FileManager.deleteFSNode(FileManager.outputDir)
         }
@@ -25,15 +25,29 @@ exports.createMainPage = function (project, articles, manuscriptNames, mapNames)
         let manuscriptList = ""
         let mapList = ""
 
-        let tree = buildTree(articles)
+        let articleTree = buildTree(articles)
+        let manuscriptTree = buildTree(manuscripts)
         
-        for (const child of tree[0]["children"]){
+        for (const child of articleTree[0]["children"]){
             if(child["type"] != "default"){
                 articleList += `<li><a href="articles/${
                     encodeURIComponent(encodeURIComponent(child["text"]))
                 }.html">${child["text"]}</a></li>`
             }else{
                 articleList += `<li><a href="articles/${
+                    encodeURIComponent(encodeURIComponent(child["text"]))
+                }/index.html">${child["text"]}</a></li>`
+            
+            }
+        }   
+        
+        for (const child of manuscriptTree[0]["children"]){
+            if(child["type"] != "default"){
+                manuscripts += `<li><a href="articles/${
+                    encodeURIComponent(encodeURIComponent(child["text"]))
+                }.html">${child["text"]}</a></li>`
+            }else{
+                manuscripts += `<li><a href="articles/${
                     encodeURIComponent(encodeURIComponent(child["text"]))
                 }/index.html">${child["text"]}</a></li>`
             
@@ -131,6 +145,57 @@ exports.exportArticles = function (project, articles, templates, resources) {
     createUidToPathTable(tree)
     traverseArticleTree(tree[0], articleOutputDir)
 }
+exports.exportManuscripts = function (project, manuscripts) {
+    let manuscriptOutputDir = Path.join(FileManager.outputDir, "manuscripts")
+
+    DirectoryManager.createDirectory(
+        manuscriptOutputDir,
+        "Output article directory");
+
+    let traverseTree = (currentNode, currentPath) => {
+        let newPath;
+        if(currentNode.type == "default"){
+            //its a folder
+            if(!(currentNode.id == "root")){
+                newPath = Path.join(currentPath, encodeURIComponent(currentNode["text"]))
+                DirectoryManager.createDirectory(newPath)    
+
+                let template = fetchTemplate("subdirIndex")
+                let children = ""
+
+                currentNode["children"].forEach(child => {
+                    children += `
+                        <li class="${child.type}"><a href="${
+                            child.type === "default"
+                            ? encodeURIComponent(encodeURIComponent(child["text"])) + "/index.html"
+                            : encodeURIComponent(encodeURIComponent(child["text"])) + ".html"}">${child["text"]}</a></li>
+                    `
+                })
+
+                let content = template.replace("${name}", currentNode["text"]).replace("${files}", children)
+
+                FileManager.writeFile(Path.join(newPath, "index.html"), content)
+            }
+            //traverse children
+            currentNode["children"].forEach((child) => traverseTree(child, 
+                (currentNode.id == "root") ? currentPath : newPath
+            ));
+        }else {
+            newPath = Path.join(currentPath, encodeURIComponent(currentNode["text"]) + ".html")
+            let template = fetchTemplate("manuscript")
+            let data = JSON.parse(
+                FileManager.readFromDataDirectory("manuscripts", project, currentNode["data"]["uid"])
+            )
+
+            let content = buildScene(template, currentNode["text"], data);
+
+            FileManager.writeFile(newPath, content)
+        }
+    }
+
+    let tree = buildTree(manuscripts)
+    traverseTree(tree[0], manuscriptOutputDir)
+}
 
 exports.exportTimeline  = function (project, timeline){
     let template = fetchTemplate("timeline")
@@ -210,6 +275,10 @@ function convertDeltaToHTML(delta) {
         linkTarget: ""
     })
     return converter.convert()
+}
+
+function buildScene(template, name, data){
+    return template.replaceAll("${scriptName}", name).replaceAll("${scriptSynopsis}", data["synopsis"]).replaceAll("${scriptText}", data["scene"])
 }
 
 function buildArticle(htmlTemplate, name, data, template, banner){
