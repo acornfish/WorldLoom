@@ -190,7 +190,7 @@ app.use(Express.text({
 
 app.listen(PORT, HOST, function () {
     LogManager.log(
-        `${FgGreen}World Loom is running.\nAcess the application at ${Reset}${Underscore}http://${HOST}:${PORT}`
+        `${FgGreen}World Loom is running.\nAccess the application at ${Reset}${Underscore}http://${HOST}:${PORT}`
     );
 })
 
@@ -235,7 +235,6 @@ app.post("/api/createProject", (req, res) => {
         DirectoryManager.createDirectory("files/articles/" + encodeURIComponent(projectName))
         DirectoryManager.createDirectory("files/manuscripts/" + encodeURIComponent(projectName))
         DirectoryManager.createDirectory("files/resources/" + encodeURIComponent(projectName))
-        DirectoryManager.createDirectory("files/timeline/" + encodeURIComponent(projectName))
     } catch (err) {
         LogManager.error(`${FgRed} failed to create project directories: ${err}`)
         res.status(503).send("Fail: " + err)

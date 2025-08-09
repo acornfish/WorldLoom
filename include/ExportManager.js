@@ -8,7 +8,6 @@ const Path = require("path")
 const Archiver = require("archiver")
 const {
     QuillDeltaToHtmlConverter,
-    InsertDataQuill
 } = require("quill-delta-to-html")
 
 var uidToPathTable = {}

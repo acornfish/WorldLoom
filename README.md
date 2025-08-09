@@ -1,13 +1,13 @@
 # Note
 I am doing a rewrite and currently maps feature isn't available. And honestly I feel kind of lazy to do it and making a good scene editing system feels better right now so I might delay making the maps feature a bit more
 
-Previous and buggy version is available in releases as version 1.0.0 and also in the old branch
+Previous and buggy version is available in the old branch
 
 # Prerequisites
 -NodeJS (https://nodejs.org/en/download/package-manager) 
 
 # Installation
- 1. Download the latest release
+ 1. Download the repository as zip file
  2. Extract the zip file
  3. Run the appropriate script file on the main folder (`start.sh` on linux and `start.bat` on windows)
  4. Follow the instructions on the script output
