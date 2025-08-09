@@ -205,13 +205,14 @@ $(() => {
             return
         }
 
+        let name = sessionStorage.getItem("TemplateName")
+        $(".template-name-prompt").val(name)
+        
         template.forEach(promptC => {
             templates.then(x => {
                 let container = $(".container")
                 let newp = $("#new-prompt")        
 
-                let name = sessionStorage.getItem("TemplateName")
-                $(".template-name-prompt").val(name)
 
                 let newButtonContent = newp.get(0).outerHTML
 

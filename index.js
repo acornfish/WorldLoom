@@ -631,6 +631,14 @@ app.post("/api/modifyTemplate", (req, res) => {
     const deleteBranch = () => {
         let index = templates.findIndex((x) => x["name"] == oldname)
         let oldTemp = templates[index].template
+        console.log(templates[index].inheritors)
+
+        for(let inheritor of templates[index].inheritors){
+            let prior = JSON.parse(FileManager.readFromDataDirectory("articles", project, inheritor))
+            prior.data.settings.templateName = ""
+            FileManager.writeToDataDirectory("articles", project, inheritor, JSON.stringify(prior))
+        }
+
         for (let i = 0; i < oldTemp.length; i++) {
             let prompt = oldTemp[i]
             if (prompt.type === 'Reference' && prompt.crossRefT) {
@@ -644,6 +652,7 @@ app.post("/api/modifyTemplate", (req, res) => {
                 }
             }
         }
+
     }
 
     const appendBranch = () => {

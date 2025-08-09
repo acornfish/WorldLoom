@@ -2,6 +2,7 @@ import '/global.js'
 import "../libs/jquery.min.js"
 import "../libs/dist/jstree.js"
 import "../libs/quill.js"
+import "../libs/select2.min.js"
 
 var lastSelectedSceneID = ""
 const urlParams = new URLSearchParams(window.location.search);
@@ -28,6 +29,45 @@ const JSTreePlugins = [
     "types", "wholerow", "unique"
 ]
         
+
+const QuillTextFormat = Quill.import('formats/bold');
+const customIcons = Quill.import('ui/icons');
+customIcons['articleReference'] = '<i class="fa-solid fa-link" style="color: var(--text-color);"></i>';
+class ArticleReferenceBlot extends QuillTextFormat {
+    static blotName = 'articleReference';
+    static tagName = 'a';
+    static className = 'quill-article-reference';
+
+    static create(value) {
+        let node = super.create();
+        node.classList.add('quill-button-link');
+        node.value = value.text
+        node.setAttribute(
+            'onclick',
+            `openArticleReference("${value.id}");return false`
+        ); 
+        node.setAttribute(
+            'id',
+            `${value.id}`
+        ); 
+        node.setAttribute(
+            'type',
+            `button`
+        );
+        return node;
+    }
+
+    static formats(node) {
+        let content = {
+            id: node.getAttribute('id'),
+            text: node.innerText
+        };
+
+        return content
+    }
+
+}
+
 
 function retrieveManuscriptTree() {
     return new Promise((resolve, reject) => {
@@ -126,7 +166,78 @@ function deleteScene(sceneName) {
         name: sceneName
     }));
 }
+const handleArticleReferences = async (value) => {
+    let selectorPopup = $(".reference-inline-popup")
+    let quill = document.quill;
+    let range = quill.getSelection();
+    if (!range.length) {
+        return
+    }
+    selectorPopup.show()
+    let val = await new Promise((resolve, reject) => {
+        $(".reference-inline-popup button").one("click", (e) => {
+            let element = $("#inline-reference")
+            resolve({
+                id: element.val(),
+                text: element.select2('data')[0].text
+            })
+            $(".reference-inline-popup").hide()
+            $(".reference-inline-popup button").off("click")
+        })
+    })
 
+    if (val) {
+        quill.formatText(range.index, range.length, 'articleReference', val);
+        quill.setSelection(range.index + range.length);
+        quill.format('articleReference', false);
+        selectorPopup.hide()    
+    }
+
+}
+
+function fetchReferenceables(type, callback) {
+    const xhr = new XMLHttpRequest();
+    const url =
+        `/api/fetchReferenceables?project=${encodeURIComponent(localStorage.getItem("CurrentProject"))}&type=${encodeURIComponent(type)}`;
+
+    xhr.open("GET", url, true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                let data
+                try {
+                    data = JSON.parse(xhr.responseText);
+                } catch (parseErr) {
+                    callback(xhr.status, null);
+                    return
+                }
+                callback(xhr.status, data);
+            } else {
+                callback(xhr.status, null);
+            }
+        }
+    };
+    xhr.send();
+}
+window.openArticleReference = function (id){
+    if(confirm("Are you sure you want to leave this article? Unsaved Changes will be lost!")){
+        sessionStorage.setItem("Article", id);
+        window.location.reload()
+    }
+}
+
+fetchReferenceables("", (status, data) => {
+    if (status == 200) {
+        let element = $("#inline-reference")
+        data.forEach(opt => {
+            element.append(`
+                <option value="${opt.uid}">${opt.text}</option>
+                `)
+        });
+        element.select2()
+    }
+
+})
 
 document.quill = new Quill('#text-editor', {
     theme: 'snow',
@@ -142,7 +253,10 @@ document.quill = new Quill('#text-editor', {
                     'list': 'ordered'
                 }, {
                     'list': 'bullet'
-                }]
+                }],
+                [
+                    'articleReference'
+                ]
             ],
             handlers: {
                 link: function (value) {
@@ -158,6 +272,8 @@ document.quill = new Quill('#text-editor', {
                     }
 
                 },
+                articleReference: handleArticleReferences,
+
             }
         }
     },

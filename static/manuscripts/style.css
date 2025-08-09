@@ -178,3 +178,56 @@ input{
     background-color: var(--menu-color);
     outline: none;
 }
+
+
+
+.reference-inline-popup{
+    position: absolute;
+    width: 75%;
+    background-color: gray;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 99;
+    padding: 3%;
+    display: none;
+}
+.reference-prompt {
+    width: 80%;
+}
+
+#inline-reference-container{
+    position: relative;
+    width: 80%;
+    height: 10%;
+    display: inline-block;
+    margin-left: 5%;
+}
+
+#inline-reference{
+    position: relative;
+    width: 100%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.reference-inline-popup button {
+	position: relative;
+	display: inline;
+	background-color: var(--accent);
+	height: 5vh;
+    width: 5vw;
+	border: none;
+	padding: 1%;
+    color: var(--text-color);
+    margin-left: 5%;
+}
+
+.reference-inline-popup button:not([disabled]):hover{
+    filter: brightness(120%);
+}
+
+.reference-inline-popup, button:not([disabled]):active{
+    filter: brightness(140%);
+}
