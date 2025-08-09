@@ -53,5 +53,4 @@ Prebuilt binary: Try adding the nodejs installation to the PATH envoriment varia
 
 Source code: Try another method
 
-
- 
+Please open a issue if you come across another problem. Thanks in advance.
