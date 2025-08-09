@@ -2,6 +2,7 @@ const { cwd } = require("process");
 const {
     FileManager,
     DirectoryManager,
+    FS,
 } = require("./FileManager")
 const Path = require("path")
 const Archiver = require("archiver")
@@ -43,11 +44,11 @@ exports.createMainPage = function (project, articles, manuscripts, mapNames) {
         
         for (const child of manuscriptTree[0]["children"]){
             if(child["type"] != "default"){
-                manuscripts += `<li><a href="articles/${
+                manuscriptList += `<li><a href="manuscripts/${
                     encodeURIComponent(encodeURIComponent(child["text"]))
                 }.html">${child["text"]}</a></li>`
             }else{
-                manuscripts += `<li><a href="articles/${
+                manuscriptList += `<li><a href="manuscripts/${
                     encodeURIComponent(encodeURIComponent(child["text"]))
                 }/index.html">${child["text"]}</a></li>`
             
@@ -183,6 +184,11 @@ exports.exportManuscripts = function (project, manuscripts) {
         }else {
             newPath = Path.join(currentPath, encodeURIComponent(currentNode["text"]) + ".html")
             let template = fetchTemplate("manuscript")
+
+            if(!FS.existsSync( Path.join("files", "manuscripts", encodeURIComponent(project) ,currentNode["data"]["uid"])) ){
+                return
+            }
+
             let data = JSON.parse(
                 FileManager.readFromDataDirectory("manuscripts", project, currentNode["data"]["uid"])
             )
@@ -278,7 +284,9 @@ function convertDeltaToHTML(delta) {
 }
 
 function buildScene(template, name, data){
-    return template.replaceAll("${scriptName}", name).replaceAll("${scriptSynopsis}", data["synopsis"]).replaceAll("${scriptText}", data["scene"])
+    return template.replaceAll("${scriptName}", name).replaceAll("${scriptSynopsis}", data["synopsis"]).replaceAll("${scriptText}",
+        convertDeltaToHTML( JSON.parse( data["scene"]) )
+    )
 }
 
 function buildArticle(htmlTemplate, name, data, template, banner){
