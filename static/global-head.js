@@ -38,7 +38,7 @@ window.switchTheme = (shouldSwitch = true) => {
         '--menu-color': '#ffffff',
         '--background-color': '#b8b8b8',
         '--text-color': '#333333',
-        '--accent': '#C02942',
+        '--accent': '#ff617b',
         '--menu-color-red-transistion': '#b08890',
         '--link-color': '#114d6b',
     }

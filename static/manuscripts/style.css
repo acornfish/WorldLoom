@@ -172,7 +172,7 @@ body {
     filter: brightness(140%);
 }
 
-input{
+input:not(.select2-search__field){
     color: var(--text-color);
     border: 2px solid var(--accent) !important;
     background-color: var(--menu-color);
@@ -211,6 +211,7 @@ input{
     top: 50%;
     transform: translate(-50%,-50%);
 }
+
 
 .reference-inline-popup button {
 	position: relative;

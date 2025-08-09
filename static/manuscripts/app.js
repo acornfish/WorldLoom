@@ -220,9 +220,9 @@ function fetchReferenceables(type, callback) {
     xhr.send();
 }
 window.openArticleReference = function (id){
-    if(confirm("Are you sure you want to leave this article? Unsaved Changes will be lost!")){
+    if(confirm("Are you sure you want to leave this? Unsaved Changes will be lost!")){
         sessionStorage.setItem("Article", id);
-        window.location.reload()
+        window.location = "/article"
     }
 }
 
@@ -238,6 +238,7 @@ fetchReferenceables("", (status, data) => {
     }
 
 })
+Quill.register('formats/articleReference', ArticleReferenceBlot)
 
 document.quill = new Quill('#text-editor', {
     theme: 'snow',
