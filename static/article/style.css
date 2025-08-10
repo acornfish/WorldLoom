@@ -229,3 +229,8 @@ body{
 .quill-button-link:hover {
     filter: brightness(120%);
 }
+
+.seperator{
+    position: relative;
+    width: 100%;
+}

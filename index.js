@@ -154,7 +154,7 @@ var resources = new ResourceManager(db);
     }
 }
 
-const PORT = 1930
+const PORT = 4523
 const HOST = "127.0.0.1"
 
 const app = Express();

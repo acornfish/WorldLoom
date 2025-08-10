@@ -447,6 +447,8 @@ class ContentTab {
             }
             globTemplate = template
         })
+
+        this.form.append("<div class='seperator'></div>")
     }
 
     async fetchContent() {
