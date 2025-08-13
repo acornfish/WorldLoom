@@ -33,6 +33,7 @@ const JSTreePlugins = [
 const QuillTextFormat = Quill.import('formats/bold');
 const customIcons = Quill.import('ui/icons');
 customIcons['articleReference'] = '<i class="fa-solid fa-link" style="color: var(--text-color);"></i>';
+customIcons['manuscriptStats'] = '<i class="fa-solid fa-chart-simple" style="color: var(--text-color);"></i>';
 class ArticleReferenceBlot extends QuillTextFormat {
     static blotName = 'articleReference';
     static tagName = 'a';
@@ -195,6 +196,14 @@ const handleArticleReferences = async (value) => {
 
 }
 
+let statPopupActive = false;
+
+const handleStatButton = () => {
+    (statPopupActive ? $(".statistics-popup").hide() : $(".statistics-popup").show())
+    statPopupActive ^= 1
+    window.calculateStats();
+}
+
 function fetchReferenceables(type, callback) {
     const xhr = new XMLHttpRequest();
     const url =
@@ -256,7 +265,8 @@ document.quill = new Quill('#text-editor', {
                     'list': 'bullet'
                 }],
                 [
-                    'articleReference'
+                    'articleReference',
+                    'manuscriptStats'
                 ]
             ],
             handlers: {
@@ -274,6 +284,7 @@ document.quill = new Quill('#text-editor', {
 
                 },
                 articleReference: handleArticleReferences,
+                manuscriptStats: handleStatButton
 
             }
         }
@@ -438,6 +449,28 @@ function saveScene(update = true) {
     }));
 }
 
+window.calculateStats = function (){
+    let quillText = document.quill?.getText().trim() || ""
+
+    let words = quillText.trim().split(/\s+/).filter(Boolean);
+    let wordCount = words.length;
+    
+    let sentences = quillText
+      .split(/[.!?]+/)
+      .map(s => s.trim())
+      .filter(Boolean);
+    let sentenceCount = sentences.length;
+    
+    let sylabbles = quillText
+    .split(/[euıioüaiöEUIOÜAIİÖ]+/)
+    .map(s => s.trim())
+    .filter(Boolean);
+    let sylabbleCount = sylabbles.length;
+
+    let fleschReadability = ((206.835 - 1.025 * (wordCount / sentenceCount) - 84.6 * (sylabbleCount / wordCount))) / 2.06|| 100
+
+    $(".readability-index").text("Readability: " + fleschReadability.toFixed(2))
+}
 
 
 window.saveScene = saveScene;

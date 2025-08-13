@@ -232,3 +232,23 @@ input:not(.select2-search__field){
 .reference-inline-popup, button:not([disabled]):active{
     filter: brightness(140%);
 }
+
+.statistics-popup{
+    position: absolute;
+    width: 80%;
+    height: 40%;
+    background-color: var(--menu-color);
+    left: 50%;
+    top: 95%;
+    transform: translate(-50%, -100%);
+    border: var(--text-color) 2px solid;
+    display: none;
+    z-index: 80;
+}
+
+.statistics-popup h3{
+    position: relative;
+    color: var(--text-color);
+    left: 2%;
+    margin-top: 1%;
+}
