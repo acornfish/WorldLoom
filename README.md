@@ -7,10 +7,10 @@ Previous and buggy version is available in the old branch
 -NodeJS (https://nodejs.org/en/download/package-manager) 
 
 # Installation
- 1. Download the repository as zip file
- 2. Extract the zip file
- 3. Run the appropriate script file on the main folder (`start.sh` on linux and `start.bat` on windows)
- 4. Follow the instructions on the script output
+ 1. run `git clone https://github.com/ftkare/WorldLoom.git`
+ 2. Run the appropriate script file on the main folder (`start.sh` on linux and `start.bat` on windows)
+ 3. Follow the instructions on the script output
+ 4. if you want to update to current version just do `git pull`
 # Features
 
 ## Articles
