@@ -12,7 +12,7 @@ Previous and buggy version is available in the old branch
 
 # Installation
  1. run `git clone https://github.com/ftkare/WorldLoom.git`
- 2. Run the appropriate script file on the main folder (`start.sh` on linux and `start.bat` on windows)
+ 2. Run the appropriate script file on the main folder (`start.sh` on linux and `start.ps1` on windows)
  3. Follow the instructions on the script output
  4. if you want to update to current version just do `git pull`
 # Features
