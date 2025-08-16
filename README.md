@@ -40,8 +40,7 @@ You can chronologicaly list events using the timelines feature.
 
 
 # Exporting
-You can export your project both in the json format (to be imported later) and 
-HTML format to upload as a wiki website
+You can export your project in HTML format to upload as a wiki website
 ![Alt text](README_assets/settings.png "")
 
 # Credits
