@@ -1,3 +1,21 @@
+
+/*
+    Worldloom
+    Copyright (C) 2025 Ege Açıkgöz
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, version 3 of the License.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/    
+
 import '/global.js'
 import "../libs/jquery.min.js"
 import "../libs/dist/jstree.js"
@@ -452,24 +470,20 @@ function saveScene(update = true) {
 window.calculateStats = function (){
     let quillText = document.quill?.getText().trim() || ""
 
-    let words = quillText.trim().split(/\s+/).filter(Boolean);
-    let wordCount = words.length;
-    
-    let sentences = quillText
-      .split(/[.!?]+/)
-      .map(s => s.trim())
-      .filter(Boolean);
-    let sentenceCount = sentences.length;
-    
-    let sylabbles = quillText
-    .split(/[euıioüaiöEUIOÜAIİÖ]+/)
-    .map(s => s.trim())
-    .filter(Boolean);
-    let sylabbleCount = sylabbles.length;
 
-    let fleschReadability = ((206.835 - 1.025 * (wordCount / sentenceCount) - 84.6 * (sylabbleCount / wordCount))) / 2.06|| 100
+    $.ajax({
+        url: "/api/getReadability",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ text: quillText, language: localStorage.getItem("TextAnalyticsLanguage") }), 
+        success: function(data) {
+            $(".readability-index").text("Readability: " + parseFloat(data).toFixed(2))
+        },
+        error: function(err) {
+          console.error("Error:", err);
+        }
+      });
 
-    $(".readability-index").text("Readability: " + fleschReadability.toFixed(2))
 }
 
 

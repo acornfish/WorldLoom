@@ -138,3 +138,9 @@ h4{
     background-color: var(--text-color);
     width: 50%;
 }
+
+.text-anaylitcs-language-container {
+    margin-left: 5%;
+    position: relative;
+}
+

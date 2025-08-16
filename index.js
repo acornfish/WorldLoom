@@ -1,3 +1,22 @@
+
+/*
+    Worldloom
+    Copyright (C) 2025 Ege Açıkgöz
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, version 3 of the License.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/    
+
+
 const Process = require("process");
 const Path = require("path");
 
@@ -43,6 +62,7 @@ const {
     json
 } = require("stream/consumers");
 const { truncateSync } = require("fs");
+const { daleChall, fleschKincaid } = require("./include/TextStatistics");
 
 process.chdir(__dirname);
 
@@ -327,6 +347,13 @@ app.get("/api/fetchArticle", (req, res) => {
         res.status(406).send("Fail: Not initalized yet")
     }
 
+})
+
+app.post("/api/getReadability", (req, res) => {
+    let text = req.body["text"]
+    let language = req.body["language"] ?? "english"
+    let readability = fleschKincaid(language, text) + (100 + daleChall(language, text)) 
+    res.status(200).send(readability.toString())
 })
 
 app.get("/api/retrieveTimeline", (req, res) => {

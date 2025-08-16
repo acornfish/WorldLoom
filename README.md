@@ -1,4 +1,8 @@
 # Note
+Due to dependencies license will be changing from MIT to GPL3 in this version and those coming afterward
+
+Readability analysis tool requires you to select the target language in application settings. Selecting a language with mismatching alphabet causes it to overshoot significantly and selecting the wrong wordlist can cause it to undershoot
+
 I am doing a rewrite and currently maps feature isn't available. And honestly I feel kind of lazy to do it and making a good scene editing system feels better right now so I might delay making the maps feature a bit more
 
 Previous and buggy version is available in the old branch
@@ -40,6 +44,16 @@ You can export your project both in the json format (to be imported later) and
 HTML format to upload as a wiki website
 ![Alt text](README_assets/settings.png "")
 
+# Credits
+
+## Wordlists
+English: [Edgar Dale](https://en.wikipedia.org/wiki/Edgar_Dale) / [Jeanne Chall](https://en.wikipedia.org/wiki/Jeanne_Chall)
+
+English2: [Oxford Learner's Dictionaries](https://www.oxfordlearnersdictionaries.com/)
+
+Russian: [Neri](https://www.blogger.com/profile/00782205209018274322)
+
+Turkish: [3000mostcommonwords.com](https://3000mostcommonwords.com/)
 
 # Troubleshooting
 
