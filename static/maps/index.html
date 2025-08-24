@@ -1,0 +1,56 @@
+
+<!--
+    Worldloom
+    Copyright (C) 2025 Ege Açıkgöz
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, version 3 of the License.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Loom</title>
+    <script src="app.js" type="module" defer></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/global.css">
+    <script type="module" src="/global-head.js"></script>
+</head>
+<body>
+    <div class="navbar"></div>
+    <div class="map-container">
+        <img class="map-render-image" draggable="false"></img>
+    </div>
+    <div class="controls">
+        <div class="metadata-controls">
+            <input type="text" name="map-name-field" id="map-name-field" placeholder="Map Name">
+            <input type="button" id="map-image-field-button" value="Select Image">
+            <input type="file" name="map-image-field" id="map-image-field" accept="image/*" hidden>
+        </div>
+        <div class="map-list">
+            <div class="map-list-menu">
+                <ul class="map-list-ul">
+                    <li><button>map1</button></li>
+                    <li><button>map2</button></li>
+                    <li><button>map3</button></li>
+                    <li><button class="add-new-map">+</button></li>
+                </ul>
+            </div>
+            <button id="map-list-button">
+                <i class="fa-solid fa-book-atlas"></i>
+            </button>
+        </div>
+    </div>
+</body>
+</html>
