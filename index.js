@@ -84,6 +84,10 @@ process.chdir(__dirname);
         "Manuscript storage directory");
 
     DirectoryManager.createDirectory(
+        "./files/maps",
+        "Map storage directory");
+
+    DirectoryManager.createDirectory(
         "./files/articles",
         "Article storage directory");
 }
@@ -229,6 +233,7 @@ app.use((req, res, next) => {
 })
 
 
+
 app.post("/api/createProject", (req, res) => {
     let projectName = req.body["Name"];
     let projectDescription = req.body["Description"];
@@ -253,6 +258,7 @@ app.post("/api/createProject", (req, res) => {
     //create directories
     try {
         DirectoryManager.createDirectory("files/articles/" + encodeURIComponent(projectName))
+        DirectoryManager.createDirectory("files/maps/" + encodeURIComponent(projectName))
         DirectoryManager.createDirectory("files/manuscripts/" + encodeURIComponent(projectName))
         DirectoryManager.createDirectory("files/resources/" + encodeURIComponent(projectName))
     } catch (err) {

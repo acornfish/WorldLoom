@@ -45,6 +45,7 @@ class Project {
 
         this.articles = jstreeBase("Articles");
         this.manuscripts = jstreeBase("Manuscripts");
+        this.maps = [];
         this.resources = [];
         this.timeline = [{
             "events": [],
