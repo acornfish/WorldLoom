@@ -656,7 +656,7 @@ $(() => {
     //fetch existing article and do nothing if no article exists
     fetchArticle(
         (data) => {
-            //sucess
+            //success
             if (data["data"]["settings"]["templateName"]) {
                 let cachedTempName = sessionStorage.getItem("TemplateName")
                 if (!cachedTempName) {

@@ -362,6 +362,78 @@ app.post("/api/getReadability", (req, res) => {
     res.status(200).send(readability.toString())
 })
 
+app.post("/api/setMapData", (req, res) => {
+    let projectName = req.body["project"]
+    let uid = encodeURIComponent(req.body["uid"])
+    let image = req.body["image"] 
+    let name = req.body["name"]
+    let pins = req.body["pins"] || []
+
+    if (projectName == null || !db.checkProjectExists(projectName)) {
+        res.status(406).send("Fail: project name is null or project is non-existent")
+        return
+    }
+
+    let mapsList = db.getSubdir(projectName, "maps")
+    let index = (mapsList.findIndex(x => x.uid == uid))
+    if(index != -1){
+        //Already exists. Modify
+        mapsList[index].pins = pins
+        mapsList[index].name = name
+
+        try{
+            FileManager.writeToDataDirectory("maps", projectName, uid, image)
+        }catch{res.status(500).send("Fail: can't write map image file");return;}
+        
+        db.setSubdir(projectName, "maps", mapsList)
+    }else {
+        try{
+            FileManager.writeToDataDirectory("maps", projectName, uid, image)
+        }catch{res.status(500).send("Fail: can't write map image file");return;}
+        db.appendToSubdir(projectName, "maps", {
+            uid,
+            pins,
+            name
+        })
+    }
+
+    res.status(200).send("success");
+
+})
+
+app.get("/api/retrieveMapData", (req, res) => {
+    let projectName = (req.query["project"])
+    let uid = encodeURIComponent(req.query["uid"])
+
+    if (projectName == null || !db.checkProjectExists(projectName)) {
+        res.status(406).send("Fail: project name is null or project is non-existent")
+        return
+    }
+
+    let mapsList = db.getSubdir(projectName, "maps")
+    let index = (mapsList.findIndex(x => x.uid == uid))
+
+    if(index == -1){
+        return res.status(404).send("Fail: Map not found")
+    }else {
+        let image = FileManager.readFromDataDirectory("maps", projectName, uid)
+        return res.status(200).send({...mapsList[index], image})
+    }
+})
+
+app.get("/api/retrieveMapList", (req, res) => {
+    let projectName = (req.query["project"])
+
+    if (projectName == null || !db.checkProjectExists(projectName)) {
+        res.status(406).send("Fail: project name is null or project is non-existent")
+        return
+    }
+
+    let mapsList = db.getSubdir(projectName, "maps")
+    
+    res.status(200).send(mapsList);
+})
+
 app.get("/api/retrieveTimeline", (req, res) => {
     let projectName = (req.query["project"])
 

@@ -94,7 +94,7 @@ html,body {
     padding-left: 1vw;
 }
 
-#map-image-field-button{
+#map-image-field-button, #map-save-button{
     position: fixed;
     width: 20%;
     height: 90%;
@@ -102,16 +102,24 @@ html,body {
     background-color: var(--accent);
     color: var(--text-color);
     outline: none;
-    left: calc(2vw + 20%);
     top: 50%;
     transform: translateY(-50%);
 }
 
-#map-image-field-button:hover{
+#map-image-field-button {
+    left: calc(2vw + 20%);
+}
+
+#map-save-button
+{
+    right: 2vw;
+}
+
+#map-image-field-button:hover, #map-save-button:hover{
     filter: brightness(120%);
 }
 
-#map-image-field-button:active {
+#map-image-field-button:active, #map-save-button:active {
     filter: brightness(140%);
 }
 

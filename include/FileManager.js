@@ -161,6 +161,11 @@ class FileManager {
     let path = Path.join("files", directory, encodeURIComponent(projectName), filename)
     return this.deleteFSNode(path)
   }
+  
+  static existsInDataDirectory(directory="articles", projectName , filename){
+    let path = Path.join("files", directory, encodeURIComponent(projectName), filename)
+    return FS.existsSync(path)
+  }
 
   static writeImportantFile(file = "database", content = "") {
     switch (file.toLocaleLowerCase()) {
