@@ -30,7 +30,7 @@ const {
 var uidToPathTable = {}
 var uidToNameTable = {}
 
-exports.createMainPage = function (project, articles, manuscripts, mapNames) {
+exports.createMainPage = function (project, articles, manuscripts, maps) {
         if(DirectoryManager.directoryExists(FileManager.outputDir)){
             FileManager.deleteFSNode(FileManager.outputDir)
         }
@@ -69,6 +69,12 @@ exports.createMainPage = function (project, articles, manuscripts, mapNames) {
                 }/index.html">${child["text"]}</a></li>`
             
             }
+        }    
+        
+        for (const map of maps){
+            mapList += `<li><a href="maps/${
+                    encodeURIComponent(encodeURIComponent((map.uid)))
+                }.html">${(map.name)}</a></li>`
         }
 
         let outputIndex = fetchTemplate("index");
@@ -217,6 +223,26 @@ exports.exportManuscripts = function (project, manuscripts) {
 
     let tree = buildTree(manuscripts)
     traverseTree(tree[0], manuscriptOutputDir)
+}
+
+exports.exportMaps = function (project, maps) {
+    let template = fetchTemplate("map")
+    let mapOutputDir = Path.join(FileManager.outputDir, "maps")
+
+    DirectoryManager.createDirectory(
+        mapOutputDir,
+        "Output map directory");
+
+    for (const map of maps){
+        let res = template
+        res = res.replace("${mapName}", map.name)
+        res = res.replace("${pins}", JSON.stringify(map.pins))
+
+        let mapImage = FileManager.readFromDataDirectory("maps", project, encodeURIComponent(map.uid))
+        res = res.replace("${mapImage}", mapImage)
+
+        FileManager.writeFile(Path.join(mapOutputDir, encodeURIComponent(map.uid) + ".html"), res)
+    }
 }
 
 exports.exportTimeline  = function (project, timeline){

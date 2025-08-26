@@ -1,82 +1,226 @@
 :root {
-    --background-color: wheat;
+    --background-color: #ffefd1;
     --menu-color: #929292;
+    --menu-color-darker: #828282;
     --text-color: #ffffff !important;
+    --accent: #531818; 
 }
 
-html, body{
+
+html,body {
     width: 100%;
     height: 100%;
     position: relative;
-    margin: 0;
     background-color: var(--background-color);
+    color: var(--text-color);
     overflow: hidden;
+    margin: 0;
 }
 
-.inner-map-container {
-    width: 95vw;
-    position: absolute;
-    -webkit-user-drag: none;
-    user-select: none;
-    -ms-user-select: none;
-    cursor: move; 
-    cursor: grab;
-    cursor: -moz-grab;
-    cursor: -webkit-grab;
-}
-.inner-map-container:active {
-    cursor: grabbing;
-    cursor: -moz-grabbing;
-    cursor: -webkit-grabbing;
-}
-
-.map-image {
-    position: relative;
-    transition: transform 0.3s ease-in-out;
-    width: 95vw;
-    -webkit-user-drag: none;
-    user-select: none;
-    -ms-user-select: none;
-    pointer-events: none;
-}
-
-.pin{
-    z-index: 2;
-    position: absolute;
+.controls{
+    width: 100%;
+    height: 100%;
+    position: fixed;
     left: 0;
     top: 0;
-    cursor: default;
-    -webkit-user-drag: none;
-    user-select: none;
-    -ms-user-select: none;
+    pointer-events: none; 
 }
 
-.pin:hover{
+.controls * {
+    pointer-events: all;
+}
+
+#map-list-button{
+    background-color: var(--accent);
+    color: var(--text-color);
+    position: fixed;
+    bottom: 2%;
+    left: 2%;
+    border: none;
+    width: 4vw;
+    height: 4vw;
+    font-size:xx-large;
+}
+
+
+#map-list-button:hover {
+    border: 3px solid var(--text-color);
+}
+
+.map-list-button-active {
+    filter: brightness(150%);
+}
+
+.map-list-menu{
+    position: fixed;
+    background-color: var(--menu-color);
+    width: 16vw;
+    height: 20vw;
+    bottom: calc(4vw + 2%);
+    left: 2%;
+    overflow: scroll;
+    border: 1px solid var(--text-color);
+    display: none;
+}
+
+.map-list-ul button{
+    width: 100%;
+    height: 5vh;
+    border: none;
+    margin: 0;
+    padding-top: 1%;
+    background-color: var(--accent);
+    color: var(--text-color);
+    border-bottom: 1px solid var(--text-color);
+}
+
+.map-list-li-active {
+    filter: brightness(150%);
+}
+
+.map-list-ul button:hover{
     filter: brightness(120%);
 }
 
+.metadata-controls{
+    position: fixed;
+    width: 70%;
+    height: 7vh;
+    background-color: var(--menu-color);
+    left: 50%;
+    transform: translateX(-50%);
+}
 
-.pin:active{
+#map-name-field{
+    position: fixed;
+    width: 20%;
+    height: 90%;
+    background-color: var(--menu-color);
+    border: 1px solid var(--accent);
+    color: var(--text-color);
+    outline: none;
+    left: 1vw;
+    top: 50%;
+    transform: translateY(-50%);
+    padding-left: 1vw;
+}
+
+#map-image-field-button, #map-save-button{
+    position: fixed;
+    width: 20%;
+    height: 90%;
+    border: 0;
+    background-color: var(--accent);
+    color: var(--text-color);
+    outline: none;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#map-image-field-button {
+    left: calc(2vw + 20%);
+}
+
+#map-save-button
+{
+    right: 2vw;
+}
+
+#map-image-field-button:hover, #map-save-button:hover{
+    filter: brightness(120%);
+}
+
+#map-image-field-button:active, #map-save-button:active {
     filter: brightness(140%);
 }
 
-.pin-data-panel{
-    position: fixed;
-    width: 100%;
-    height: 5%;
-    background-color: var(--menu-color);
-    opacity: 80%;
-    color: var(--text-color);
-    padding-left: 1%;
-    display: flex;
+.map-render-image{
+    position: absolute;
+    user-drag: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
-.pin-data-panel h3{
-    display: block;
-    position: relative;
-    padding: 1%;
-    padding-top: 0;
-    flex: 1;
-    margin: 0;
+.pin {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    font-size: x-large;
+    padding: 0.2em;
+    width: 2em;
+    height: 2em;
+    transform: translate(-50%, -50%);
+}
 
+.pin img{
+    user-drag: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    object-fit: contain;
+}
+
+.pin-data {
+    position: fixed;
+    width: 20vw;
+    height: 40vh;
+    right: 2vw;
+    bottom: 6vh;
+    background-color: var(--menu-color);
+    font-size: medium !important;
+}
+
+.pin-data-button {
+    position: fixed;
+    width: 20vw;
+    height: 5vh;
+    right: 2vw;
+    bottom: 1vh;
+    background-color: var(--menu-color);
+    border-top: 1px solid var(--text-color);
+    display: flex;
+    align-items: center;
+}
+.pin-data-button button {
+    position: inherit;
+    right: 2vw;
+    background-color: var(--menu-color);
+    color: var(--text-color);
+    border: 1px solid var(--accent);
+    font-size: larger;
+    margin-right: 0.5vw;
+    padding: .2vh;
+}
+
+.pin-data-button button:hover {
+    filter: brightness(120%);
+}
+
+.pin-data-button button:active {
+    filter: brightness(140%);
+}
+
+#pin-name, #pin-description {
+    width: 90%;
+    border: 1px solid var(--accent);
+    background: var(--menu-color);
+    outline: none;
+    padding: 2%;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    margin-top: 2%;
+    color: var(--text-color);
+    font-size: medium;
+}
+
+#pin-description{
+    height: 75%;
+    resize: none;
+    font-size: small;
 }

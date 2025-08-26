@@ -78,6 +78,15 @@ class FileManager {
         force: true,
         recursive: true,
       }
+    );   
+    
+    FS.cpSync(
+      Path.join(".", "templates", "resources"),
+      Path.join(FileManager.outputDir, "resources"),
+      {
+        force: true,
+        recursive: true,
+      }
     );
   }
 
