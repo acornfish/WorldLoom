@@ -1,12 +1,3 @@
-# Note
-Due to dependencies license will be changing from MIT to GPL3 in this version and those coming afterward
-
-Readability analysis tool requires you to select the target language in application settings. Selecting a language with mismatching alphabet causes it to overshoot significantly and selecting the wrong wordlist can cause it to undershoot
-
-I am doing a rewrite and currently maps feature isn't available. And honestly I feel kind of lazy to do it and making a good scene editing system feels better right now so I might delay making the maps feature a bit more
-
-Previous and buggy version is available in the old branch
-
 # Prerequisites
 -NodeJS (https://nodejs.org/en/download/package-manager) 
 
@@ -15,6 +6,7 @@ Previous and buggy version is available in the old branch
  2. Run the appropriate script file on the main folder (`start.sh` on linux and `start.ps1` on windows)
  3. Follow the instructions on the script output
  4. if you want to update to current version just do `git pull`
+
 # Features
 
 ## Articles
