@@ -4,6 +4,7 @@ html,body {
     position: relative;
     background-color: var(--background-color);
     color: var(--text-color);
+    overflow: none;
 }
 
 .controls{
