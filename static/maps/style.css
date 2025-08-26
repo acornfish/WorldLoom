@@ -132,3 +132,12 @@ html,body {
     -webkit-user-select: none;
     -ms-user-select: none;
 }
+
+.pin {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    font-size: x-large;
+    padding: 0.2em;
+}
