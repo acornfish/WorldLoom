@@ -22,7 +22,7 @@ import "../libs/dist/jstree.js"
 var isMapListMenuActive = false
 var currentImage = ""
 var pins = []
-var movingPin = ""
+var lastPin = ""
 
 function setMapListButtonEvent() {
     $(".map-list-ul button:not(.add-new-map)").on("click", (event) => {
@@ -145,11 +145,19 @@ function placePins (){
                 pinPositionData.lastTop = event.clientY
                 pinPositionData.totalTop = (event.currentTarget.getBoundingClientRect().top) || 0
                 pinPositionData.totalLeft =  (event.currentTarget.getBoundingClientRect().left) || 0
+                lastPin = pin.uid
+                setInterfacePinData()
             } 
         })
     
         $(".map-container").append(newPin)
     }
+}
+
+function setInterfacePinData() {
+    let pin = pins.find(x => x.uid == lastPin)
+    $("#pin-description").val(pin.description || "")
+    $("#pin-name").val(pin.name || "")
 }
 
 retrieveMapList().then(maps => {
@@ -167,6 +175,12 @@ retrieveMapList().then(maps => {
         sessionStorage.setItem("uid", map.uid)
     }
    selectMap();
+})
+
+$("#pin-description, #pin-name").on("input", (event) => {
+    let i = pins.findIndex(x => x.uid == lastPin)
+    pins[i].name = $("#pin-name").val()
+    pins[i].description = $("#pin-description").val()
 })
 
 $("#map-list-button").on('click', (event) => {
@@ -250,14 +264,18 @@ $(document).on("contextmenu", (event) => {
         uid: newPinUid,
         top: event.clientY,
         left: event.clientX,
-        name: "", 
-        description: ""
+        name: "newPin", 
+        description: "Pin description"
     })
 
     newPin.attr("style", `
         top: ${event.clientY}px;
         left: ${event.clientX}px;
     `)   
+
+    lastPin = newPinUid
+    setInterfacePinData()
+
     newPin.on("mousedown", (event) => {
         if(event.button == 0){ 
             event.currentTarget.classList.add("dragging-pin") 
@@ -265,6 +283,8 @@ $(document).on("contextmenu", (event) => {
             pinPositionData.lastTop = event.clientY
             pinPositionData.totalTop = (event.currentTarget.getBoundingClientRect().top) || 0
             pinPositionData.totalLeft =  (event.currentTarget.getBoundingClientRect().left) || 0
+            lastPin = event.currentTarget.getAttribute("uid")
+            setInterfacePinData()
         } 
     })
 
