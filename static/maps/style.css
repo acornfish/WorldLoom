@@ -155,9 +155,39 @@ html,body {
     width: 20vw;
     height: 40vh;
     right: 2vw;
-    bottom: 2vw;
+    bottom: 6vh;
     background-color: var(--menu-color);
     font-size: medium !important;
+}
+
+.pin-data-button {
+    position: fixed;
+    width: 20vw;
+    height: 5vh;
+    right: 2vw;
+    bottom: 1vh;
+    background-color: var(--menu-color);
+    border-top: 1px solid var(--text-color);
+    display: flex;
+    align-items: center;
+}
+.pin-data-button button {
+    position: inherit;
+    right: 2vw;
+    background-color: var(--menu-color);
+    color: var(--text-color);
+    border: 1px solid var(--accent);
+    font-size: larger;
+    margin-right: 0.5vw;
+    padding: .2vh;
+}
+
+.pin-data-button button:hover {
+    filter: brightness(120%);
+}
+
+.pin-data-button button:active {
+    filter: brightness(140%);
 }
 
 #pin-name, #pin-description {

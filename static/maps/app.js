@@ -67,7 +67,9 @@ function saveMapData(uid, image, name, pins) {
 
 function retrieveMapData(uid) {
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", `/api/retrieveMapData?project=${encodeURIComponent(localStorage.getItem("CurrentProject"))}&uid=${encodeURIComponent(uid)}`);
+    xhr.open("GET",
+        `/api/retrieveMapData?project=${encodeURIComponent(localStorage.getItem("CurrentProject"))}&uid=${encodeURIComponent(uid)}`
+        );
 
     return new Promise((resolve, reject) => {
         xhr.onload = function () {
@@ -87,32 +89,32 @@ function retrieveMapData(uid) {
 function retrieveMapList() {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", `/api/retrieveMapList?project=${encodeURIComponent(localStorage.getItem("CurrentProject"))}`);
-    return new Promise ((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         xhr.onload = function () {
             if (xhr.status === 200) {
-              try {
-                const mapsList = JSON.parse(xhr.responseText);
-                resolve(mapsList)
-              } catch (err) {
-                console.error("Failed to parse response:", xhr.responseText);
-                reject("Fail")
-              }
+                try {
+                    const mapsList = JSON.parse(xhr.responseText);
+                    resolve(mapsList)
+                } catch (err) {
+                    console.error("Failed to parse response:", xhr.responseText);
+                    reject("Fail")
+                }
             } else {
-              console.error("Retrieve failed:", xhr.status, xhr.responseText);
+                console.error("Retrieve failed:", xhr.status, xhr.responseText);
             }
-          };
-        
-          xhr.send();
+        };
+
+        xhr.send();
     })
 }
-  
+
 function drawMap(imageData) {
     currentImage = imageData
     $(".map-render-image").attr("src", imageData)
 }
 
-function selectMap(){
-    if(sessionStorage.getItem("uid")) {
+function selectMap() {
+    if (sessionStorage.getItem("uid")) {
         retrieveMapData(sessionStorage.getItem("uid")).then(data => {
             currentImage = data.image || ""
             $("#map-name-field").val(data.name)
@@ -124,32 +126,32 @@ function selectMap(){
             $("#map-name-field").val("")
             pins = []
             placePins()
-            drawMap(currentImage) 
+            drawMap(currentImage)
         })
-    }    
+    }
 }
 
-function placePins (){
+function placePins() {
     $(".pin").remove()
-    for(let pin of pins){
+    for (let pin of pins) {
         let newPin = $(`<div class="pin" uid=${pin.uid}><i class="fa-solid fa-map-pin"></i></div>`)
 
         newPin.attr("style", `
             top: ${pin.top}px;
             left: ${pin.left}px;
-        `)   
+        `)
         newPin.on("mousedown", (event) => {
-            if(event.button == 0){ 
-                event.currentTarget.classList.add("dragging-pin") 
+            if (event.button == 0) {
+                event.currentTarget.classList.add("dragging-pin")
                 pinPositionData.lastLeft = event.clientX
                 pinPositionData.lastTop = event.clientY
                 pinPositionData.totalTop = (event.currentTarget.getBoundingClientRect().top) || 0
-                pinPositionData.totalLeft =  (event.currentTarget.getBoundingClientRect().left) || 0
+                pinPositionData.totalLeft = (event.currentTarget.getBoundingClientRect().left) || 0
                 lastPin = pin.uid
                 setInterfacePinData()
-            } 
+            }
         })
-    
+
         $(".map-container").append(newPin)
     }
 }
@@ -162,19 +164,19 @@ function setInterfacePinData() {
 
 retrieveMapList().then(maps => {
     $(".map-list-ul").find("[uid]").parent().remove()
-    for(let map of maps){
+    for (let map of maps) {
         let buttons = $(".map-list-ul button")
         buttons.removeClass("map-list-li-active")
-    
+
         $(`
             <li><button class="map-list-li-active" uid=${map.uid}>${map.name}</button></li>
         `).insertBefore($(".map-list-ul .add-new-map"))
-    
+
         $("#map-name-field").val(map.name)
         setMapListButtonEvent();
         sessionStorage.setItem("uid", map.uid)
     }
-   selectMap();
+    selectMap();
 })
 
 $("#pin-description, #pin-name").on("input", (event) => {
@@ -187,19 +189,19 @@ $("#map-list-button").on('click', (event) => {
     if (!isMapListMenuActive) {
         retrieveMapList().then(maps => {
             $(".map-list-ul").find("[uid]").parent().remove()
-            for(let map of maps){
+            for (let map of maps) {
                 let buttons = $(".map-list-ul button")
                 buttons.removeClass("map-list-li-active")
-            
+
                 $(`
                     <li><button class="map-list-li-active" uid=${map.uid}>${map.name}</button></li>
                 `).insertBefore($(".map-list-ul .add-new-map"))
-            
+
                 $("#map-name-field").val(map.name)
                 setMapListButtonEvent();
                 sessionStorage.setItem("uid", map.uid)
             }
-            
+
             $(".map-list-menu").show()
             event.currentTarget.classList.add("map-list-button-active")
             isMapListMenuActive = !isMapListMenuActive
@@ -264,28 +266,28 @@ $(document).on("contextmenu", (event) => {
         uid: newPinUid,
         top: event.clientY,
         left: event.clientX,
-        name: "newPin", 
+        name: "newPin",
         description: "Pin description"
     })
 
     newPin.attr("style", `
         top: ${event.clientY}px;
         left: ${event.clientX}px;
-    `)   
+    `)
 
     lastPin = newPinUid
     setInterfacePinData()
 
     newPin.on("mousedown", (event) => {
-        if(event.button == 0){ 
-            event.currentTarget.classList.add("dragging-pin") 
+        if (event.button == 0) {
+            event.currentTarget.classList.add("dragging-pin")
             pinPositionData.lastLeft = event.clientX
             pinPositionData.lastTop = event.clientY
             pinPositionData.totalTop = (event.currentTarget.getBoundingClientRect().top) || 0
-            pinPositionData.totalLeft =  (event.currentTarget.getBoundingClientRect().left) || 0
+            pinPositionData.totalLeft = (event.currentTarget.getBoundingClientRect().left) || 0
             lastPin = event.currentTarget.getAttribute("uid")
             setInterfacePinData()
-        } 
+        }
     })
 
     $(".map-container").append(newPin)
@@ -293,17 +295,17 @@ $(document).on("contextmenu", (event) => {
 
 //make map draggable
 $(".map-render-image").on("mousedown", (event) => {
-    if(event.button == 0){
+    if (event.button == 0) {
         mapPositionData.lastLeft = event.clientX
         mapPositionData.lastTop = event.clientY
-        mapPositionData.isDragging = true;    
+        mapPositionData.isDragging = true;
     }
 })
 
 $(document).on("mousemove", (event) => {
     let mapElem = $(".map-render-image")
 
-    if($(".dragging-pin").length){
+    if ($(".dragging-pin").length) {
         let diffX = (event.clientX - pinPositionData.lastLeft)
         let diffY = (event.clientY - pinPositionData.lastTop)
 
@@ -320,7 +322,7 @@ $(document).on("mousemove", (event) => {
 
         let rectP = $(".dragging-pin").get(0).getBoundingClientRect()
         let rectM = mapElem.get(0).getBoundingClientRect()
-       
+
         let currentPinIndex = pins.findIndex(pin => pin.uid == $($(".dragging-pin")).attr("uid"))
         pins[currentPinIndex].left = rectP.left - rectM.left
         pins[currentPinIndex].top = rectP.top - rectM.top
@@ -332,7 +334,7 @@ $(document).on("mousemove", (event) => {
     if (mapPositionData.isDragging) {
         let diffX = (event.clientX - mapPositionData.lastLeft)
         let diffY = (event.clientY - mapPositionData.lastTop)
-   
+
         mapPositionData.lastLeft = event.clientX
         mapPositionData.lastTop = event.clientY
 
@@ -351,7 +353,7 @@ $(document).on("mousemove", (event) => {
                 top: ${diffY+ rectP.top}px;
                 left: ${diffX + rectP.left}px;
             `)
-            
+
             let currentPinIndex = pins.findIndex(pin => pin.uid == $(el).attr("uid"))
             pins[currentPinIndex].left = rectP.left - rectM.left
             pins[currentPinIndex].top = rectP.top - rectM.top
@@ -376,6 +378,20 @@ $("#map-save-button").on("click", event => {
     let name = $("#map-name-field").val()
 
     saveMapData(sessionStorage.getItem("uid"), currentImage, name, pins)
+})
+
+var pinDataShown = true
+$(".pin-data-button button").on("click", (event) => {
+    if (pinDataShown) {
+        $(".pin-data").hide();
+        $(".pin-data-button i").removeClass("fa-angles-down");
+        $(".pin-data-button i").addClass("fa-angles-up");
+    } else {
+        $(".pin-data").show()
+        $(".pin-data-button i").removeClass("fa-angles-up");
+        $(".pin-data-button i").addClass("fa-angles-down");
+    }
+    pinDataShown = !pinDataShown
 })
 
 setMapListButtonEvent();
