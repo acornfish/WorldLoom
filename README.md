@@ -16,8 +16,8 @@ You can create articles which tell about your characters, areas, religions, spec
 
 ![Alt text](README_assets/articles.png "")
 ## Maps
-
-Map feature allows you to import images and mark areas using pins. It also allows you to put multiple image layers which can be toggled.
+Map feature allows you to import images and mark areas using pins. 
+![Alt text](README_assets/maps.png "")
 
 
 ## Manuscripts

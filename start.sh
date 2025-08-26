@@ -2,7 +2,7 @@
 
 if [ ! -d node_modules ]; then
   echo "Installing dependencies..."
-  npm install --silent
+  npm install --silent --production
 fi
 
 npm run --silent start

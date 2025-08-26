@@ -348,9 +348,10 @@ $(document).on("mousemove", (event) => {
 
         $(".pin").each((index, el) => {
             let rectP = el.getBoundingClientRect()
+            let rectM = mapElem.get(0).getBoundingClientRect()
 
             $(el).attr("style", `
-                top: ${diffY+ rectP.top}px;
+                top: ${diffY + rectP.top}px;
                 left: ${diffX + rectP.left}px;
             `)
 
