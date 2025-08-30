@@ -1,5 +1,6 @@
 # Prerequisites
 -NodeJS (https://nodejs.org/en/download/package-manager) 
+-Git (optional)
 
 # Installation
  1. run `git clone https://github.com/ftkare/WorldLoom.git`
