@@ -1,3 +1,5 @@
+![Alt text](README_assets/worldloombanner.png "")
+
 # Prerequisites
 -NodeJS (https://nodejs.org/en/download/package-manager) 
 
