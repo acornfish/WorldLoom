@@ -1,0 +1,8 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "4523:4523"
+    volumes:
+      - ./files:/usr/src/app/files
