@@ -11,11 +11,13 @@
  3. Follow the instructions on the script output
  4. if you want to update to current version just do `git pull`
 
-# Installation - docker
- 1. install ![docker](https://docs.docker.com/engine/install/) 
- 2. run `docker compose up`
+# Installation - Docker
+ 1. run `git clone https://github.com/ftkare/WorldLoom.git`
+ 2. Change to the repository directory (`cd WorldLoom`)
+ 3. install ![docker](https://docs.docker.com/engine/install/) 
+ 4. run `docker compose up`
 
-the data is stored in `./files` for persistence
+The data is stored in `./files` for persistence
 
 # Features
 
