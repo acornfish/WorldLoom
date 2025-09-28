@@ -11,6 +11,12 @@
  3. Follow the instructions on the script output
  4. if you want to update to current version just do `git pull`
 
+# Installation - docker
+ 1. install ![docker](https://docs.docker.com/engine/install/) 
+ 2. run `docker compose up`
+
+the data is stored in `./files` for persistence
+
 # Features
 
 ## Articles
