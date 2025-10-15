@@ -6,13 +6,13 @@
 -Git (optional)
 
 # Installation
- 1. run `git clone https://github.com/ftkare/WorldLoom.git`
+ 1. run `git clone https://github.com/acornfish/WorldLoom.git`
  2. Run the appropriate script file on the main folder (`start.sh` on linux and `start.ps1` on windows)
  3. Follow the instructions on the script output
  4. if you want to update to current version just do `git pull`
 
 # Installation - Docker
- 1. run `git clone https://github.com/ftkare/WorldLoom.git`
+ 1. run `git clone https://github.com/acornfish/WorldLoom.git`
  2. Change to the repository directory (`cd WorldLoom`)
  3. install ![docker](https://docs.docker.com/engine/install/) 
  4. run `docker compose up`
