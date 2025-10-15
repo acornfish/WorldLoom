@@ -1,4 +1,4 @@
-name: ollama-webui
+name: docker-push
 
 on:
   push:
