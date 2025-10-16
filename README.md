@@ -14,7 +14,7 @@
 # Installation - Docker
  1. run `git clone https://github.com/acornfish/WorldLoom.git`
  2. Change to the repository directory (`cd WorldLoom`)
- 3. install ![docker](https://docs.docker.com/engine/install/) 
+ 3. install https://docs.docker.com/engine/install/
  4. run `docker compose up`
 
 The data is stored in `./files` for persistence
