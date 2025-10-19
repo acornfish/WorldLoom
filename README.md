@@ -17,7 +17,7 @@
  3. install https://docs.docker.com/engine/install/
  4. run `docker compose up`
 
-The data is stored in `./files` for persistence
+The data is stored in `/usr/src/app/files` for persistence
 
 # Features
 
