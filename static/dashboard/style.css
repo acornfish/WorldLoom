@@ -24,15 +24,21 @@ body>h2{
     border: none;
 }
 
-.tree-container{
+.tree-container-outer {
     position: relative;
     width: 30%;
-    height: 90%;
-    background-color: var(--menu-color-darkened);
+    height: 95%;
     display: inline-block;
-    overflow: scroll;
     top: 5%;
     left: 2.5%;
+}
+
+.tree-container{
+    position: relative;
+    width: 100%;
+    height: 90%;
+    background-color: var(--menu-color-darkened);
+    overflow: scroll;
     padding: 1%;
 }
 
@@ -43,16 +49,23 @@ input{
     outline: none;
 }
 
-.templates-container{
+.templates-container-outer{
     position: relative;
     width: 60%;
-    height: 90%;
-    background-color: var(--menu-color-darkened);
+    height: 95%;
     float: right;
     right: 2.5%;
     top: 5%;
+}
+
+.templates-container{
+    position: relative;
+    width: 100%;
+    height: 90%;
+    background-color: var(--menu-color-darkened);
     overflow-y: scroll;
     overflow-x: hidden;
+
 }
 
 .templates-list{
@@ -201,4 +214,9 @@ input{
     float: right;
     background-color: var(--accent);
     color: var(--text-color);
+}
+
+.container-label{
+    color: var(--accent);
+    font-weight: 500;
 }

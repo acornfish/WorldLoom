@@ -30,18 +30,24 @@
 </head>
 <body>
     <div class="navbar"></div>
-    <div class="tree-container" id="article-tree">
-        <h2 id="article-tree-title">Articles</h2>
-        <ul></ul>
+
+    <div class="tree-container-outer">
+        <span class="container-label">Articles</span>
+        <div class="tree-container" id="article-tree">
+            <ul></ul>
+        </div>
     </div>
 
-    <div class="templates-container">
-        <button class="template-mass-import-open"><i class="fa-solid fa-download"></i></button>
-        <button class="template-mass-export-open"><i class="fa-solid fa-upload"></i></button>
-        <div class="templates-list">
-            <label class="template-selector new-template">
-                <input type="button" value="1" onclick="window.location = '/templateCreator'"><span><i class="fa-solid fa-plus fa-2xl"></i></span>
-            </label>
+    <div class="templates-container-outer">
+        <span class="container-label">Templates</span>
+        <div class="templates-container">
+            <button class="template-mass-import-open"><i class="fa-solid fa-download"></i></button>
+            <button class="template-mass-export-open"><i class="fa-solid fa-upload"></i></button>
+            <div class="templates-list">
+                <label class="template-selector new-template">
+                    <input type="button" value="1" onclick="window.location = '/templateCreator'"><span><i class="fa-solid fa-plus fa-2xl"></i></span>
+                </label>
+            </div>
         </div>
     </div>
 
