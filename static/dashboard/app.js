@@ -367,8 +367,14 @@ function importTemplates(templates, callback) {
 $(".template-mass-export-button").on("click", (e) => {
     let textarea = $(".template-mass-export textarea")
     exportTemplates((data) => {
-        let json = JSON.parse(data) //TODO: REMOVE INHERITORS
-        textarea.val(data)
+        let jsonData = JSON.parse(data) //TODO: REMOVE INHERITORS
+        
+        textarea.val(JSON.stringify(jsonData.map (x => {
+            return {
+                ...x,
+                inheritors: []
+            }
+        })))
     })
 })
 
