@@ -171,6 +171,8 @@ function drawEvents() {
         let start = ((event.start.year - middleTime) * canvasTimelineLengthRatio / 2) + (canvas
             .clientWidth / 2)
         let length = ((event.end.year - event.start.year) * canvasTimelineLengthRatio / 2)
+        
+        if(length < 10) length = 10;
 
         ctx.fillStyle = event.color;
         if (event.isHovered) {

@@ -358,7 +358,7 @@ app.get("/api/fetchArticle", (req, res) => {
 app.post("/api/getReadability", (req, res) => {
     let text = req.body["text"]
     let language = req.body["language"] ?? "english"
-    let readability = fleschKincaid(language, text) + (100 + daleChall(language, text)) 
+    let readability = 0.5 * fleschKincaid(language, text) + 0.5 * daleChall(language, text)
     res.status(200).send(readability.toString())
 })
 

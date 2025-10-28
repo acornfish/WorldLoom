@@ -28,7 +28,6 @@ body {
     display: flex;
     flex-direction: row;
     border-radius: 30% 30% 5% 5%;
-    overflow: hidden;
 }
 
 .toolbar div {
@@ -259,4 +258,16 @@ input[type=number]::-webkit-outer-spin-button {
 
 .settings-popup * {
     left: 5%;
+}
+
+.tooltip-timeline{
+    position: absolute;
+    bottom: 110%;
+    display: none;
+    background-color: var(--accent);
+}
+
+.toolbar>div:hover .tooltip-timeline{
+    display: inline-block;
+    
 }
