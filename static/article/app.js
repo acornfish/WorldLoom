@@ -139,6 +139,7 @@ function quillFactory(parent) {
         }, {
             'color': []
         }],
+        [{ 'align': [] }],
         [
             'articleReference'
         ]

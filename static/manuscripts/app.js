@@ -282,6 +282,7 @@ document.quill = new Quill('#text-editor', {
                 }, {
                     'list': 'bullet'
                 }],
+                [{ 'align': [] }],
                 [
                     'articleReference',
                     'manuscriptStats'
