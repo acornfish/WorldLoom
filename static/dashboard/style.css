@@ -33,10 +33,17 @@ body>h2{
     left: 2.5%;
 }
 
+.tree-container-controls{
+    position:relative;
+    width: 100%;
+    height: 5%;
+    background-color: var(--menu-color);
+}
+
 .tree-container{
     position: relative;
     width: 100%;
-    height: 90%;
+    height: 85%;
     background-color: var(--menu-color-darkened);
     overflow: scroll;
     padding: 1%;
@@ -220,3 +227,24 @@ input{
     color: var(--accent);
     font-weight: 500;
 }
+
+#add-article, #add-folder{
+    position: relative;
+    height: 80%;
+    aspect-ratio: 1;
+    border: 0;
+    background-color: var(--accent);
+    color: var(--text-color);
+    left: 2%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#add-article:hover, #add-folder:hover{
+    filter: brightness(120%);
+}
+
+#add-article:active, #add-folder:active{
+    filter: brightness(140%);
+}
+

@@ -363,6 +363,33 @@ function importTemplates(templates, callback) {
     xhr.send(payload);
 }
 
+$("#add-article").on("click", (e) => {
+    let jstree = $(ARTICLE_JSTREE).jstree()
+    
+    let selected = jstree.get_selected(true).at(0)
+    let id = ""
+    if (selected.type === "default") {
+        id = jstree.create_node(selected.id, { text: " ", type: "file" }, "last")
+    } else {
+        id = jstree.create_node("#", { text: " ", type: "file" }, "last")
+    }    
+
+    jstree.edit(jstree.get_node(id))
+}) 
+
+$("#add-folder").on("click", (e) => {
+    let jstree = $(ARTICLE_JSTREE).jstree()
+    
+    let selected = jstree.get_selected(true).at(0)
+    let id = ""
+    if (selected.type === "default") {
+        id = jstree.create_node(selected.id, { text: " ", type: "default" }, "last")
+    } else {
+        id = jstree.create_node("#", { text: " ", type: "default" }, "last")
+    }    
+
+    jstree.edit(jstree.get_node(id))
+}) 
 
 $(".template-mass-export-button").on("click", (e) => {
     let textarea = $(".template-mass-export textarea")
