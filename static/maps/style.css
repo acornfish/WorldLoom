@@ -178,9 +178,12 @@ html,body {
     background-color: var(--menu-color);
     color: var(--text-color);
     border: 1px solid var(--accent);
-    font-size: larger;
+    font-size: 2.8vh;
     margin-right: 0.5vw;
     padding: .2vh;
+    aspect-ratio: 1;
+    max-height: 100%;
+    padding-bottom: 3vh;
 }
 
 .pin-data-button button:hover {
