@@ -63,6 +63,7 @@ const {
 } = require("stream/consumers");
 const { truncateSync } = require("fs");
 const { daleChall, fleschKincaid } = require("./include/TextStatistics");
+const csv = require("csv-parser")
 
 process.chdir(__dirname);
 
@@ -887,7 +888,6 @@ app.post("/api/importTemplates", (req, res) => {
     res.status(200).send(templates)
 })
 
-
 app.get("/api/getTemplate", (req, res) => {
     let project = req.query["project"]
     let name = req.query["name"]
@@ -906,6 +906,53 @@ app.get("/api/getTemplate", (req, res) => {
     }
     res.status(200).send(template["template"] ?? [])
 })
+
+var namelists_raw = FileManager.readFile("./static_data/namelists.json")
+let namelists_parsed = JSON.parse(namelists_raw);
+app.get("/api/getNamegenList", (req, res) => {
+    try {
+        let buffer = []
+        for(let generator in namelists_parsed){
+            buffer.push(generator)
+        }
+
+        res.send(buffer);
+    }catch (err) {
+        console.error(err);
+    }
+})
+
+app.get("/api/getNamegen", (req, res) => {
+    let type = req.query["type"]
+    try {
+        let metadata = namelists_parsed[type]
+        const results = {};
+
+        FS.createReadStream(Path.join("static_data", metadata.path))
+          .pipe(csv())
+          .on('data', (row) => {
+            for(let key in row){
+                if(!row[key]) continue
+                if(results[key]) {results[key].push(row[key])} else {results[key] = []}
+            }
+          })
+          .on('end', () => {
+            let comp_ind = Math.floor(Math.random() * (metadata.compositions.length-1))
+            let name = ""
+
+            for(let placeholder of metadata.compositions[comp_ind].split(" ")){
+                let list = results[placeholder]
+                let ind = Math.floor(Math.random() * (list.length-1))
+                name += list[ind] + " "
+            }
+            res.status(200).send(name)
+          });
+    }catch (err) {
+        res.status(500).send(err)
+        console.error(err);
+    }
+})
+
 
 
 app.use((req, res, next) => {

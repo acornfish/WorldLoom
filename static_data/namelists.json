@@ -1,0 +1,79 @@
+{
+    "English Modern": {
+        "path": "English_Modern_Names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "American": {
+        "path": "american_names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "Chinese": {
+        "path": "chinese_names.csv",
+        "compositions": ["Name Surname"]
+    },
+    "Colombian": {
+        "path": "colombian_names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "Danish": {
+        "path": "danish_names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "Sweedish": {
+        "path": "swedish_names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "French": {
+        "path": "french_names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "German": {
+        "path": "german_names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "Greek": {
+        "path": "greek_names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "Hispanic": {
+        "path": "hispanic_names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "Indian": {
+        "path": "indian_names.csv",
+        "compositions": ["Name Surname"]
+    },
+
+    "Irish": {
+        "path": "irish_names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "Italian": {
+        "path": "italian_names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "Mexican": {
+        "path": "mexican_names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "Norwegian": {
+        "path": "norwegian_names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "Spanish": {
+        "path": "spanish_names.csv",
+        "compositions": ["Name Surname", "Name Name Surname"]
+    },
+    "Korean": {
+        "path": "korean_names.csv",
+        "compositions": ["Name Surname"]
+    },
+    "Japanese": {
+        "path": "japanese_names.csv",
+        "compositions": ["Name Surname"]
+    },
+    "Russian": {
+        "path": "Russian_Names.csv",
+        "compositions": ["Name Surname"]
+    }
+}
