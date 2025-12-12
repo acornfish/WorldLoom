@@ -15,11 +15,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */    
 
-import "../libs/jquery.min.js"
+import "../../libs/jquery.min.js"
 import '/global.js'
 
-function fetchGeneratorList(onSuccess, onError) {
-    const url = new URL("/api/getNamegenList", window.location.origin);
+function fetchGeneratorList(count, onSuccess, onError) {
+    const url = new URL("/api/getNamegen", window.location.origin);
+    url.searchParams.set("type", new URLSearchParams(window.location.search).get("type"))
+    url.searchParams.set("count", count)
+
 
     const xhr = new XMLHttpRequest();
     xhr.open("GET", url.toString(), true);
@@ -28,6 +31,7 @@ function fetchGeneratorList(onSuccess, onError) {
     xhr.onload = () => {
         if (xhr.status === 200) {
             onSuccess(xhr.response);
+            console.log(xhr.response)
         } else {
             onError(`Error ${xhr.status}: ${xhr.statusText}`);
         }
@@ -40,17 +44,13 @@ function fetchGeneratorList(onSuccess, onError) {
     xhr.send(); 
 }
 
-
-document.addEventListener("DOMContentLoaded", () => {
-    fetchGeneratorList((data) => {
-        const generatorDOMTemplate = (type) => `
-                <div class="generator-cell">
-                    <button class="generator-button" onclick="window.location = '/namegen/generate?type=${type}'">${type}</button>
-                </div>`
-
-        const gridElement = document.getElementsByClassName("generators-grid")[0]
-        for(let generator of data) {
-            gridElement.innerHTML += generatorDOMTemplate(generator)
-        }
+let batchSizeElement = document.getElementsByClassName("batch-size-input")[0]
+let namesListElement = document.getElementsByClassName("names-list")[0]
+document.getElementsByClassName("generate-batch")[0].addEventListener("click", (event) => {
+    fetchGeneratorList(batchSizeElement.value, (data) => {
+        namesListElement.innerHTML = 0;
+        namesListElement.innerHTML = data.map(x => `
+            <span>${x}<span/>    
+        `).join('<br/>');
     }, () => {})
 })

@@ -13,13 +13,18 @@
 <body>
     <div class="navbar"></div>
     <div class="container">
-        <div class="search-container">
-            <input type="text" name="search-bar" id="search-bar" class="search-bar">
-            <div class="search-button"><button>Search</button></div>
+        <div class="left-container">
+            <div class="names-list"></div>
         </div>
-        <div class="generators-grid-container">
-            <div class="generators-grid">
-
+        <div class="right-container">
+            <div class="controls">
+                <div class="buttons">
+                    <button class="generate-batch">Generate Batch</button>
+                    <button class="save-batch">Save Batch</button>
+                </div>
+                <input type="number" class="batch-size-input" value="5">
+            </div>
+            <div class="saves">
             </div>
         </div>
     </div>

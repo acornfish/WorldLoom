@@ -1,0 +1,91 @@
+html,body {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    overflow: hidden;
+}
+
+.container {
+    position: relative;
+    background-color: var(--menu-color);
+    width: 90%;
+    height: 90%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.left-container{
+    position: relative;
+    flex: 1;
+    border-right: 1px solid var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.right-container {
+    position: relative;
+    flex: 1;
+    border-left: 1px solid var(--text-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.names-list {
+    position: relative;
+    width: 80%;
+    height: 80%;
+    background-color: var(--background-color);
+    color: var(--menu-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5%;
+    border-bottom: 1px solid var(--text-color);
+}
+
+.saves {
+    flex: 2;
+}
+
+.controls .buttons {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+}
+
+.controls .buttons button {
+    width: 30%;
+    margin: 2%;
+    height: 5vh;
+    border: none;
+    background-color: var(--accent);
+    color: var(--text-color);
+}
+
+.batch-size-input {
+    width: 60%;
+    padding-left: 2%;
+    height: 5vh;
+    background-color: var(--menu-color);
+    border: 2px solid var(--accent);
+    outline: none;
+}
+
+.controls .buttons button:hover {filter: brightness(120%);}
+.controls .buttons button:active {filter: brightness(140%);}
+.batch-size-input:focus {filter: brightness(120%);}

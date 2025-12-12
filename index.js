@@ -924,6 +924,8 @@ app.get("/api/getNamegenList", (req, res) => {
 
 app.get("/api/getNamegen", (req, res) => {
     let type = req.query["type"]
+    let count = parseInt(req.query["count"])
+
     try {
         let metadata = namelists_parsed[type]
         const results = {};
@@ -937,15 +939,22 @@ app.get("/api/getNamegen", (req, res) => {
             }
           })
           .on('end', () => {
-            let comp_ind = Math.floor(Math.random() * (metadata.compositions.length-1))
-            let name = ""
+            let names = []
 
-            for(let placeholder of metadata.compositions[comp_ind].split(" ")){
-                let list = results[placeholder]
-                let ind = Math.floor(Math.random() * (list.length-1))
-                name += list[ind] + " "
+            for(let x=0;x<count;x++){
+                let comp_ind = Math.floor(Math.random() * (metadata.compositions.length-1))
+                let name = ""
+    
+                for(let placeholder of metadata.compositions[comp_ind].split(" ")){
+                    let list = results[placeholder]
+                    let ind = Math.floor(Math.random() * (list.length-1))
+                    name += list[ind] + " "
+                }
+
+                names.push(name)
             }
-            res.status(200).send(name)
+
+            res.status(200).send(names)
           });
     }catch (err) {
         res.status(500).send(err)
