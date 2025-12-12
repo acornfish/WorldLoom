@@ -53,4 +53,25 @@ document.addEventListener("DOMContentLoaded", () => {
             gridElement.innerHTML += generatorDOMTemplate(generator)
         }
     }, () => {})
+
+    document.getElementsByClassName("search-button")[0].addEventListener("click", () => {
+        let searchVal = document.getElementById("search-bar").value 
+        const gridElement = document.getElementsByClassName("generators-grid")[0]
+     
+        gridElement.innerHTML = ""
+
+        fetchGeneratorList((data) => {
+            const generatorDOMTemplate = (type) => `
+                    <div class="generator-cell">
+                        <button class="generator-button" onclick="window.location = '/namegen/generate?type=${type}'">${type}</button>
+                    </div>`
+    
+            for(let generator of data) {
+                if(generator.includes(searchVal)){
+                    gridElement.innerHTML += generatorDOMTemplate(generator)
+                }
+            }
+        }, () => {})
+    })
+
 })
