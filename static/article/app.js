@@ -29,6 +29,7 @@ import "/global.js"
 const indicator = `!"#$WXYZ%&'(^_abcdef)*+,-./0123456ABlmnopq[\]ghijkrstuvwxyz{|}~CDEFGHIJKLMNOPQ789:;<=>?RSTUV`
 
 var imageIDS = {}
+const urlParams = new URLSearchParams(window.location.search);
 
 const filePondConfig = (proj, type) => {
     return {
@@ -362,7 +363,7 @@ function getTemplate(callback) {
     const xhr = new XMLHttpRequest();
 
     xhr.open("GET",
-        `/api/getTemplate?project=${localStorage.getItem("CurrentProject")}&name=${sessionStorage.getItem("TemplateName")}`,
+        `/api/getTemplate?project=${localStorage.getItem("CurrentProject")}&name=${sessionStorage.getItem("TemplateName").slice(indicator.length)}`,
         true);
 
     xhr.onreadystatechange = function () {
@@ -597,7 +598,7 @@ class SettingsTab {
     constructor() {}
     async fetchContent() {
         return {
-            templateName: sessionStorage.getItem("TemplateName")
+            templateName: sessionStorage.getItem("TemplateName").slice(indicator.length)
         }
     }
     activate() {}
@@ -661,13 +662,13 @@ $(() => {
             if (data["data"]["settings"]["templateName"]) {
                 let cachedTempName = sessionStorage.getItem("TemplateName")
                 if (!cachedTempName) {
-                    sessionStorage.setItem("TemplateName", data["data"]["settings"]["templateName"])
+                    sessionStorage.setItem("TemplateName", indicator+data["data"]["settings"]["templateName"])
                     return
                 }
                 if ((cachedTempName.startsWith(indicator))) {
-                    sessionStorage.setItem("TemplateName", cachedTempName.slice(indicator.length))
+                    sessionStorage.setItem("TemplateName", cachedTempName)
                 } else {
-                    sessionStorage.setItem("TemplateName", data["data"]["settings"]["templateName"])
+                    sessionStorage.setItem("TemplateName", indicator+data["data"]["settings"]["templateName"])
                 }
             }
 
@@ -676,7 +677,7 @@ $(() => {
             getTemplate((status, temp) => {
                 if (status == 200) {
                     tabs[0].addPrompts(temp, data["data"]["content"])
-                    $("#type-selector").val(sessionStorage.getItem("TemplateName"))
+                    $("#type-selector").val(sessionStorage.getItem("TemplateName").slice(indicator.length))
                     $("#type-selector").trigger("change")
                 } else {
                     window.showToast(`Couldn't fetch template`, "danger", 2000);
@@ -689,7 +690,7 @@ $(() => {
             getTemplate((status, temp) => {
                 if (status == 200) {
                     tabs[0].addPrompts(temp, null)
-                    $("#type-selector").val(sessionStorage.getItem("TemplateName"))
+                    $("#type-selector").val(sessionStorage.getItem("TemplateName").slice(indicator.length))
                     $("#type-selector").trigger("change")
                 } else {
                     window.showToast(`Couldn't fetch template`, "danger", 2000);

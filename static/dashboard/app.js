@@ -23,6 +23,7 @@ import "../libs/dist/jstree.js"
 const ARTICLE_JSTREE = "#article-tree ul"
 
 const urlParams = new URLSearchParams(window.location.search);
+const indicator = `!"#$WXYZ%&'(^_abcdef)*+,-./0123456ABlmnopq[\]ghijkrstuvwxyz{|}~CDEFGHIJKLMNOPQ789:;<=>?RSTUV`
 
 const template_selector_template = `
     <label class="template-selector">
@@ -95,16 +96,16 @@ $(() => {
         container.html(elements + container.html())
 
         container.find("input[type='radio']").eq(0).attr("checked", "1")
-        sessionStorage.setItem("TemplateName", templates[0])
+        sessionStorage.setItem("TemplateName", indicator+templates[0])
 
         $(".template-selector").on("click", (e) => {
             let name = ($(e.currentTarget).children("span").text())
-            sessionStorage.setItem("TemplateName", name)
+            sessionStorage.setItem("TemplateName", indicator+name)
         })
 
         $(".template-selector").on("dblclick", (e) => {
             let name = ($(e.currentTarget).children("span").text())
-            sessionStorage.setItem("TemplateName", name)
+            sessionStorage.setItem("TemplateName", indicator+name)
             window.location = '/templateCreator'
         })
     })
