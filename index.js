@@ -203,8 +203,24 @@ app.use((req, res, next) => {
     next();
 })
 
+// Legacy routes
+app.use("/article", Express.static("./static/article"));
+app.use("/createProject", Express.static("./static/createProject"));
+app.use("/dashboard", Express.static("./static/dashboard"));
+app.use("/", Express.static("./static/dashboard"));
+app.use("/fonts", Express.static("./static/fonts"));
+app.use("/libs", Express.static("./static/libs"));
+app.use("/manuscripts", Express.static("./static/manuscripts"));
+app.use("/maps", Express.static("./static/maps"));
+app.use("/namegen", Express.static("./static/namegen"));
+app.use("/settings", Express.static("./static/settings"));
+app.use("/templateCreator", Express.static("./static/templateCreator"));
+app.use("/temps", Express.static("./static/temps"));
+app.use("/timelines", Express.static("./static/timelines"));
+app.use("/", Express.static("./static/public"));
 
-app.use(Express.static("./static"));
+// TODO: Place React routes here
+
 app.use(Express.static("./files"));
 app.use(Express.json({
     limit: '10mb'
