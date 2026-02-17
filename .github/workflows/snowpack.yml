@@ -34,6 +34,10 @@ jobs:
           mkdir dist-temp
           cp -r build/* dist-temp/
 
+          # Clean changes
+          git reset --hard
+          git clean -fd
+
           # Switch to main
           git fetch origin main
           git checkout main
