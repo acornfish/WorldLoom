@@ -2,7 +2,8 @@ name: Snowpack
 on:
   push:
     branches: ["react-build"]
-
+  workflow_dispatch:
+  
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
