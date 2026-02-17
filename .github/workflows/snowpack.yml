@@ -1,8 +1,7 @@
 name: Snowpack
 on:
   push:
-    branches:
-      - react-build
+    branches: ["react-build"]
 
 jobs:
   build-and-deploy:
