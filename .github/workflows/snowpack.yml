@@ -1,0 +1,56 @@
+name: Snowpack
+on:
+  push:
+    branches: ["react-build"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout react-build branch
+        uses: actions/checkout@v4
+        with:
+          ref: react-build
+          path: source
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        working-directory: source
+        run: npm install
+
+      - name: Build with Snowpack
+        working-directory: source
+        run: |
+          npm run build
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          cd ..
+
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: destination
+
+
+      - name: Deploy to main
+        working-directory: destination
+        run: |
+          rm -rf dist
+          mkdir dist
+          cp -r ../source/build/* dist/
+
+          git add dist
+          git commit -m "Auto-build from react-build"
+          git push origin main
