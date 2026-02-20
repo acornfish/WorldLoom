@@ -486,24 +486,6 @@ app.post("/api/saveTimeline", (req, res) => {
     res.send("Success")
 })
 
-app.get("/api/fetchScene", (req, res) => {
-    let projectName = (req.query["project"])
-    let uid = req.query["uid"]
-
-    if (projectName == null || !db.checkProjectExists(projectName)) {
-        res.status(406).send("Fail: project name is null or project is non-existent")
-        return
-    }
-
-    let content = FileManager.readFromDataDirectory("manuscripts", projectName, uid)
-
-    if (JSON.parse(content)["data"]) {
-        res.send(content)
-    } else {
-        res.status(406).send("Fail: Not initalized yet")
-    }
-
-})
 
 app.get("/api/deleteScene", (req, res) => {
     let projectName = (req.query["project"])
@@ -651,15 +633,6 @@ app.post("/api/setArticleTree", (req, res) => {
 app.post("/api/setManuscriptTree", (req, res) => {
     let projectName = req.body["project"]
     let tree = req.body["tree"]
-
-    db.setSubdir(projectName, "manuscripts", tree)
-
-    res.status(200).send("Success")
-})
-
-app.post("/api/retrieveScene", (req, res) => {
-    let projectName = req.body["project"]
-    let name = req.body["name"]
 
     db.setSubdir(projectName, "manuscripts", tree)
 
@@ -940,7 +913,7 @@ app.get("/api/getNamegenList", (req, res) => {
 
 app.get("/api/getNamegen", (req, res) => {
     let type = req.query["type"]
-    let count = parseInt(req.query["count"])
+    let count = parseInt(req.query["count"]) 
 
     try {
         let metadata = namelists_parsed[type]
@@ -977,7 +950,6 @@ app.get("/api/getNamegen", (req, res) => {
         console.error(err);
     }
 })
-
 
 
 app.use((req, res, next) => {
