@@ -1,13 +1,20 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
+import {BrowserRouter, Route, Routes} from 'react-router-dom'
+import Navbar from './components/Navbar';
+import ArticlesPage from './pages/Articles';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Page has been open for <code>{count}</code> seconds.
-        </p>
-      </header>
+      <link rel="stylesheet" href="global.css" />
+      <link rel="stylesheet" href="/libs/fontAwsome/css/all.min.css" />
+
+      <BrowserRouter>
+      <Navbar></Navbar>
+        <Routes>
+          <Route Component={ArticlesPage} path='/'></Route>
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

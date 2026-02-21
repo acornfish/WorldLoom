@@ -1,3 +1,6 @@
 .snowpack
 build
 node_modules
+public/global.css
+public/libs
+public/fonts
