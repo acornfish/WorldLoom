@@ -1,4 +1,4 @@
-name: Snowpack
+name: React-Compile
 on:
   push:
     branches: ["react-build"]
