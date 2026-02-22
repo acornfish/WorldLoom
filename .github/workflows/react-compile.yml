@@ -21,13 +21,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 24
 
       - name: Install dependencies
         working-directory: source
         run: npm install
 
-      - name: Build with Snowpack
+      - name: Build with Vite
         working-directory: source
         run: |
           npm run build
