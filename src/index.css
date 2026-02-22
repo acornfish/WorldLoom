@@ -1,0 +1,588 @@
+@import url('/fonts/Rubik.css');
+@import url('/libs/fontAwsome/css/fontawesome.css');
+@import url('/libs/fontAwsome/css/solid.css');
+    
+:root {
+    --menu-color: #444444;
+    --menu-color-darkened: #404040;
+    --background-color: #b8b8b8;
+    --text-color: #dddddd;
+    --accent: #C02942;
+    --menu-color-red-transistion: #4b3b3e;
+    --link-color: #ff4d6b;
+    --navbar-pages: 4;
+}
+
+html{
+    width: 100%;
+    height: 100%;
+}
+
+body{
+    width: 100%;
+    height: 100%;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+*:not(i) {
+    /*Workaround for fontawsome*/
+    font-family: 'Rubik', Arial, Helvetica, sans-serif !important;
+}
+
+input {
+    color: var(--text-color);
+}
+
+.Navbar {
+    background-color: var(--menu-color);
+    height: 100%;
+    width: 5%;
+    position: fixed;
+    margin: 0;
+    padding: 0;
+    left: 0;
+    z-index: 100;
+    border-right: 2px solid var(--accent);
+    transition: all 0.5s ease-in-out;
+}
+
+.Navbar[collapsed] {
+    transform: translateX(-100%);
+}
+.Navbar:not([collapsed]) {
+    transform: translateX(0);
+}
+
+
+.Navbar .collapse-switch {
+    display: inline-block;
+    position: absolute;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 3px;
+    left: 100%;
+    background-color: var(--menu-color);
+    border-top-right-radius: 50% ;
+    border-bottom-right-radius: 50%;
+    color: var(--text-color);
+    border: 2px solid var(--accent);
+    border-left: none;
+    text-align: center;
+
+}
+
+.Navbar .collapse-switch:hover{
+    filter: brightness(120%);
+}
+
+.Navbar .collapse-switch:active{
+    filter: brightness(140%);
+}
+
+.Navbar .collapse-switch::before {
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 4vh;
+    content: "\f100";
+}
+
+.Navbar[collapsed] .collapse-switch::before {
+    content: "\f101";
+}
+
+.Navbar .NavbarButtons {
+    height: 70%;
+    width: 100%;
+}
+
+.Navbar .NavbarButtons div {
+    height: calc(100% / var(--navbar-pages) - 5%);
+    margin-top: 5%;
+    width: 100%;
+    z-index: 10;
+}
+
+.Navbar .NavbarButtons div:hover span{
+    display: inline-block;
+}
+
+.Navbar .NavbarButtons span {
+    display: none;
+    position: absolute;
+    z-index: 11;
+    left: 110%;
+    margin-top: 50%;
+    padding: 3%;
+    padding-right: 5%;
+    background-color: var(--accent);
+    box-shadow: 1% 1% 1% black;
+    color: var(--text-color);
+    border-radius: 0 10% 10% 0;
+}
+
+.Navbar .NavbarButtons div button {
+    width: 100%;
+    height: 100%;
+    background-color: var(--menu-color);
+    border: none;
+    color: var(--text-color);
+}
+
+.Navbar .NavbarButtons div button:hover {
+    filter: brightness(85%);
+}
+
+.Navbar .NavbarButtons div button:active {
+    filter: brightness(70%);
+}
+
+.change-project-popup {
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    z-index: 99;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: block;
+    visibility: hidden;
+}
+
+.change-project-popup .popup-window {
+    width: 30vw;
+    height: 30vw;
+    background-color: var(--menu-color);
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
+}
+
+
+.popup-header {
+    font-family: 'Rubik', Arial, Helvetica, sans-serif;
+    color: var(--text-color);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 2%;
+}
+
+.select-container {
+    position: relative;
+    margin: 0 auto;
+    width: 80%;
+    top: 20%;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.select-container .select {
+    position: relative;
+    background: var(--accent);
+    height: 60px;
+}
+
+.select-container .select::after {
+    position: absolute;
+    content: "";
+    width: 15px;
+    height: 15px;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%) rotate(45deg);
+    border-bottom: 2px solid white;
+    border-right: 2px solid white;
+    cursor: pointer;
+    transition: border-color 0.4s;
+}
+
+.select-container.active .select::after {
+    border: none;
+    border-left: 2px solid white;
+    border-top: 2px solid white;
+}
+
+.select-container .select input {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0 15px;
+    background: none;
+    outline: none;
+    border: none;
+    font-size: 1.4rem;
+    color: white;
+    cursor: pointer;
+}
+
+.select-container .option-container {
+    position: relative;
+    background: var(--accent);
+    height: 0;
+    overflow-y: scroll;
+    transition: 0.4s;
+    z-index: 2;
+}
+
+.select-container.active .option-container {
+    height: 1%;
+}
+
+.select-container .option-container::-webkit-scrollbar {
+    border-left: 1px solid rgba(0, 0, 0, 0.2);
+    width: 10px;
+}
+
+.select-container .option-container::-webkit-scrollbar-thumb {
+    background: #0f0e11;
+}
+
+.select-container .option-container .option {
+    position: relative;
+    padding-left: 15px;
+    height: 60px;
+    border-top: 1px solid rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.select-container .option-container .option.selected {
+    background: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+.select-container .option-container .option:hover {
+    background: rgba(0, 0, 0, 0.2);
+    padding-left: 20px;
+}
+
+.select-container .option-container .option label {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.create-new-project {
+    background-color: var(--accent);
+    border: 0;
+    position: absolute;
+    width: 50vh;
+    height: 10vh;
+    max-width: 100%;
+    top: 65%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--text-color) !important;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.create-new-project:hover {
+    filter: brightness(80%);
+}
+
+.create-new-project:active {
+    filter: brightness(60%);
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-target .tooltip {
+    visibility: hidden;
+    width: 100%;
+    height: 140%;
+    background-color: var(--menu-color);
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    border: 1px solid black;
+    word-wrap: break-word;
+    white-space: no-wrap;
+    position: absolute;
+    right: 50%;
+    top: 100%;
+    transform: translateX(50%);
+    overflow-y: scroll;
+    z-index: 99;
+}
+
+.tooltip-target:hover .tooltip {
+    visibility: visible !important;
+}
+
+.tooltip-target .tooltip:hover {
+    visibility: visible !important;
+
+}
+
+.tooltip-target .tooltip .tooltip-text {
+    color: var(--text-color);
+}
+
+.toast {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    max-width: 300px;
+    background: #fff;
+    padding: 0.5rem;
+    border-radius: 4px;
+    box-shadow: -1px 1px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1023;
+    animation: slideInRight 0.3s ease-in-out forwards,
+        fadeOut 0.5s ease-in-out forwards 3s;
+    transform: translateX(110%);
+}
+
+.toast.closing {
+    animation: slideOutRight 0.5s ease-in-out forwards;
+}
+
+.toast-progress {
+    position: absolute;
+    display: block;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 100%;
+    background: #b7b7b7;
+    animation: toastProgress 3s ease-in-out forwards;
+}
+
+.toast-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toast-icon {
+    padding: 0.35rem 0.5rem;
+    font-size: 1.5rem;
+}
+.toast-icon i{
+    color: #000000 !important;
+}
+
+.toast-message {
+    flex: 1;
+    font-size: 0.9rem;
+    color: #000000;
+    padding: 0.5rem;
+}
+
+.toast.toast-success {
+    background: #95eab8;
+}
+
+.toast.toast-success .toast-progress {
+    background-color: #2ecc71;
+}
+
+.toast.toast-danger {
+    background: #efaca5;
+}
+
+.toast.toast-danger .toast-progress {
+    background-color: #e74c3c;
+}
+
+.toast.toast-info {
+    background: #bddaed;
+}
+
+.toast.toast-info .toast-progress {
+    background-color: #3498db;
+}
+
+.toast.toast-warning {
+    background: #ead994;
+}
+
+.toast.toast-warning .toast-progress {
+    background-color: #f1c40f;
+}
+
+.ql-tooltip{
+    background-color: var(--menu-color) !important;
+    color: var(--text-color) !important;
+}
+
+.ql-tooltip .ql-action,.ql-remove{
+    color: var(--text-color) !important;
+}
+
+.ql-container a{
+    color: var(--link-color) !important;
+}
+
+textarea:focus{
+    filter: brightness(120%);
+}
+input[type="text"]:focus{
+    filter: brightness(120%);
+}
+
+@keyframes slideInRight {
+    0% {
+        transform: translateX(110%);
+    }
+
+    75% {
+        transform: translateX(-10%);
+    }
+
+    100% {
+        transform: translateX(0%);
+    }
+}
+
+@keyframes slideOutRight {
+    0% {
+        transform: translateX(0%);
+    }
+
+    25% {
+        transform: translateX(-10%);
+    }
+
+    100% {
+        transform: translateX(110%);
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes toastProgress {
+    0% {
+        width: 100%;
+    }
+
+    100% {
+        width: 0%;
+    }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.select2-container .select2-selection--single {
+    background-color: var(--menu-color);
+    border: 1px solid var(--text-color);
+    color: var(--text-color);
+  }
+  
+  /* Selected text */
+  .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--text-color);
+  }
+  
+  /* Dropdown menu */
+  .select2-container--default .select2-dropdown {
+    background-color: var(--menu-color);
+    border: 1px solid var(--text-color);
+  }
+  
+  /* Options */
+  .select2-container--default .select2-results__option {
+    background-color: var(--menu-color) !important;
+    color: var(--text-color) !important;
+  }
+  
+  /* Hover & selected option states */
+  .select2-container--default .select2-results__option--highlighted {
+    background-color: var(--text-color) !important;
+    color: var(--menu-color)  !important;
+  }
+  .select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: var(--text-color) !important;
+    color: var(--menu-color) !important;
+  }
+  
+  /* Search input inside dropdown */
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    background-color: var(--menu-color);
+    border: 1px solid var(--text-color) !important;
+    color: var(--text-color);
+  }
+  
+  /* Placeholder text inside search input */
+  .select2-container--default .select2-search--dropdown .select2-search__field::placeholder {
+    color: var(--text-color);
+    opacity: 0.7; /* optional for contrast */
+  }
+
+  /* Works for both themes */
+.select2-container .select2-search--inline .select2-search__field {
+    background-color: var(--menu-color);
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
+    /* Remove Select2’s default borderless look */
+    margin: 2px;
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+  
+  /* Placeholder inside the inline combobox input */
+  .select2-container .select2-search--inline .select2-search__field::placeholder {
+    color: var(--text-color);
+    opacity: 0.7;
+  }
+  
+  /* Focus ring to match your theme */
+  .select2-container .select2-search--inline .select2-search__field:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--text-color) 30%, transparent);
+  }
+  
+  /* If you’re using the Classic theme, also style the dropdown search just in case */
+  .select2-container--classic .select2-search--dropdown .select2-search__field,
+  .select2-container--default .select2-search--dropdown .select2-search__field {
+    background-color: var(--menu-color);
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
+  }
+
+  /* Selected “pill” chips in multi-select */
+.select2-container--default .select2-selection--multiple .select2-selection__choice,
+.select2-container--classic .select2-selection--multiple .select2-selection__choice {
+  background-color: var(--text-color);
+  color: var(--menu-color);
+  border: 1px solid var(--text-color);
+}
+
+/* Remove “x” button hover inversion issues */
+.select2-container .select2-selection__choice__remove {
+  color: inherit;
+}
+
+.select2-selection--multiple {
+    background-color: var(--menu-color) !important;
+}

@@ -1,22 +1,18 @@
-import React from 'react';
-import {BrowserRouter, Route, Routes} from 'react-router-dom'
-import Navbar from './components/Navbar';
-import ArticlesPage from './pages/Articles';
+import { BrowserRouter, Routes, Route } from 'react-router'
+import Navbar from './components/navbar'
+import './App.css'
 
 function App() {
   return (
-    <div className="App">
-      <link rel="stylesheet" href="global.css" />
-      <link rel="stylesheet" href="/libs/fontAwsome/css/all.min.css" />
-
-      <BrowserRouter>
+    <>
       <Navbar></Navbar>
+      <BrowserRouter>
         <Routes>
-          <Route Component={ArticlesPage} path='/'></Route>
+          <Route path='/'></Route>
         </Routes>
       </BrowserRouter>
-    </div>
-  );
+    </>
+  )
 }
 
-export default App;
+export default App

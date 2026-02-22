@@ -1,15 +1,13 @@
 import React, {useState} from "react";
-import { useNavigate } from "react-router-dom";
 
 function Navbar (){
     var [navbarCollapsed, setNavbarCollapsed]  = useState(true);
-    const navigate = useNavigate()
 
     return (
         <div className="Navbar" collapsed={navbarCollapsed?".":undefined}>
             <div className="NavbarButtons">
                 <div>
-                    <button onClick={() => {navigate('/dashboard')}}><i className="fa-solid fa-table-columns fa-lg"></i></button>
+                    <button onClick={() => {('/dashboard')}}><i className="fa-solid fa-table-columns fa-lg"></i></button>
                     <span className="tooltip">Dashboard</span>
                 </div>
                 <div>
