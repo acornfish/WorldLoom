@@ -49,7 +49,7 @@ jobs:
         run: |
           rm -rf dist
           mkdir dist
-          cp -r ../source/build/* dist/
+          cp -r ../source/dist/* dist/
 
           git add dist
           git commit -m "Auto-build from react-build"
