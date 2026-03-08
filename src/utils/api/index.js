@@ -42,7 +42,7 @@ export function getProjectList() {
 }
 
 export function exportProject(project) {
-    return sendRequest('GET', 'exportProject', { project });
+    window.open("/api/exportProject?project=" + project)
 }
 
 // Relation Management
