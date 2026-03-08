@@ -2,12 +2,14 @@ import React, {useState} from "react";
 
 function Navbar (){
     var [navbarCollapsed, setNavbarCollapsed]  = useState(true);
+    
+    document.documentElement.style.setProperty("--navbar-pages", 4)
 
     return (
         <div className="Navbar" collapsed={navbarCollapsed?".":undefined}>
             <div className="NavbarButtons">
                 <div>
-                    <button onClick={() => {('/dashboard')}}><i className="fa-solid fa-table-columns fa-lg"></i></button>
+                    <button onClick={() => {window.location = '/dashboard'}}><i className="fa-solid fa-table-columns fa-lg"></i></button>
                     <span className="tooltip">Dashboard</span>
                 </div>
                 <div>
