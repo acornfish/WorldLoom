@@ -12,6 +12,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/settings' Component={settingsPage}></Route>
+          <Route path='/settings/' Component={settingsPage}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
