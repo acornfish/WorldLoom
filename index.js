@@ -213,13 +213,26 @@ app.use("/libs", Express.static("./static/libs"));
 app.use("/manuscripts", Express.static("./static/manuscripts"));
 app.use("/maps", Express.static("./static/maps"));
 app.use("/namegen", Express.static("./static/namegen"));
-app.use("/settings", Express.static("./static/settings"));
+//app.use("/settings", Express.static("./static/settings"));
 app.use("/templateCreator", Express.static("./static/templateCreator"));
 app.use("/temps", Express.static("./static/temps"));
 app.use("/timelines", Express.static("./static/timelines"));
 app.use("/", Express.static("./static/public"));
 
-// TODO: Place React routes here
+// React routes
+app.use("/article",         Express.static("./dist/"));
+app.use("/createProject",   Express.static("./dist/"));
+app.use("/dashboard",       Express.static("./dist/"));
+app.use("/fonts",           Express.static("./dist/"));
+app.use("/libs",            Express.static("./dist/"));
+app.use("/manuscripts",     Express.static("./dist/"));
+app.use("/maps",            Express.static("./dist/"));
+app.use("/namegen",         Express.static("./dist/"));
+app.use("/settings",        Express.static("./dist/"));
+app.use("/templateCreator", Express.static("./dist/"));
+app.use("/temps",           Express.static("./dist/"));
+app.use("/timelines",       Express.static("./dist/"));
+app.use("/",                Express.static("./dist/"));
 
 app.use(Express.static("./files"));
 app.use(Express.json({
