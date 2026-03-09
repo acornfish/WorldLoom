@@ -1,7 +1,7 @@
 .templates-container-outer{
     position: relative;
-    width: 60%;
-    height: 95%;
+    height: 100%;
+    width: 100%;
 }
 
 .templates-container{

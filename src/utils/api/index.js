@@ -1,5 +1,7 @@
 export const LS_PROJECT_NAME = "CurrentProject" 
 
+
+
 function sendRequest(method, endpoint, params) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -55,7 +57,7 @@ export function fetchArticle(project, uid) {
     return sendRequest('GET', 'fetchArticle', { project, uid });
 }
 
-export function modifyArticle(project, operation, data, uid) {
+export function modifyArticle(project, operation, uid, data) {
     return sendRequest('POST', 'modifyArticle', { project, operation, data, uid });
 }
 

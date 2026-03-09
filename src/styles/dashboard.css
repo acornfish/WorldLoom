@@ -1,0 +1,17 @@
+.template-manager {
+    position: relative;
+    float: right;
+    width: 60%;
+    height: 95%;
+    right: 2vw;
+    top: 5%;
+}
+
+.article-tree {
+    position: relative;
+    width: 30%;
+    height: 95%;
+    display: inline-block;
+    top: 5%;
+    left: 2.5%;
+}

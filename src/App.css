@@ -1,5 +1,5 @@
 @import url('/libs/select2.min.css');
-
+@import url('/libs/dist/themes/proton/style.min.css');
 
 body {
     background-color: var(--background-color);

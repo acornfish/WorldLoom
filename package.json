@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "jquery": "^4.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-jstree": "^1.0.0",
     "react-router": "^7.13.0",
     "react-select": "^5.10.2"
   },

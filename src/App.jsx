@@ -2,7 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router'
 import Navbar from './components/navbar'
 import { ThemeProvider } from './hooks/themeProvider'
 import './App.css'
-import settingsPage from './pages/settings'
+import SettingsPage from './pages/settings'
+import DashboardPage from './pages/dashboard'
 
 function App() {
   return (
@@ -11,8 +12,8 @@ function App() {
       <Navbar></Navbar>
       <BrowserRouter>
         <Routes>
-          <Route path='/settings' Component={settingsPage}></Route>
-          <Route path='/settings/' Component={settingsPage}></Route>
+          <Route path='/settings' Component={SettingsPage}></Route>
+          <Route path='/dashboard' Component={DashboardPage}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
