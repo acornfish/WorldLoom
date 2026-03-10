@@ -3,6 +3,9 @@ import $ from 'jquery';
 window.jQuery = $;
 import { useEffect, useRef } from 'react';
 
+//
+// Beware! This shit is not react at all
+//
 
 const JstreeConfig = (data) => {return {
             "core": {
@@ -94,6 +97,8 @@ export default function Tree ({getTree, handleCreateNode, handleDeleteNode, hand
                     .on("loaded.jstree", treeLoadedEvent(ul))
                     .on("rename_node.jstree", handleRenameNode(ul))
                     .on("dblclick.jstree", handleDoubleClick(ul));
+
+                
             })})
     }, [])
 
@@ -101,8 +106,8 @@ export default function Tree ({getTree, handleCreateNode, handleDeleteNode, hand
         <div className="tree-container-outer">
             <span className="container-label">Articles (Right click menu)</span>
             <div className="tree-container-controls">
-                <button id="add-element"><i className="fa-solid fa-file-medical"></i></button>
-                <button id="add-folder"><i className="fa-solid fa-folder-plus"></i></button>
+                <button id="add-element" onClick={() => {addElementButton(ulRef.current)}}><i className="fa-solid fa-file-medical"></i></button>
+                <button id="add-folder" onClick={() => {addFolderButton(ulRef.current)}}><i className="fa-solid fa-folder-plus"></i></button>
             </div>
             <div className="tree-container" id="article-tree">
                 <ul ref={ulRef}></ul>
@@ -111,6 +116,33 @@ export default function Tree ({getTree, handleCreateNode, handleDeleteNode, hand
     )
 }
 
+const addElementButton = (ul) => {
+    let jstree = $(ul).jstree(true)
+    
+    let selected = jstree.get_selected(true).at(0)
+    let id = ""
+    if (selected.type === "default") {
+        id = jstree.create_node(selected.id, { text: " ", type: "file" }, "last")
+    } else {
+        id = jstree.create_node("#", { text: " ", type: "file" }, "last")
+    }    
+
+    jstree.edit(jstree.get_node(id))
+} 
+
+const addFolderButton = (ul) => {
+    let jstree = $(ul).jstree(true)
+    
+    let selected = jstree.get_selected(true).at(0)
+    let id = ""
+    if (selected.type === "default") {
+        id = jstree.create_node(selected.id, { text: " ", type: "default" }, "last")
+    } else {
+        id = jstree.create_node("#", { text: " ", type: "default" }, "last")
+    }    
+
+    jstree.edit(jstree.get_node(id))
+} 
 
 
 export function enforceUniqueNodeNames(jst, node) {
