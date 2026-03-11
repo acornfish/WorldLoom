@@ -2,8 +2,11 @@ import { BrowserRouter, Routes, Route } from 'react-router'
 import Navbar from './components/navbar'
 import { ThemeProvider } from './hooks/themeProvider'
 import './App.css'
-import SettingsPage from './pages/settings'
-import DashboardPage from './pages/dashboard'
+import { lazy, Suspense } from 'react'
+
+const SettingsPage = lazy(() => import("./pages/settings"));
+const DashboardPage = lazy(() => import("./pages/dashboard"));
+const ArticleEditorPage = lazy(() => import("./pages/articleEditor"));
 
 function App() {
   return (
@@ -11,9 +14,11 @@ function App() {
     <ThemeProvider>
       <Navbar></Navbar>
       <BrowserRouter>
+       <Suspense fallback={<div>Loading...</div>}></Suspense>
         <Routes>
           <Route path='/settings' Component={SettingsPage}></Route>
           <Route path='/dashboard' Component={DashboardPage}></Route>
+          <Route path='/article' Component={ArticleEditorPage}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
