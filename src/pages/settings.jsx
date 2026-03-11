@@ -11,9 +11,19 @@ function exportAsHtmlButton(){
 }
 
 function SettingsPage (){
-    const [AnalyticsLanguage, SetAnalyticsLanguage] = useState();
+    const textAnalyticsOptions = [
+        {value: "english", label: "English (Dale-Chall wordlist)"},
+        {value: "english2", label: "English (Oxford wordlist)"},
+        {value: "russian", label: "Russian"},
+        {value: "turkish", label: "Turkish"},
+    ]
+
+    
+
+    const [AnalyticsLanguage, SetAnalyticsLanguage] = useState(localStorage.getItem("TextAnalyticsLanguage"))
     const {Theme, SetTheme} = useTheme();
 
+    
     useEffect(() => {
         localStorage.setItem("TextAnalyticsLanguage", AnalyticsLanguage)
     }, [AnalyticsLanguage]);
@@ -37,13 +47,10 @@ function SettingsPage (){
                <br></br>
                <div className="text-anaylitcs-language-container">
                 <Select className="text-analytics-language"
-                    options={[
-                        {value: "english", label: "English (Dale-Chall wordlist)"},
-                        {value: "english2", label: "English (Oxford wordlist)"},
-                        {value: "russian", label: "Russian"},
-                        {value: "turkish", label: "Turkish"},
-                    ]}
-                    defaultValue={AnalyticsLanguage}
+                    defaultValue={textAnalyticsOptions.find(x => {
+                        return (x.value == localStorage.getItem("TextAnalyticsLanguage"))
+                    })}
+                    options={textAnalyticsOptions}
                     onChange={x => SetAnalyticsLanguage(x.value)}
                 >
                </Select>
