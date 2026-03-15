@@ -5,3 +5,7 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
 }
+
+.react-select__option{
+    background-color: red !important;
+}

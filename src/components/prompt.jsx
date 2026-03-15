@@ -1,18 +1,26 @@
 import RichTextEditor from './richTextEditor'
 import '../styles/prompt.css'
 import { useState } from 'react'
+import { useImperativeHandle } from 'react'
 
 export const PromptTypes = {
-    Number: "number",
-    ShortText: "shorttext",
-    RichText: "richtext",
-    Reference: "reference"
+    Number: "Number",
+    ShortText: "Short Text",
+    RichText: "Rich Text",
+    Reference: "Reference"
 }
 
-
-export default function ArticlePrompt ({promptType, promptName}){
+/**
+ * @param {Object} props
+ * @param {string} props.promptType
+ * @param {string} props.promptName
+ * @param {import('react').RefObject<{ getContents: () => any }>} props.getContents
+ * @returns {import('react').ReactElement}
+ */
+export default function ArticlePrompt({ promptType, promptName, getContents }) {
     const [value, setValue] = useState()
 
+    useImperativeHandle(getContents, () => value)
     return (
         <>
             <div className='seperator'></div>
@@ -30,7 +38,7 @@ export default function ArticlePrompt ({promptType, promptName}){
     )
 }
 
-function NumberPrompt ({promptName, value, setValue}){
+function NumberPrompt ({promptName, value, setValue, get}){
     return (
         <input type="number" className="number-prompt prompt" name={promptName} onChange={(e) => setValue(e.target.value)} defaultValue={value}/>
     )
@@ -44,7 +52,7 @@ function ShortTextPrompt ({promptName, value, setValue}){
 
 function ReferencePrompt ({promptName, value, setValue}){
     return (
-        <select name={p.promptName} class="reference-prompt prompt" multiple="multiple"></select>
+        <select name={promptName} class="reference-prompt prompt" multiple="multiple"></select>
     )
 }
 

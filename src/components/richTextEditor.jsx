@@ -1,10 +1,39 @@
-import { useState } from "react";
-import ReactQuill, { Quill } from "react-quill";
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill, { Quill } from "react-quill-new";
+import { useReferencePopup } from "../hooks/referencePopupProvider";
+import 'react-quill-new/dist/quill.snow.css';
+import '../styles/richTextEditor.css'
+import { useRef } from "react";
+import { WLdomid } from '../utils/uid'
 
 export default function RichTextEditor({PromptName, value, setValue}) {
+    const openPopup = useReferencePopup();
+    const editor = useRef();
+
+    let id = WLdomid();
+
+    const handleArticleReferences = (value) => {
+        console.log(editor.current)
+        let quill = editor.current.editor
+        let range = quill.getSelection();
+        if (!range.length) {
+            return
+        }
+
+        openPopup().then(val => {
+            console.log(val)
+        })
+
+        if (value) {
+            quill.formatText(range.index, range.length, 'articleReference', value);
+            quill.setSelection(range.index + range.length);
+            quill.format('articleReference', false);
+        }
+
+    }
+
     const modules = {
-        toolbar: [
+        toolbar: {
+            container: [
             [{
                 'header': [1, 2, false]
             }],
@@ -23,10 +52,12 @@ export default function RichTextEditor({PromptName, value, setValue}) {
             [
                 'articleReference'
             ]
-        ],
+            ],
+            handlers: {
+                articleReference: handleArticleReferences,
+            }
+        }
     };
-
-    let id = window.domid()
 
 
     return ( 
@@ -39,8 +70,10 @@ export default function RichTextEditor({PromptName, value, setValue}) {
                 setValue
             }
             modules={modules}
+            
             id={id}
             className="prompt richtext-prompt"
+            ref={editor}
         />
     )
 }

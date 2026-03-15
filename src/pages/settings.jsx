@@ -1,10 +1,10 @@
 import { useState } from "react"
 import "../styles/settingsPage.css"
-import Select from 'react-select'
 import { useEffect } from "react";
 import '../utils/api'
 import { useTheme } from "../hooks/themeProvider";
 import { exportProject, LS_PROJECT_NAME } from "../utils/api";
+import WLSelect from "../components/WLSelect";
 
 function exportAsHtmlButton(){
     exportProject(localStorage.getItem(LS_PROJECT_NAME))
@@ -45,15 +45,14 @@ function SettingsPage (){
                <button className="export-html-button" onClick={exportAsHtmlButton}>Export as HTML</button>
                 <h2>Text Analytics Language</h2>
                <br></br>
-               <div className="text-anaylitcs-language-container">
-                <Select className="text-analytics-language"
+               <div className="text-analytics-language-container">
+                <WLSelect
+                    className="text-analytics-language"
                     defaultValue={textAnalyticsOptions.find(x => {
                         return (x.value == localStorage.getItem("TextAnalyticsLanguage"))
                     })}
                     options={textAnalyticsOptions}
-                    onChange={x => SetAnalyticsLanguage(x.value)}
-                >
-               </Select>
+                    onChange={x => SetAnalyticsLanguage(x.value)}></WLSelect>
                </div>
             </div>
         </>

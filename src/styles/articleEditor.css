@@ -112,7 +112,8 @@
     flex-direction: column;
 }
 
-.settings-tab form *{
+/*This line messes with ARIA screenreader support withot :not()*/
+.settings-tab form *:not([aria-live]){
     position: relative;
 }
 

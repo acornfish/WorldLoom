@@ -1,0 +1,27 @@
+
+.ql-picker-options{
+    background-color: var(--menu-color) !important;
+    border-color: var(--menu-color) !important;
+}
+
+.ql-stroke,
+.ql-picker-label,
+.ql-editor,
+.ql-picker-item:not(.ql-selected) {
+    font-family: 'Rubik',Arial, Helvetica, sans-serif;
+    stroke: var(--text-color) !important;
+    color: var(--text-color) !important;
+}
+
+.ql-editing input {
+    background-color: var(--menu-color) !important;
+    outline: none;
+}
+
+.ql-editing input:hover {
+    filter: brightness(120%);
+}
+
+.ql-editing input:focus {
+    filter: brightness(140%);
+}
