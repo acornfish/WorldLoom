@@ -1,14 +1,28 @@
 import { useState } from "react"
 import WLSelect from "../../components/WLSelect"
 import { useEffect } from "react"
+import { useImperativeHandle } from "react"
 
-export default function SettingsTab ({selectedTab, templateList, selectedTemplateRef}){
-    const [selectedTemplate, setSelectedTemplate] = selectedTemplateRef.current
+export default function SettingsTab ({selectedTab, templateList, getSettingsRef, defaultTemplate}){
+    const [selectedTemplate, setSelectedTemplate] = useState(defaultTemplate)
     const index = 3
 
-    useEffect(()=>{
-        sessionStorage.setItem("TemplateName", selectedTemplate)
-    }, [selectedTemplate])
+    getSettingsRef.current = async () => {
+        return {templateName: selectedTemplate}
+    }
+
+    useEffect(() => {
+        setSelectedTemplate(defaultTemplate)
+    }, [defaultTemplate])
+
+    function onChange (e){
+        setSelectedTemplate(e.value);
+        sessionStorage.setItem("TemplateName", e.value)
+        if(confirm("This action will cause unsaved data to be lost. Proceed?")){
+            sessionStorage.setItem("ArticleRestructureFlag", 1)
+            window.location.reload()
+        }
+    }
 
     return (
         <div className={"tab settings-tab " + (selectedTab==index?"active-tab":"")}  index={index}>
@@ -17,8 +31,8 @@ export default function SettingsTab ({selectedTab, templateList, selectedTemplat
             <div id="type-selector-container">
               <WLSelect
                 options={templateList?.map((t,i) => {return {value: t, label:t}})}
-                onChange={(e) => {setSelectedTemplate(e.value)}}
-                defaultValue={{value:selectedTemplate, label:selectedTemplate}}
+                onChange={onChange}
+                defaultValue={{value: selectedTemplate, label:selectedTemplate}}
                 ></WLSelect>
             </div>
           </form>

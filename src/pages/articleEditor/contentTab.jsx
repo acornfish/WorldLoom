@@ -11,7 +11,7 @@ export default function ContentTab({selectedTab, templateData, saveFunction}){
     templateRef.current = templateData
   }, [templateData])
 
-  saveFunction.current = () => {
+  saveFunction.current = async () => {
     const contentsObj = {}
     prompts.current.forEach((x,i) => {
       contentsObj[templateRef.current[i].promptName] = x
@@ -29,7 +29,9 @@ export default function ContentTab({selectedTab, templateData, saveFunction}){
                 promptName={t.promptName} 
                 promptType={t.type} 
                 key={i} 
-                getContents={(el) => prompts.current[i] = el}></ArticlePrompt>
+                getContents={(el) => prompts.current[i] = el}
+                referenceType={t.rtype}
+                ></ArticlePrompt>
             )
           }
         )

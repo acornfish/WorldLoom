@@ -2,6 +2,9 @@ import RichTextEditor from './richTextEditor'
 import '../styles/prompt.css'
 import { useState } from 'react'
 import { useImperativeHandle } from 'react'
+import { fetchReferenceables, LS_PROJECT_NAME } from '../utils/api'
+import { useEffect } from 'react'
+import WLSelect from './WLSelect'
 
 export const PromptTypes = {
     Number: "Number",
@@ -17,7 +20,7 @@ export const PromptTypes = {
  * @param {import('react').RefObject<{ getContents: () => any }>} props.getContents
  * @returns {import('react').ReactElement}
  */
-export default function ArticlePrompt({ promptType, promptName, getContents }) {
+export default function ArticlePrompt({ promptType, promptName, getContents, referenceType }) {
     const [value, setValue] = useState()
 
     useImperativeHandle(getContents, () => value)
@@ -30,7 +33,7 @@ export default function ArticlePrompt({ promptType, promptName, getContents }) {
                       (promptType == PromptTypes.Number) ?    (<NumberPrompt    promptName={promptName} value={value} setValue={setValue}></NumberPrompt>) 
                     : (promptType == PromptTypes.ShortText) ? (<ShortTextPrompt promptName={promptName} value={value} setValue={setValue}></ShortTextPrompt>)
                     : (promptType == PromptTypes.RichText) ?  (<RichTextEditor  promptName={promptName} value={value} setValue={setValue}></RichTextEditor>)
-                    : (promptType == PromptTypes.Reference) ? (<ReferencePrompt promptName={promptName} value={value} setValue={setValue}></ReferencePrompt>)
+                    : (promptType == PromptTypes.Reference) ? (<ReferencePrompt promptName={promptName} value={value} setValue={setValue} referenceType={referenceType}></ReferencePrompt>)
                     :                                         (<div className='seperator'></div>)
                 }
             </div>
@@ -50,9 +53,27 @@ function ShortTextPrompt ({promptName, value, setValue}){
     )
 }
 
-function ReferencePrompt ({promptName, value, setValue}){
+function ReferencePrompt ({promptName, referenceType, value, setValue}){
+    const [referenceables, setReferenceables] = useState([])
+
+    useEffect(() => {
+        (async () => {
+            let res = await fetchReferenceables(localStorage.getItem(LS_PROJECT_NAME), referenceType)
+            if(res.startsWith("Fail")){
+                console.warn("Referenceables of type" + referenceType + "couldn't be found") 
+            }else {
+                setReferenceables(JSON.parse(res))
+            }
+        })()
+    },[])
+
     return (
-        <select name={promptName} class="reference-prompt prompt" multiple="multiple"></select>
+        <WLSelect name={promptName} class="reference-prompt prompt" multiple="multiple" 
+        options={referenceables?.map((t,i) => {return {value: t.uid, label: t.text}})}
+        onChange={setValue}
+        isMulti={true}
+        >
+        </WLSelect>
     )
 }
 

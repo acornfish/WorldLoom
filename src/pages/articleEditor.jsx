@@ -13,19 +13,18 @@ export default function ArticleEditor (){
     const [templateData, setTemplateData] = useState([])
     const [templateList, setTemplateList] = useState([])
     const [selectedTemplate, setSelectedTemplate] = useState("")
-    const [articleData, setArticleData] = useState("")
-    const selectedTemplateRef = useRef([selectedTemplate, setSelectedTemplate])
+    const [articleData, setArticleData] = useState({contents: {},settings: {templateName: null},design: {}})
 
     const contentsFetchFunction = useRef(()=>{console.warn("Content fetch function is undefined")})
     const desginFetchFunction = useRef(() => {console.warn("Design fetch function is undefined")})
-    const settingsFetchFunction = useRef(()=>{console.warn("Settings fetch function is undefined")})
+    const settingsFetchFunction = useRef(() => {console.warn("Settings fetch function is undefined")})
 
-    function saveFunction(){
-      let contents = contentsFetchFunction.current()
-      let design = desginFetchFunction.current()
-      let settings = settingsFetchFunction.current()
+    async function saveFunction(){
+      let contents = await contentsFetchFunction.current()
+      let design = await desginFetchFunction.current()
+      let settings = await settingsFetchFunction.current()
 
-      modifyArticle(localStorage.getItem(LS_PROJECT_NAME), "modify", localStorage.getItem("Article"), {
+      modifyArticle(localStorage.getItem(LS_PROJECT_NAME), "modify", sessionStorage.getItem("Article"), {
         contents,
         design,
         settings
@@ -33,9 +32,24 @@ export default function ArticleEditor (){
     }
 
     useEffect(() => {
-        if(selectedTemplate) window.sessionStorage.setItem("TemplateName", selectedTemplate);
+        if(articleData?.settings?.templateName){
+          //Either a template update or a normal load
+          if(sessionStorage.getItem("ArticleRestructureFlag") == 1){
+            // Definitely a template update
+            articleData.settings.templateName = sessionStorage.getItem("TemplateName")
+            sessionStorage.setItem("ArticleRestructureFlag", 0)
+          }else{
+            // Definitely a normal load
+            sessionStorage.setItem("TemplateName", articleData.settings.templateName)
+          }
+        }else {
+          // Article creation
+          articleData.settings.templateName = sessionStorage.getItem("TemplateName")
+        }
+        setSelectedTemplate(articleData.settings.templateName);
+
         (async () => {
-          let res = await getTemplate(localStorage.getItem(LS_PROJECT_NAME), selectedTemplate)
+          let res = await getTemplate(localStorage.getItem(LS_PROJECT_NAME), articleData.settings.templateName)
           if(res.startsWith("Fail")){
             console.error("Couldn't fetch template")
           }else {
@@ -56,22 +70,17 @@ export default function ArticleEditor (){
 
         (async () => {
           if(sessionStorage.getItem("Article")){
-            let res = await fetchArticle(localStorage.getItem(LS_PROJECT_NAME), sessionStorage.getItem("Article"))
-            if(res.startsWith("Fail")){
-              console.error("Couldn't fetch article")
-            }else {
+            try{
+              let res = await fetchArticle(localStorage.getItem(LS_PROJECT_NAME), sessionStorage.getItem("Article"))
+
               let data = JSON.parse(res).data
               setArticleData(data)
               setSelectedTemplate(data.settings.templateName)
+            }catch(err){
+              if(err == "Fail: Not initalized yet"){
+              
+              }
             }
-          }{
-            setArticleData({
-              contents: {},
-              settings: {
-                templateName: sessionStorage.getItem("templateName")
-              },
-              design: {}
-            })
           }
         })();
     }, [])
@@ -89,8 +98,10 @@ export default function ArticleEditor (){
             
             <div className="editor-panel">
               <ContentTab selectedTab={selectedTab} templateData={templateData} saveFunction={contentsFetchFunction}></ContentTab>
-              <DesignTab selectedTab={selectedTab}></DesignTab>
-              <SettingsTab selectedTab={selectedTab} templateList={templateList} selectedTemplateRef={selectedTemplateRef}></SettingsTab>
+              <DesignTab selectedTab={selectedTab} getDesignRef={desginFetchFunction} imageIDs={articleData.design}></DesignTab>
+              <SettingsTab selectedTab={selectedTab} templateList={templateList} getSettingsRef={settingsFetchFunction}
+               defaultTemplate={sessionStorage.getItem("TemplateName")}>
+               </SettingsTab>
             </div>
             <input type="button" className="save-button" value="Save" onClick={saveFunction}></input>
         </div>

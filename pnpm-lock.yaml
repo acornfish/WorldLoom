@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      filepond:
+        specifier: ^4.32.12
+        version: 4.32.12
       jquery:
         specifier: ^4.0.0
         version: 4.0.0
@@ -17,6 +20,9 @@ importers:
       react-dom:
         specifier: ^19.2.0
         version: 19.2.4(react@19.2.4)
+      react-filepond:
+        specifier: ^7.1.3
+        version: 7.1.3(filepond@4.32.12)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-quill-new:
         specifier: ^3.8.3
         version: 3.8.3(quill-delta@5.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -798,6 +804,9 @@ packages:
     resolution: {integrity: sha512-XXTUwCvisa5oacNGRP9SfNtYBNAMi+RPwBFmblZEF7N7swHYQS6/Zfk7SRwx4D5j3CH211YNRco1DEMNVfZCnQ==}
     engines: {node: '>=16.0.0'}
 
+  filepond@4.32.12:
+    resolution: {integrity: sha512-wro0/deLwua9CkL7HJygOlDaPo1c7Ov8kfzbZjH7m4hdi56gdHGDeRWnYa+qXnRm3Lty69gUGVFb3JZy/9vT8g==}
+
   find-root@1.1.0:
     resolution: {integrity: sha512-NKfW6bec6GfKc0SGx1e07QZY9PE99u0Bft/0rzSD5k3sO/vwkVUpDUKVm5Gpp5Ue3YfShPFTX2070tDs5kB9Ng==}
 
@@ -1045,6 +1054,13 @@ packages:
     resolution: {integrity: sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ==}
     peerDependencies:
       react: ^19.2.4
+
+  react-filepond@7.1.3:
+    resolution: {integrity: sha512-uQOCZt+YXnBfYn6OxK6vsgSoUROkBu/ZahcfIJnK94c1ZeSAS84L/XKDADq/8Adx/Lz88VtVWvUpTXnNpmjHFQ==}
+    peerDependencies:
+      filepond: '>=3.7.x < 5.x'
+      react: 16 - 19
+      react-dom: 16 - 19
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -1939,6 +1955,8 @@ snapshots:
     dependencies:
       flat-cache: 4.0.1
 
+  filepond@4.32.12: {}
+
   find-root@1.1.0: {}
 
   find-up@5.0.0:
@@ -2149,6 +2167,12 @@ snapshots:
     dependencies:
       react: 19.2.4
       scheduler: 0.27.0
+
+  react-filepond@7.1.3(filepond@4.32.12)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+    dependencies:
+      filepond: 4.32.12
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
 
   react-is@16.13.1: {}
 
