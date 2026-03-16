@@ -1,28 +1,36 @@
 import { useState } from "react"
 import WLSelect from "../../components/WLSelect"
 import { useEffect } from "react"
-import { useImperativeHandle } from "react"
+import { getTemplateList, LS_PROJECT_NAME } from "../../utils/api"
+import { useRef } from "react"
 
-export default function SettingsTab ({selectedTab, templateList, getSettingsRef, defaultTemplate}){
-    const [selectedTemplate, setSelectedTemplate] = useState(defaultTemplate)
+export default function SettingsTab ({selectedTab, getSettingsRef, defaultTemplate}){
+    const [templateList, setTemplateList] = useState([])
+    const templateSelectRef = useRef()
     const index = 3
 
     getSettingsRef.current = async () => {
-        return {templateName: selectedTemplate}
+        return {templateName: templateSelectRef.current.getValue()[0].value}
     }
 
-    useEffect(() => {
-        setSelectedTemplate(defaultTemplate)
-    }, [defaultTemplate])
-
     function onChange (e){
-        setSelectedTemplate(e.value);
         sessionStorage.setItem("TemplateName", e.value)
         if(confirm("This action will cause unsaved data to be lost. Proceed?")){
             sessionStorage.setItem("ArticleRestructureFlag", 1)
             window.location.reload()
         }
     }
+
+    useEffect(() => {
+        (async () => {
+          let res = await getTemplateList(localStorage.getItem(LS_PROJECT_NAME))
+          if(res.startsWith("Fail")){
+            console.error("Couldn't fetch template list")
+          }else {
+            setTemplateList(JSON.parse(res))
+          }
+        })();        
+    }, [])
 
     return (
         <div className={"tab settings-tab " + (selectedTab==index?"active-tab":"")}  index={index}>
@@ -32,7 +40,8 @@ export default function SettingsTab ({selectedTab, templateList, getSettingsRef,
               <WLSelect
                 options={templateList?.map((t,i) => {return {value: t, label:t}})}
                 onChange={onChange}
-                defaultValue={{value: selectedTemplate, label:selectedTemplate}}
+                value={{value: defaultTemplate, label:defaultTemplate}}
+                ref={templateSelectRef}
                 ></WLSelect>
             </div>
           </form>

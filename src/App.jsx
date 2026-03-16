@@ -4,12 +4,19 @@ import { ThemeProvider } from './hooks/themeProvider'
 import './App.css'
 import { lazy, Suspense } from 'react'
 import { ReferencePopupProvider } from './hooks/referencePopupProvider'
+import { useEffect } from 'react'
 
 const SettingsPage = lazy(() => import("./pages/settings"));
 const DashboardPage = lazy(() => import("./pages/dashboard"));
 const ArticleEditorPage = lazy(() => import("./pages/articleEditor"));
 
 function App() {
+  useEffect(() =>{
+    if(!(localStorage.getItem("CurrentProject"))){
+      window.location = '/createProject'
+    }
+  },[])
+
   return (
     <>
     <ReferencePopupProvider>

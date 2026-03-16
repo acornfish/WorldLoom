@@ -1,19 +1,30 @@
 import { useState, useRef, useEffect } from "react";
-import ArticlePrompt from "../../components/prompt";
+import ArticlePrompt, { PromptTypes } from "../../components/prompt";
+import { fetchArticle, LS_PROJECT_NAME } from "../../utils/api";
 
-export default function ContentTab({selectedTab, templateData, saveFunction}){
+export default function ContentTab({selectedTab, templateData, saveFunction, priorArticleData}){
   const index = 1;
-  const prompts = useRef([])
+  const promptsGET = useRef([])
+  const promptsSET = useRef([])
   const templateRef = useRef(templateData)
+  const [promptVersion, setPromptVersion] = useState(0)
 
   //Don't question it. I am going mad
   useEffect(() => {
     templateRef.current = templateData
   }, [templateData])
 
+  useEffect(() => {
+    for(let i=0;i<templateRef.current.length;i++){
+      setPromptVersion(e=>e+1)
+      promptsSET.current[i] = priorArticleData[templateRef.current[i].promptName] ?? ("")
+    }
+  }, [priorArticleData, templateData])
+
   saveFunction.current = async () => {
     const contentsObj = {}
-    prompts.current.forEach((x,i) => {
+    
+    promptsGET.current.forEach((x,i) => {
       contentsObj[templateRef.current[i].promptName] = x
     })
 
@@ -29,8 +40,10 @@ export default function ContentTab({selectedTab, templateData, saveFunction}){
                 promptName={t.promptName} 
                 promptType={t.type} 
                 key={i} 
-                getContents={(el) => prompts.current[i] = el}
+                getContents={(el) => {promptsGET.current[i] = el}}
+                priorContentVal={promptsSET.current[i]}
                 referenceType={t.rtype}
+                
                 ></ArticlePrompt>
             )
           }

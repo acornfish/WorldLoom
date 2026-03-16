@@ -144,8 +144,7 @@ input {
     position: fixed;
     z-index: 99;
     background-color: rgba(0, 0, 0, 0.8);
-    display: block;
-    visibility: hidden;
+    display: none;
 }
 
 .change-project-popup .popup-window {
@@ -160,7 +159,7 @@ input {
 }
 
 
-.popup-header {
+.change-project-popup .popup-header {
     font-family: 'Rubik', Arial, Helvetica, sans-serif;
     color: var(--text-color);
     position: absolute;
@@ -169,12 +168,11 @@ input {
     margin-top: 2%;
 }
 
-.select-container {
+.change-project-select {
     position: relative;
     margin: 0 auto;
     width: 80%;
     top: 20%;
-    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 .select-container .select {

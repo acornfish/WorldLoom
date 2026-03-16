@@ -20,10 +20,14 @@ export const PromptTypes = {
  * @param {import('react').RefObject<{ getContents: () => any }>} props.getContents
  * @returns {import('react').ReactElement}
  */
-export default function ArticlePrompt({ promptType, promptName, getContents, referenceType }) {
+export default function ArticlePrompt({ promptType, promptName, getContents, referenceType, priorContentVal}) {
     const [value, setValue] = useState()
 
     useImperativeHandle(getContents, () => value)
+    useEffect(() => {
+        setValue(priorContentVal)
+    }, [priorContentVal])
+
     return (
         <>
             <div className='seperator'></div>
@@ -65,13 +69,20 @@ function ReferencePrompt ({promptName, referenceType, value, setValue}){
                 setReferenceables(JSON.parse(res))
             }
         })()
+        setValue([])
     },[])
 
     return (
         <WLSelect name={promptName} class="reference-prompt prompt" multiple="multiple" 
         options={referenceables?.map((t,i) => {return {value: t.uid, label: t.text}})}
-        onChange={setValue}
+        onChange={x => {
+            let val = x.map(t => t.value)
+            setValue(val)
+        }}
         isMulti={true}
+        value={
+            referenceables.filter((t,i) => value.find((e,j) => t.uid == e)).map((t,i) => ({value: t?.uid, label: t?.text}))
+        }
         >
         </WLSelect>
     )

@@ -72,7 +72,7 @@ function TemplateManager(){
             }}>
                 <button className="template-mass-exchange-close-button" onClick={() => {setMassImportPopupActive(false)}}>X</button>
                 <textarea name="templates" id="template-mass-import-textarea" onChange={(x) => {setMassImportText(x.currentTarget.value)}}></textarea>
-                <button className="template-mass-import-button" onClick={() => {importTemplatesButton(massImportText)}}>Import</button>            
+                <button className="template-mass-import-button" onClick={() => {importTemplatesButton(massImportText); window.location.reload()}}>Import</button>            
             </div>
             
             <div className="template-mass-export" style={{
