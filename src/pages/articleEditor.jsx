@@ -13,20 +13,20 @@ export default function ArticleEditor (){
     const [selectedTab, setSelectedTab] = useState(1)
     const [templateData, setTemplateData] = useState([])
     const [selectedTemplate, setSelectedTemplate] = useState("")
-    const [articleData, setArticleData] = useState({contents: {},settings: {templateName: null},design: {}})
+    const [articleData, setArticleData] = useState({content: {},settings: {templateName: null},design: {}})
 
     const contentsFetchFunction = useRef(()=>{console.warn("Content fetch function is undefined")})
     const desginFetchFunction = useRef(() => {console.warn("Design fetch function is undefined")})
     const settingsFetchFunction = useRef(() => {console.warn("Settings fetch function is undefined")})
 
     async function saveFunction(){
-      let contents = await contentsFetchFunction.current()
+      let content = await contentsFetchFunction.current()
       let design = await desginFetchFunction.current()
       let settings = await settingsFetchFunction.current()
 
       try{
         await modifyArticle(localStorage.getItem(LS_PROJECT_NAME), "modify", sessionStorage.getItem("Article"), {
-          contents,
+          content,
           design,
           settings
         })
@@ -97,7 +97,7 @@ export default function ArticleEditor (){
             </div>
             
             <div className="editor-panel">
-              <ContentTab selectedTab={selectedTab} templateData={templateData} saveFunction={contentsFetchFunction} priorArticleData={articleData.contents}></ContentTab>
+              <ContentTab selectedTab={selectedTab} templateData={templateData} saveFunction={contentsFetchFunction} priorArticleData={articleData.content}></ContentTab>
               <DesignTab selectedTab={selectedTab} getDesignRef={desginFetchFunction} imageIDs={articleData.design}></DesignTab>
               <SettingsTab selectedTab={selectedTab} getSettingsRef={settingsFetchFunction} defaultTemplate={selectedTemplate}></SettingsTab>
             </div>

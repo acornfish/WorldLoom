@@ -3,6 +3,7 @@ export const LS_PROJECT_NAME = "CurrentProject"
 
 
 function sendRequest(method, endpoint, params) {
+    console.log(endpoint, params)
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         let url = '/api/' + endpoint;
@@ -49,7 +50,11 @@ export function exportProject(project) {
 
 // Relation Management
 export function fetchReferenceables(project, type) {
-    return sendRequest('GET', 'fetchReferenceables', { project, type });
+    if(type){
+        return sendRequest('GET', 'fetchReferenceables', { project, type });
+    }else{
+        return sendRequest('GET', 'fetchReferenceables', { project});
+    }
 }
 
 // Articles

@@ -33,7 +33,7 @@ export default function ChangeProjectPopup ({style}){
                     }}
                     defaultValue = {{value: localStorage.getItem(LS_PROJECT_NAME), label: localStorage.getItem(LS_PROJECT_NAME)}}
                 ></WLSelect>
-                <input type="button" className="create-new-project" id="create-new-project" value="Create new" onclick="window.location = '/createProject'"></input>
+                <input type="button" className="create-new-project" id="create-new-project" value="Create new" onClick={() => {window.location = '/createProject'}}></input>
             </div>
         </div>
     )

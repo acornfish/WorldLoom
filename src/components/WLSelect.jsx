@@ -16,8 +16,9 @@ export default function WLSelect(props){
                 ...baseStyles,
                 backgroundColor: "var(--menu-color)",
                 color: "var(--text-color)",
-                border: "1px solid var(--text-color)",
-                outline: "none"
+                border: "1px solid var(--text-color) !important",
+                outline: "none",
+                filter: state.isFocused ? "brightness(120%)" : "brightness(100%)"
               }),
               menu: (baseStyles, state) => ({
                 ...baseStyles,

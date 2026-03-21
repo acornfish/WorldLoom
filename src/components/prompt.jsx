@@ -23,10 +23,34 @@ export const PromptTypes = {
 export default function ArticlePrompt({ promptType, promptName, getContents, referenceType, priorContentVal}) {
     const [value, setValue] = useState()
 
-    useImperativeHandle(getContents, () => value)
+    useImperativeHandle(getContents, () => {
+        return value
+    }, [value])
+
     useEffect(() => {
-        setValue(priorContentVal)
-    }, [priorContentVal])
+        let next;
+        if (promptType === PromptTypes.Reference) {
+            if (typeof priorContentVal === "string") {
+                try {
+                    next = JSON.parse(priorContentVal)
+                } catch {
+                    next = []
+                }
+            } else {
+                next = priorContentVal ?? []
+            }
+        } else {
+            next = priorContentVal
+        }
+
+        setValue(prev => {
+            if (JSON.stringify(prev) === JSON.stringify(next)) {
+                return prev
+            }
+            return next
+        })
+    }, [priorContentVal, promptType])
+
 
     return (
         <>
@@ -69,8 +93,9 @@ function ReferencePrompt ({promptName, referenceType, value, setValue}){
                 setReferenceables(JSON.parse(res))
             }
         })()
+        
         setValue([])
-    },[])
+    },[referenceType])
 
     return (
         <WLSelect name={promptName} class="reference-prompt prompt" multiple="multiple" 
@@ -81,7 +106,7 @@ function ReferencePrompt ({promptName, referenceType, value, setValue}){
         }}
         isMulti={true}
         value={
-            referenceables.filter((t,i) => value.find((e,j) => t.uid == e)).map((t,i) => ({value: t?.uid, label: t?.text}))
+            Array.isArray(value) ? referenceables?.filter((t,i) => value?.find((e,j) => t?.uid == e)).map((t,i) => ({value: t?.uid, label: t?.text})) : undefined
         }
         >
         </WLSelect>

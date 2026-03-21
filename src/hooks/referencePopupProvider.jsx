@@ -24,7 +24,9 @@ export function ReferencePopupProvider({children}){
 
     function acceptReference (e){
         if(getReferenceRef.current){
-            getReferenceRef.current(selectObj.current.value)
+            getReferenceRef.current(JSON.stringify({
+                id: selectObj.current.value,
+                text: options[selectObj.current.selectedIndex].text}))
             getReferenceRef.current = null
             
         }
@@ -34,7 +36,6 @@ export function ReferencePopupProvider({children}){
 
     useEffect(() => {
         async function load() {
-            if(!currentType) return
             const res = await fetchReferenceables(
                 localStorage.getItem(LS_PROJECT_NAME),
                 currentType
