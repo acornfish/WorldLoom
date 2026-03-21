@@ -16,6 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */    
 
+const PORT = 4523
+const HOST = "0.0.0.0"
+const VERSION = "0.1.7"
 
 const Process = require("process");
 const Path = require("path");
@@ -63,7 +66,8 @@ const {
 } = require("stream/consumers");
 const { truncateSync } = require("fs");
 const { daleChall, fleschKincaid } = require("./include/TextStatistics");
-const csv = require("csv-parser")
+const csv = require("csv-parser");
+const { fixQuillReferences, fixReferencePrompts, fixManuscriptReferences } = require("./include/BackwardsCompatibility");
 
 process.chdir(__dirname);
 
@@ -179,8 +183,12 @@ var resources = new ResourceManager(db);
     }
 }
 
-const PORT = 4523
-const HOST = "0.0.0.0"
+//Backwards compatibility
+if(!db.matchVersion(VERSION)){
+    fixQuillReferences(db)
+    fixReferencePrompts(db)
+    fixManuscriptReferences(db)
+}
 
 const app = Express();
 
@@ -204,13 +212,13 @@ app.use((req, res, next) => {
 })
 
 // Legacy routes
-app.use("/article", Express.static("./static/article"));
+//app.use("/article", Express.static("./static/article"));
 app.use("/createProject", Express.static("./static/createProject"));
-app.use("/dashboard", Express.static("./static/dashboard"));
-app.use("/", Express.static("./static/dashboard"));
+//app.use("/dashboard", Express.static("./static/dashboard"));
+//app.use("/", Express.static("./static/dashboard"));
 app.use("/fonts", Express.static("./static/fonts"));
 app.use("/libs", Express.static("./static/libs"));
-app.use("/manuscripts", Express.static("./static/manuscripts"));
+//app.use("/manuscripts", Express.static("./static/manuscripts"));
 app.use("/maps", Express.static("./static/maps"));
 app.use("/namegen", Express.static("./static/namegen"));
 //app.use("/settings", Express.static("./static/settings"));
@@ -595,6 +603,21 @@ app.post("/api/modifyArticle", (req, res) => {
 
             // Update inheritor caches for templates
             let templates = db.getSubdir(projectName, "templates")
+
+            //Remove from inheritors of previous template
+            if(prior.data?.settings){
+                let oldTemplateIndex = templates.findIndex((x) => x["name"] == prior.data["settings"]["templateName"])
+                if(oldTemplateIndex != -1){
+                    let refInd = templates[oldTemplateIndex]["inheritors"].findIndex(x => x == uid)
+                    if(refInd != -1){
+                        templates[oldTemplateIndex]?.inheritors?.splice(refInd, 1)
+                    }
+
+                    db.setWithIndex(projectName, "templates", oldTemplateIndex, templates[oldTemplateIndex])
+                }
+            }
+            
+            // Add to inheritors of new template            
             let templateIndex = templates.findIndex((x) => x["name"] == data["settings"]["templateName"])
             if (templateIndex == -1) {
                 res.status(406).send("Fail: template doesn't exist")

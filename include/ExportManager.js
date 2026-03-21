@@ -312,11 +312,16 @@ function convertDeltaToHTML(delta) {
         if(!delta.ops[i].attributes) continue;
         let ref = delta.ops[i].attributes["articleReference"]
         if(ref){
-            let id = ref["id"]
-            let text = ref["text"]
-            delete delta.ops[i].attributes.articleReference;
-            delta.ops[i].attributes.link = uidToPathTable[id];
-            delta.ops[i].insert = text;
+            try{
+                ref = JSON.parse(ref);
+                let id = ref["id"]
+                let text = ref["text"]
+                delete delta.ops[i].attributes.articleReference;
+                delta.ops[i].attributes.link = uidToPathTable[id];
+                delta.ops[i].insert = text;
+            }catch(err) {
+                console.log(err)
+            }
         }
     }
     let converter = new QuillDeltaToHtmlConverter(delta["ops"], {

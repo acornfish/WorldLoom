@@ -218,6 +218,7 @@ window.addNewPromptTemplate = function (){
 
 $(() => {
     //initalization
+    
     getTemplate((status, template) => {
         if(status != 200) {
             return

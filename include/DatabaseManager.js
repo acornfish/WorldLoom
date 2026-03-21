@@ -61,16 +61,29 @@ class Project {
 
 class DatabaseManager {
     #projects
+    #version
+    #isUpToDate = null
 
     constructor() {
         this.#projects = [];
-        this.#projects = JSON.parse(FileManager.readImportantFile("database"))["projects"]
+        let dbFileData = JSON.parse(FileManager.readImportantFile("database"))
+        this.#projects = dbFileData["projects"]
+        this.#version = dbFileData["version"] ?? "0.0.1"
         this.saveState()
+    }
+
+    matchVersion(version){
+        if(this.#isUpToDate === null){
+            this.#isUpToDate = this.#version == version;
+        }
+        this.#version = version;
+        return this.#isUpToDate;
     }
 
     saveState() {
         FileManager.writeImportantFile("database", JSON.stringify({
-            projects: this.#projects
+            projects: this.#projects,
+            version: this.#version
         }));
     }
 
@@ -232,50 +245,50 @@ exports.updateArticleRefWeb = (project, uid, article, templates, articleOld) => 
     let content = article?.data?.content;
     let contentOld = articleOld?.data?.content;
     let template = templates.find(t => t.name === article.data.settings.templateName);
+    let oldTemplate = templates.find(t => t.name === articleOld?.data?.settings?.templateName);
+
+    if(contentOld && oldTemplate){
+        for (let prompt of oldTemplate.template) {
+            if (prompt.type === "Reference" && prompt.crossRefT) {
+                try {
+                    //remove old references
+                    for (let refId of contentOld[prompt.promptName]) {
+                        let data = FileManager.readFromDataDirectory("articles", project, refId);
+                        let parsed = JSON.parse(data);
+                        let crossRef = parsed?.data?.content[prompt.crossRefT] || [];
+                        if (crossRef.includes(uid)) {
+                            parsed?.data?.content[prompt.crossRefT]?.splice(crossRef.indexOf(uid),1);
+                            FileManager.writeToDataDirectory("articles", project, refId, JSON.stringify(parsed));
+                        }
+                    }
+                }
+                catch (err){
+                    console.error(`Error updating references for article ${uid}:`, err);
+                }
+            }
+        }
+    }
 
     if (!template) return;
-
     for (let prompt of template.template) {
         if (prompt.type === "Reference" && prompt.crossRefT) {
             try {
-                // Handle new references
-                if (JSON.stringify(content[prompt.promptName]) !== JSON.stringify([":@null"])) {
-                    for (let refId of content[prompt.promptName]) {
-                        if(refId == ":@null"){
-                            continue
-                        }
-                        let idOfReference = refId.slice(2); // remove ":@"
-                        let data = FileManager.readFromDataDirectory("articles", project, idOfReference);
-                        let parsed = JSON.parse(data);
+                //Add new references
+                for (let refId of content[prompt.promptName]) {
+                    let data = FileManager.readFromDataDirectory("articles", project, refId);
+                    let parsed = JSON.parse(data);
+                    let crossRef = parsed.data.content[prompt.crossRefT] || [];
 
-                        let crossRef = parsed.data.content[prompt.crossRefT] || [];
-                        if (!crossRef.includes(":@" + uid)) {
-                            crossRef.push(":@" + uid);
-                            parsed.data.content[prompt.crossRefT] = crossRef;
-                            FileManager.writeToDataDirectory("articles", project, idOfReference, JSON.stringify(parsed));
-                        }
+                    if(!crossRef){
+                        //in case the referenced article is not initalized yet
+                        parsed.data.content[prompt.crossRefT] = []
+                    }
+                    
+                    if (!crossRef.includes(uid)) {
+                        parsed.data.content[prompt.crossRefT].push(uid);
+                        FileManager.writeToDataDirectory("articles", project, refId, JSON.stringify(parsed));
                     }
                 }
-
-                
-                
-                // Handle old references (remove back-references)
-                if (contentOld && JSON.stringify(contentOld[prompt.promptName]) !== JSON.stringify(content[prompt.promptName])) {
-                    let removed = differenceArr( contentOld[prompt.promptName], content[prompt.promptName] )
-                    for (let oldRefId of removed || []) {
-                        let idOfOldReference = oldRefId.slice(2);
-                        let data = FileManager.readFromDataDirectory("articles", project, idOfOldReference);
-                        let parsed = JSON.parse(data);
-                        let crossRef = parsed.data.content[prompt.crossRefT] || [];
-                        parsed.data.content[prompt.crossRefT] = crossRef.filter(e => e !== ":@" + uid);
-                        if (parsed.data.content[prompt.crossRefT].length === 0) {
-                            parsed.data.content[prompt.crossRefT] = [":@null"];
-                        }
-                        FileManager.writeToDataDirectory("articles", project, idOfOldReference, JSON.stringify(parsed));
-                    }
-
-                }
-
             } catch (err) {
                 console.error(`Error updating references for article ${uid}:`, err);
             }
