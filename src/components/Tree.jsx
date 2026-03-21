@@ -104,7 +104,6 @@ export default function Tree ({getTree, handleCreateNode, handleDeleteNode, hand
 
     return (
         <div className="tree-container-outer">
-            <span className="container-label">Articles (Right click menu)</span>
             <div className="tree-container-controls">
                 <button id="add-element" onClick={() => {addElementButton(ulRef.current)}}><i className="fa-solid fa-file-medical"></i></button>
                 <button id="add-folder" onClick={() => {addFolderButton(ulRef.current)}}><i className="fa-solid fa-folder-plus"></i></button>

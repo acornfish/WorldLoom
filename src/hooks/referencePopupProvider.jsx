@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import {createContext, useContext, useState} from 'react'
 import { fetchReferenceables, LS_PROJECT_NAME } from '../utils/api';
+import '../styles/inlineReferencePrompt.css'
 
 const referencePopupContext = createContext();
 

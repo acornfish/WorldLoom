@@ -11,6 +11,7 @@ export default function DashboardPage (){
     return (
         <>
             <div className="article-tree">
+                <span className="container-label">Articles (Right click menu)</span>
                 <Tree
                     getTree = {getTree}
                     handleCreateNode = {handleCreateNode}

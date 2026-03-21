@@ -116,8 +116,10 @@ class RichTextEditorInternal extends React.Component{
         this.#id = WLdomid();
 
         window.openArticleReference = (id) => {
-            sessionStorage.setItem("Article", id)
-            window.location = '/article'
+            if(confirm("Do you want to switch to another article? Unsaved data will be lost!")) {
+                sessionStorage.setItem("Article", id)
+                window.location = '/article'
+            }
         }
     }
 

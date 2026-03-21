@@ -1,6 +1,6 @@
+import showToast from "../toast";
+
 export const LS_PROJECT_NAME = "CurrentProject" 
-
-
 
 function sendRequest(method, endpoint, params) {
     console.log(endpoint, params)

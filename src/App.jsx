@@ -41,7 +41,7 @@ function App() {
             <Route path='/settings' Component={SettingsPage}></Route>
             <Route path='/dashboard' Component={DashboardPage}></Route>
             <Route path='/article' Component={ArticleEditorPage}></Route>
-            <Route path='/manuscripts' Component={ManuscriptsPages}></Route>
+            <Route path='/manuscripts' Component={ManuscriptsPage}></Route>
           </Routes>
         </BrowserRouter>
       </ThemeProvider>
