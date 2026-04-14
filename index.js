@@ -21,7 +21,6 @@ const HOST = "0.0.0.0"
 const VERSION = "0.1.7"
 
 const Process = require("process");
-const Path = require("path");
 
 try {
     var Express = require("express");
@@ -41,7 +40,8 @@ const Multer = require("multer")
 const {
     DirectoryManager,
     FileManager,
-    FS
+    FS,
+    Path
 } = require("./include/FileManager")
 const {
     DatabaseManager,
@@ -99,6 +99,7 @@ process.chdir(__dirname);
 
 var db = new DatabaseManager()
 var resources = new ResourceManager(db);
+var date = new Date();
 
 //Manage Multer
 {
@@ -197,19 +198,17 @@ var upload = Multer({
 })
 
 
-//Don't cache. its not worth it to make exceptions
+// Disable caching of API routes
 app.disable('etag');
-app.use((req, res, next) => {
-    delete req.headers['if-modified-since'];
-    delete req.headers['if-none-match'];
-    res.setHeader('Surrogate-Control', 'no-store');
-    res.setHeader(
-        'Cache-Control',
-        'no-store, no-cache, must-revalidate, proxy-revalidate'
-    );
-    res.setHeader('Expires', '0');
-    next();
-})
+const noCache = (req, res, next) => {
+  res.set({
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
+  });
+  next();
+};
+app.use('/api', noCache);
 
 // Legacy routes
 //app.use("/article", Express.static("./static/article"));
@@ -264,9 +263,6 @@ app.use((req, res, next) => {
     const statusCode = res.statusCode;
 
     LogManager.log(`[${date}] - ${endpoint} - ${statusCode}`);
-
-
-
     next();
 })
 
@@ -320,8 +316,36 @@ app.post("/api/save", (req, res) => {
     }
     res.status(200).send("Success");
     return;
-
 })
+
+app.get("/api/exportDatabaseFolder", (req, res) => {
+    res.writeHead(200, {
+        'Content-Type': 'application/zip',
+        'Content-Disposition': 'attachment; filename="' + "WorldLoom_"  + date.toLocaleDateString() + '.zip"'
+    });
+
+    FileManager.zipFolder(Path.join(Process.cwd(), "files"), (data) => {
+        res.write(data)
+    }, () => {
+        res.end()
+    })
+})
+
+app.post("/api/importDatabaseFolder", (req, res) => {
+    const fileContent = req.body["file"]
+    let ended = false
+
+    setTimeout(() => {
+        if(ended) return;
+        res.status(500).send("Fail: Timeout")
+    }, 10000)
+
+    FileManager.unzipFolder(Path.join(Process.cwd(), "files"), fileContent, (status, message) => {
+        ended = true;
+        res.status(status).send(message);
+    })
+})
+
 
 app.get("/api/fetchReferenceables", (req, res) => {
     let projectName = (req.query["project"])
@@ -392,6 +416,8 @@ app.get("/api/fetchArticle", (req, res) => {
     }
 
 })
+
+
 
 app.post("/api/getReadability", (req, res) => {
     let text = req.body["text"]
@@ -506,6 +532,7 @@ app.post("/api/saveTimeline", (req, res) => {
     db.setSubdir(projectName, "timeline", [data])
     res.send("Success")
 })
+
 
 
 app.get("/api/deleteScene", (req, res) => {
