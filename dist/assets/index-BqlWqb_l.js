@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/settings-D5ypQtnY.js","assets/settings-CuFSRTdB.css","assets/dashboard-DKt4fvqg.js","assets/Tree-2pUgYnDs.js","assets/Tree-CvCJSwdn.css","assets/uid-CgJ15W9t.js","assets/dashboard-DipLYKIr.css","assets/articleEditor-TKqT4QkZ.js","assets/richTextEditor-CcejcIqp.js","assets/richTextEditor-8I7AIxnE.css","assets/articleEditor-IvAiT0Lb.css","assets/manuscripts-DIeIM2lc.js","assets/manuscripts-Dr0Jvelc.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/settings-Bt8lPtMc.js","assets/toast-BelPYyVA.js","assets/settings-T_GEU958.css","assets/dashboard-DzgQbPwj.js","assets/Tree-D9dKbqE7.js","assets/Tree-CvCJSwdn.css","assets/uid-CgJ15W9t.js","assets/dashboard-DipLYKIr.css","assets/articleEditor-DKR3uqj8.js","assets/richTextEditor-5_CDnXca.js","assets/richTextEditor-8I7AIxnE.css","assets/articleEditor-IvAiT0Lb.css","assets/manuscripts-CxxAbg78.js","assets/manuscripts-Dr0Jvelc.css"])))=>i.map(i=>d[i]);
 function _mergeNamespaces(n, m) {
   for (var i = 0; i < m.length; i++) {
     const e = m[i];
@@ -514,7 +514,7 @@ function requireReact_production() {
   react_production.useTransition = function() {
     return ReactSharedInternals.H.useTransition();
   };
-  react_production.version = "19.2.4";
+  react_production.version = "19.2.5";
   return react_production;
 }
 var hasRequiredReact;
@@ -946,7 +946,7 @@ function requireReactDom_production() {
   reactDom_production.useFormStatus = function() {
     return ReactSharedInternals.H.useHostTransitionStatus();
   };
-  reactDom_production.version = "19.2.4";
+  reactDom_production.version = "19.2.5";
   return reactDom_production;
 }
 var hasRequiredReactDom;
@@ -12390,12 +12390,12 @@ function requireReactDomClient_production() {
     }
   };
   var isomorphicReactPackageVersion$jscomp$inline_1840 = React2.version;
-  if ("19.2.4" !== isomorphicReactPackageVersion$jscomp$inline_1840)
+  if ("19.2.5" !== isomorphicReactPackageVersion$jscomp$inline_1840)
     throw Error(
       formatProdErrorMessage(
         527,
         isomorphicReactPackageVersion$jscomp$inline_1840,
-        "19.2.4"
+        "19.2.5"
       )
     );
   ReactDOMSharedInternals.findDOMNode = function(componentOrElement) {
@@ -12413,10 +12413,10 @@ function requireReactDomClient_production() {
   };
   var internals$jscomp$inline_2347 = {
     bundleType: 0,
-    version: "19.2.4",
+    version: "19.2.5",
     rendererPackageName: "react-dom",
     currentDispatcherRef: ReactSharedInternals,
-    reconcilerVersion: "19.2.4"
+    reconcilerVersion: "19.2.5"
   };
   if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
     var hook$jscomp$inline_2348 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
@@ -12483,7 +12483,7 @@ function requireReactDomClient_production() {
     listenToAllSupportedEvents(container);
     return new ReactDOMHydrationRoot(initialChildren);
   };
-  reactDomClient_production.version = "19.2.4";
+  reactDomClient_production.version = "19.2.5";
   return reactDomClient_production;
 }
 var hasRequiredClient;
@@ -13059,7 +13059,7 @@ function resolvePath(to, fromPathname = "/") {
   } = typeof to === "string" ? parsePath(to) : to;
   let pathname;
   if (toPathname) {
-    toPathname = toPathname.replace(/\/\/+/g, "/");
+    toPathname = removeDoubleSlashes(toPathname);
     if (toPathname.startsWith("/")) {
       pathname = resolvePathname(toPathname.substring(1), "/");
     } else {
@@ -13075,7 +13075,7 @@ function resolvePath(to, fromPathname = "/") {
   };
 }
 function resolvePathname(relativePath, fromPathname) {
-  let segments = fromPathname.replace(/\/+$/, "").split("/");
+  let segments = removeTrailingSlash(fromPathname).split("/");
   let relativeSegments = relativePath.split("/");
   relativeSegments.forEach((segment) => {
     if (segment === "..") {
@@ -13146,8 +13146,10 @@ function resolveTo(toArg, routePathnames, locationPathname, isPathRelative = fal
   }
   return path;
 }
-var joinPaths = (paths) => paths.join("/").replace(/\/\/+/g, "/");
-var normalizePathname = (pathname) => pathname.replace(/\/+$/, "").replace(/^\/*/, "/");
+var removeDoubleSlashes = (path) => path.replace(/\/\/+/g, "/");
+var joinPaths = (paths) => removeDoubleSlashes(paths.join("/"));
+var removeTrailingSlash = (path) => path.replace(/\/+$/, "");
+var normalizePathname = (pathname) => removeTrailingSlash(pathname).replace(/^\/*/, "/");
 var normalizeSearch = (search) => !search || search === "?" ? "" : search.startsWith("?") ? search : "?" + search;
 var normalizeHash = (hash2) => !hash2 || hash2 === "#" ? "" : hash2.startsWith("#") ? hash2 : "#" + hash2;
 var ErrorResponseImpl = class {
@@ -13167,7 +13169,8 @@ function isRouteErrorResponse(error) {
   return error != null && typeof error.status === "number" && typeof error.statusText === "string" && typeof error.internal === "boolean" && "data" in error;
 }
 function getRoutePattern(matches) {
-  return matches.map((m) => m.route.path).filter(Boolean).join("/").replace(/\/\/*/g, "/") || "/";
+  let parts = matches.map((m) => m.route.path).filter(Boolean);
+  return joinPaths(parts) || "/";
 }
 var isBrowser$1 = typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined";
 function parseToInfo(_to, basename) {
@@ -13224,6 +13227,9 @@ DataRouterContext.displayName = "DataRouter";
 var DataRouterStateContext = reactExports.createContext(null);
 DataRouterStateContext.displayName = "DataRouterState";
 var RSCRouterContext = reactExports.createContext(false);
+function useIsRSCRouterContext() {
+  return reactExports.useContext(RSCRouterContext);
+}
 var ViewTransitionContext = reactExports.createContext({
   isTransitioning: false
 });
@@ -13447,21 +13453,21 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
         pathname: joinPaths([
           parentPathnameBase,
           // Re-encode pathnames that were decoded inside matchRoutes.
-          // Pre-encode `?` and `#` ahead of `encodeLocation` because it uses
+          // Pre-encode `%`, `?` and `#` ahead of `encodeLocation` because it uses
           // `new URL()` internally and we need to prevent it from treating
           // them as separators
           navigator2.encodeLocation ? navigator2.encodeLocation(
-            match2.pathname.replace(/\?/g, "%3F").replace(/#/g, "%23")
+            match2.pathname.replace(/%/g, "%25").replace(/\?/g, "%3F").replace(/#/g, "%23")
           ).pathname : match2.pathname
         ]),
         pathnameBase: match2.pathnameBase === "/" ? parentPathnameBase : joinPaths([
           parentPathnameBase,
           // Re-encode pathnames that were decoded inside matchRoutes
-          // Pre-encode `?` and `#` ahead of `encodeLocation` because it uses
+          // Pre-encode `%`, `?` and `#` ahead of `encodeLocation` because it uses
           // `new URL()` internally and we need to prevent it from treating
           // them as separators
           navigator2.encodeLocation ? navigator2.encodeLocation(
-            match2.pathnameBase.replace(/\?/g, "%3F").replace(/#/g, "%23")
+            match2.pathnameBase.replace(/%/g, "%25").replace(/\?/g, "%3F").replace(/#/g, "%23")
           ).pathname : match2.pathnameBase
         ])
       })
@@ -14093,9 +14099,9 @@ function singleFetchUrl(reqUrl, basename, trailingSlashAware, extension) {
     if (url.pathname === "/") {
       url.pathname = `_root.${extension}`;
     } else if (basename && stripBasename(url.pathname, basename) === "/") {
-      url.pathname = `${basename.replace(/\/$/, "")}/_root.${extension}`;
+      url.pathname = `${removeTrailingSlash(basename)}/_root.${extension}`;
     } else {
-      url.pathname = `${url.pathname.replace(/\/$/, "")}.${extension}`;
+      url.pathname = `${removeTrailingSlash(url.pathname)}.${extension}`;
     }
   }
   return url;
@@ -14335,6 +14341,7 @@ function composeEventHandlers(theirHandler, ourHandler) {
   };
 }
 function PrefetchPageLinks({ page, ...linkProps }) {
+  let rsc = useIsRSCRouterContext();
   let { router } = useDataRouterContext2();
   let matches = reactExports.useMemo(
     () => matchRoutes(router.routes, page, router.basename),
@@ -14342,6 +14349,9 @@ function PrefetchPageLinks({ page, ...linkProps }) {
   );
   if (!matches) {
     return null;
+  }
+  if (rsc) {
+    return /* @__PURE__ */ reactExports.createElement(RSCPrefetchPageLinksImpl, { page, matches, ...linkProps });
   }
   return /* @__PURE__ */ reactExports.createElement(PrefetchPageLinksImpl, { page, matches, ...linkProps });
 }
@@ -14362,6 +14372,46 @@ function useKeyedPrefetchLinks(matches) {
     };
   }, [matches, manifest, routeModules]);
   return keyedPrefetchLinks;
+}
+function RSCPrefetchPageLinksImpl({
+  page,
+  matches: nextMatches,
+  ...linkProps
+}) {
+  let location = useLocation();
+  let { future } = useFrameworkContext();
+  let { basename } = useDataRouterContext2();
+  let dataHrefs = reactExports.useMemo(() => {
+    if (page === location.pathname + location.search + location.hash) {
+      return [];
+    }
+    let url = singleFetchUrl(
+      page,
+      basename,
+      future.unstable_trailingSlashAwareDataRequests,
+      "rsc"
+    );
+    let hasSomeRoutesWithShouldRevalidate = false;
+    let targetRoutes = [];
+    for (let match2 of nextMatches) {
+      if (typeof match2.route.shouldRevalidate === "function") {
+        hasSomeRoutesWithShouldRevalidate = true;
+      } else {
+        targetRoutes.push(match2.route.id);
+      }
+    }
+    if (hasSomeRoutesWithShouldRevalidate && targetRoutes.length > 0) {
+      url.searchParams.set("_routes", targetRoutes.join(","));
+    }
+    return [url.pathname + url.search];
+  }, [
+    basename,
+    future.unstable_trailingSlashAwareDataRequests,
+    page,
+    location,
+    nextMatches
+  ]);
+  return /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, dataHrefs.map((href) => /* @__PURE__ */ reactExports.createElement("link", { key: href, rel: "prefetch", as: "fetch", href, ...linkProps })));
 }
 function PrefetchPageLinksImpl({
   page,
@@ -14474,7 +14524,7 @@ var isBrowser2 = typeof window !== "undefined" && typeof window.document !== "un
 try {
   if (isBrowser2) {
     window.__reactRouterVersion = // @ts-expect-error
-    "7.13.1";
+    "7.14.1";
   }
 } catch (e) {
 }
@@ -20305,6 +20355,12 @@ function sendRequest(method, endpoint, params) {
     }
   });
 }
+function exportDatabaseZIP() {
+  window.open("/api/exportDatabaseFolder");
+}
+function ImportDatabaseZIP(file) {
+  return sendRequest("POST", "importDatabaseFolder", { file });
+}
 function getProjectList() {
   return sendRequest("GET", "getProjectList");
 }
@@ -20532,10 +20588,10 @@ function ReferencePopupProvider({ children }) {
   ] });
 }
 const useReferencePopup = () => reactExports.useContext(referencePopupContext);
-const SettingsPage = reactExports.lazy(() => __vitePreload(() => import("./settings-D5ypQtnY.js"), true ? __vite__mapDeps([0,1]) : void 0));
-const DashboardPage = reactExports.lazy(() => __vitePreload(() => import("./dashboard-DKt4fvqg.js"), true ? __vite__mapDeps([2,3,4,5,6]) : void 0));
-const ArticleEditorPage = reactExports.lazy(() => __vitePreload(() => import("./articleEditor-TKqT4QkZ.js"), true ? __vite__mapDeps([7,8,5,9,10]) : void 0));
-const ManuscriptsPage = reactExports.lazy(() => __vitePreload(() => import("./manuscripts-DIeIM2lc.js"), true ? __vite__mapDeps([11,8,5,9,3,4,12]) : void 0));
+const SettingsPage = reactExports.lazy(() => __vitePreload(() => import("./settings-Bt8lPtMc.js"), true ? __vite__mapDeps([0,1,2]) : void 0));
+const DashboardPage = reactExports.lazy(() => __vitePreload(() => import("./dashboard-DzgQbPwj.js"), true ? __vite__mapDeps([3,4,5,6,7]) : void 0));
+const ArticleEditorPage = reactExports.lazy(() => __vitePreload(() => import("./articleEditor-DKR3uqj8.js"), true ? __vite__mapDeps([8,9,6,10,1,11]) : void 0));
+const ManuscriptsPage = reactExports.lazy(() => __vitePreload(() => import("./manuscripts-CxxAbg78.js"), true ? __vite__mapDeps([12,9,6,10,4,5,1,13]) : void 0));
 function App() {
   reactExports.useEffect(() => {
     if (!localStorage.getItem("CurrentProject")) {
@@ -20569,28 +20625,30 @@ clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
 export {
+  ImportDatabaseZIP as I,
   LS_PROJECT_NAME as L,
   React as R,
   WLSelect as W,
-  exportTemplates as a,
-  getArticleTree as b,
-  getTemplate as c,
-  fetchArticle as d,
+  exportDatabaseZIP as a,
+  exportTemplates as b,
+  getArticleTree as c,
+  getTemplate as d,
   exportProject as e,
   fetchReferenceables as f,
   getTemplateList as g,
-  getScene as h,
+  fetchArticle as h,
   importTemplates as i,
   jsxRuntimeExports as j,
-  getManuscriptTree as k,
-  setScene as l,
+  getScene as k,
+  getManuscriptTree as l,
   modifyArticle as m,
-  setManuscriptTree as n,
-  deleteScene as o,
-  commonjsGlobal as p,
-  getDefaultExportFromCjs as q,
+  setScene as n,
+  setManuscriptTree as o,
+  deleteScene as p,
+  commonjsGlobal as q,
   reactExports as r,
   setArticleTree as s,
-  useReferencePopup as t,
-  useTheme as u
+  getDefaultExportFromCjs as t,
+  useTheme as u,
+  useReferencePopup as v
 };

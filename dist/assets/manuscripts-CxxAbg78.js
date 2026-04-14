@@ -1,7 +1,8 @@
-import { r as reactExports, h as getScene, L as LS_PROJECT_NAME, j as jsxRuntimeExports, k as getManuscriptTree, l as setScene, n as setManuscriptTree, o as deleteScene } from "./index-BGqFm7i_.js";
-import { s as showToast, R as RichTextEditor } from "./richTextEditor-CcejcIqp.js";
-import { T as Tree, j as jQuery, e as enforceUniqueNodeNames } from "./Tree-2pUgYnDs.js";
+import { r as reactExports, k as getScene, L as LS_PROJECT_NAME, j as jsxRuntimeExports, l as getManuscriptTree, n as setScene, o as setManuscriptTree, p as deleteScene } from "./index-BqlWqb_l.js";
+import { R as RichTextEditor } from "./richTextEditor-5_CDnXca.js";
+import { T as Tree, j as jQuery, e as enforceUniqueNodeNames } from "./Tree-D9dKbqE7.js";
 import { W as WLuid } from "./uid-CgJ15W9t.js";
+import { s as showToast } from "./toast-BelPYyVA.js";
 window.jQuery = jQuery;
 function getTree() {
   return getManuscriptTree(localStorage.getItem(LS_PROJECT_NAME));

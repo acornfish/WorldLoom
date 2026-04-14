@@ -1,5 +1,5 @@
-import { r as reactExports, j as jsxRuntimeExports, f as fetchReferenceables, L as LS_PROJECT_NAME, W as WLSelect, R as React, g as getTemplateList, d as getTemplate, h as fetchArticle, m as modifyArticle } from "./index-CnPIfOL0.js";
-import { R as RichTextEditor } from "./richTextEditor-DPtOcj4q.js";
+import { r as reactExports, j as jsxRuntimeExports, f as fetchReferenceables, L as LS_PROJECT_NAME, W as WLSelect, R as React, g as getTemplateList, d as getTemplate, h as fetchArticle, m as modifyArticle } from "./index-BqlWqb_l.js";
+import { R as RichTextEditor } from "./richTextEditor-5_CDnXca.js";
 import { s as showToast } from "./toast-BelPYyVA.js";
 import "./uid-CgJ15W9t.js";
 const PromptTypes = {

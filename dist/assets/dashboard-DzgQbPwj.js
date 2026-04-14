@@ -1,5 +1,5 @@
-import { r as reactExports, g as getTemplateList, L as LS_PROJECT_NAME, j as jsxRuntimeExports, i as importTemplates, a as exportTemplates, m as modifyArticle, s as setArticleTree, b as getArticleTree } from "./index-BGqFm7i_.js";
-import { T as Tree, j as jQuery, e as enforceUniqueNodeNames } from "./Tree-2pUgYnDs.js";
+import { r as reactExports, g as getTemplateList, L as LS_PROJECT_NAME, j as jsxRuntimeExports, i as importTemplates, b as exportTemplates, m as modifyArticle, s as setArticleTree, c as getArticleTree } from "./index-BqlWqb_l.js";
+import { T as Tree, j as jQuery, e as enforceUniqueNodeNames } from "./Tree-D9dKbqE7.js";
 import { W as WLuid } from "./uid-CgJ15W9t.js";
 function exportTemplatesButton(setMassExportText) {
   exportTemplates(localStorage.getItem(LS_PROJECT_NAME)).then(

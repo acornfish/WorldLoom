@@ -1,4 +1,4 @@
-import { q as commonjsGlobal, t as getDefaultExportFromCjs, R as React, r as reactExports, j as jsxRuntimeExports, v as useReferencePopup } from "./index-CnPIfOL0.js";
+import { q as commonjsGlobal, t as getDefaultExportFromCjs, R as React, r as reactExports, j as jsxRuntimeExports, v as useReferencePopup } from "./index-BqlWqb_l.js";
 import { a as WLdomid } from "./uid-CgJ15W9t.js";
 var freeGlobal = typeof global == "object" && global && global.Object === Object && global;
 var freeSelf = typeof self == "object" && self && self.Object === Object && self;
