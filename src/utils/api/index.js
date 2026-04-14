@@ -31,6 +31,14 @@ function sendRequest(method, endpoint, params) {
     });
 }
 
+// Database Management 
+export function exportDatabaseZIP() {
+    window.open("/api/exportDatabaseFolder")
+}
+export function ImportDatabaseZIP(file) {
+    return sendRequest('POST', 'importDatabaseFolder', { file });
+}
+
 // Project Management
 export function createProject(name, description) {
     return sendRequest('POST', 'CreateProject', { name, description });

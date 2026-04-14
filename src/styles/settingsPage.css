@@ -146,3 +146,13 @@ h4{
     width: 50%;
 }
 
+.import-project-fp::file-selector-button{
+    width: 20%;
+    height: 10%;
+    left: 5%;
+    position: relative;
+    margin-bottom: 2%;
+    background-color: var(--accent);
+    border: none;
+    color: var(--text-color);
+}
