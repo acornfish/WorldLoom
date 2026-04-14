@@ -22,6 +22,9 @@ const { FgBlue, FgGreen, FgRed, Reset, Underscore } = require("./Colors");
 const {LogManager} = require("./LogManager");
 const { existsSync } = require("node:fs");
 const { cwd } = require("node:process");
+const Archiver = require("archiver");
+const unzipper = require('unzipper');
+const { Readable } = require('stream');
 
 class DirectoryManager {
   static createDirectory(path, onFailMessage, onSuccessAction = null) {
@@ -223,8 +226,44 @@ class FileManager {
       );
     }
   }
+
+  static zipFolder(path, onData, onEnd) {
+    const archive = Archiver('zip', {
+        zlib: {
+            level: 9
+        }
+    });
+
+    archive.on('data', onData);
+    archive.on('finish', onEnd);
+    archive.directory(path, false)
+    archive.finalize()
+  } 
+  
+  static unzipFolder(path, content, onEnd) {
+    const buffer = Buffer.from(content);
+    const stream = Readable.from(buffer);
+    const tempPath =  path + "_temp" 
+
+    stream
+      .pipe(unzipper.Extract({ path: tempPath}))
+      .on('close', () => {
+        if(!FS.existsSync(Path.join(tempPath, "db.json"))){
+          onEnd(500, "Fail: Not a valid project file")
+          return;
+        }
+        
+        if(FS.existsSync(path)){
+          FS.rmdirSync(path, {force: true, recursive: true});
+        }
+
+        FS.renameSync(tempPath, path)
+        onEnd(200, "Success")
+      });
+  }
 }
 
 exports.DirectoryManager = DirectoryManager;
 exports.FileManager = FileManager;
 exports.FS = FS;
+exports.Path = Path;

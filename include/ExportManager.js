@@ -332,8 +332,10 @@ function convertDeltaToHTML(delta) {
 
 function buildScene(template, name, data){
     return template.replaceAll("${scriptName}", name).replaceAll("${scriptSynopsis}", data["synopsis"]).replaceAll("${scriptText}",
-        convertDeltaToHTML( JSON.parse( data["scene"]) )
-    )
+        typeof data["scene"] == "string" ? 
+            convertDeltaToHTML( JSON.parse( data["scene"]) ) : 
+            convertDeltaToHTML( data["scene"] )
+    ) 
 }
 
 function buildArticle(htmlTemplate, name, data, template, banner){
