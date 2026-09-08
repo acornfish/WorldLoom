@@ -15,6 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */    
+const {
+    FgBlue,
+    FgGreen,
+    FgRed,
+    Reset,
+    Underscore
+} = require("./include/Colors")
 
 const PORT = 4523
 const HOST = "0.0.0.0"
@@ -50,13 +57,6 @@ const {
     hash,
     updateArticleRefWeb
 } = require("./include/DatabaseManager")
-const {
-    FgBlue,
-    FgGreen,
-    FgRed,
-    Reset,
-    Underscore
-} = require("./include/Colors")
 const {
     LogManager
 } = require("./include/LogManager");
