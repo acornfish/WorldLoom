@@ -1,5 +1,7 @@
 ![Alt text](README_assets/worldloombanner.png "")
 
+# THERE ARE TOO MANY UNCONNECTED PARTS. I WILL FIX THEM SOON BUT THEY ARE NOT YET FIXED
+
 # Prerequisites
 -NodeJS (https://nodejs.org/en/download/package-manager) 
 
