@@ -1,6 +1,8 @@
 ![Alt text](README_assets/worldloombanner.png "")
 
-# THERE ARE TOO MANY UNCONNECTED PARTS. I WILL FIX THEM SOON BUT THEY ARE NOT YET FIXED
+# THERE ARE TOO MANY MESSED UP PARTS. THEY MAY OR MAY NOT BE FIXED
+I am a 12th grader who lacks time. I might fix them after starting university but until then it will probably be remain too broken to use.
+Versions before react migration are relatively stable but cross references still sometimes cause errors
 
 # Prerequisites
 -NodeJS (https://nodejs.org/en/download/package-manager) 
